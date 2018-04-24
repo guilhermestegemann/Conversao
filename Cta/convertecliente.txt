@@ -1,0 +1,4 @@
+delete from clifortabelapreco;
+delete from funcionarioclifor;
+delete from cliforcontato;
+delete from clifor;

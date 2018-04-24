@@ -1,0 +1,259 @@
+    CODIGO DESCRICAO                      UN    ALIQ.EST   COD.  FORNECEDOR                      UF  COD. NO FORNECEDOR    FAT.CONV.
+         1 DISTRACAO CHOC.COCO 360G       UN          17     16  MARILAN ALIMENTOS S/A.          SP  112/291                 21,0000
+         2 IOGURTE MOR.COLOR BALL         UN          17      1  VIGOR ALIMENTOS S A             SP  738861                  18,0000
+         3 IOGURTE MOR.BLACK WHITE VIGOR  UN          17      1  VIGOR ALIMENTOS S A             SP  738804                  18,0000
+         4 GREGO TRADICIONAL VIGOR 100GR  UN          17      1  VIGOR ALIMENTOS S A             SP  731672                  24,0000
+         6 GREGO FRU. VERMELHAS VIGOR 100 UN          17      1  VIGOR ALIMENTOS S A             SP  731674                  24,0000
+         9 GREGO FLOCOS VIGOR 100GR       UN          17      1  VIGOR ALIMENTOS S A             SP  731675                  24,0000
+        12 GREGO MOR/BAUN VIGOR 100GR     UN          17      1  VIGOR ALIMENTOS S A             SP  731670                  24,0000
+        13 CREAM CHEESE TRAD 150G DANUBIO UN          17      1  VIGOR ALIMENTOS S A             SP  763735                  20,0000
+        14 CREAM CHEESE LIGHT 150G DANUB. UN          17      1  VIGOR ALIMENTOS S A             SP  331076                  20,0000
+        18 GREGO ZERO MORANGO VIGOR 100GR UN          17      1  VIGOR ALIMENTOS S A             SP  731527                  24,0000
+        19 DISTRACAO CAPPUCCI 360G        UN          17     16  MARILAN ALIMENTOS S/A.          SP  100/261                 21,0000
+        20 DISTRACAO CHOC. BRANCO 360G    UN          17     16  MARILAN ALIMENTOS S/A.          SP  111/266                 21,0000
+        27 FERMENTADO VIGOR TRAD. 450G    UN          17      1  VIGOR ALIMENTOS S A             SP  739331                  18,0000
+        39 MORT. EX. FGO/ERVAS 400GR      UN          17      2  EXCELSIOR ALIMENTOS S A         RS  204309                  12,0000
+        40 MORT. PERU LIGHT EXCEL. 400GR  UN          17      2  EXCELSIOR ALIMENTOS S A         RS  204329                  12,0000
+        42 MORT. FRANGO LIGHT 500GR       UN          17      2  EXCELSIOR ALIMENTOS S A         RS  204319                  12,0000
+        43 MORT. FRANGO TOMATE/CEBOLINHA  UN          17      2  EXCELSIOR ALIMENTOS S A         RS  204379                  12,0000
+        45 QUEIJO RALADO VIGOR 50GR       UN          12      1  VIGOR ALIMENTOS S A             SP  330872                  20,0000
+        49 MASSA PASTEL DISCO GRANDE 500G UN          17      3  INDUSTRIA DE MASSAS ALIMENTICI  SC  DG500                    1,0000
+        50 MASSA PASTEL DL MEDIO 300G     UN          17      3  INDUSTRIA DE MASSAS ALIMENTICI  SC  DL300                    1,0000
+        51 MASSA LAZANHA 500GR            UN          17      3  INDUSTRIA DE MASSAS ALIMENTICI  SC  LZ500                    1,0000
+        52 MASSA PIZZA 190GR              UN          17      3  INDUSTRIA DE MASSAS ALIMENTICI  SC  PZ190.                   1,0000
+        53 MASSA ROLO 2KG                 UN          17      3  INDUSTRIA DE MASSAS ALIMENTICI  SC  MR2000 21.               1,0000
+        54 MASSA TALHARIM 500GR           UN          17      3  INDUSTRIA DE MASSAS ALIMENTICI  SC  MF500.                   1,0000
+        59 SALSICHA HOT DOG 400G          UN          17      2  EXCELSIOR ALIMENTOS S A         RS  207889                  12,0000
+        61 PATE FRANGO EXCELSIOR 100GR    UN          17      2  EXCELSIOR ALIMENTOS S A         RS  204629                  36,0000
+        62 PATE ERVAS FINAS EXCELSIOR100G UN          17      2  EXCELSIOR ALIMENTOS S A         RS  204509                  36,0000
+        63 PATE PRESUNTO EXCELSIOR 100GR  UN          17      2  EXCELSIOR ALIMENTOS S A         RS  204578                  36,0000
+        65 ACHOC. EM PO PREMIUM 400G PT   UN          17     12  CHOCOLEITE INDUSTRIA DE ALIMEN  SC  10302                   12,0000
+        66 ACHOC. EM PO JUNIOR 400G RF    UN          17     12  CHOCOLEITE INDUSTRIA DE ALIMEN  SC  10312                   18,0000
+        82 LEITE DE COCO 200ML NORDESTE   UN          17     15  INDUSTRIA ALIMENTICIA DO VALE   PB  5003                    24,0000
+        83 TORTINHA BAUNY 160G            UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000386      36,0000
+        94 MAIZENA CHOCOLATE 400G         UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000293      24,0000
+        96 MARIA 400G                     UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000305      24,0000
+        97 WAFER BRIGADEIRO 115G          UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000253      40,0000
+        98 WAFER CHOCO. SUICO 115G        UN          17     16  MARILAN ALIMENTOS S/A.          SP  055/254                 40,0000
+        99 ROSQUINHA CHOCOLATE 400G       UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000364      24,0000
+       100 ROSQUINHA COCO 400G            UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000365      24,0000
+       101 RECH. CHOCOLATE 130G           UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000380      36,0000
+       102 RECH. MORANGO 130G             UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000381      36,0000
+       103 RECH. BAUNY 130G               UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000382      36,0000
+       109 RECH CHOCOLATE PRINCESAS 140G  UN          17     16  MARILAN ALIMENTOS S/A.          SP  144/428                 36,0000
+       115 ROSQUINHA LEITE 400G           UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000363      24,0000
+       122 SANDWICH CHEDAR 144GR          UN          17      4  POLENGHI INDS. ALIMENTICIAS LT  SP  10110032                20,0000
+       134 MANTEIGA PT 200G S/S AVIACAO   UN          12     27  GONCALVES SALLES S A INDUSTRIA  MG  105600                   1,0000
+       137 PATE BACON EXCELSIOR 100G      UN          17      2  EXCELSIOR ALIMENTOS S A         RS  204559                  36,0000
+       138 CAFE AVIACAO 500G              UN          17     10  GONCALVES SALLES INDUSTRIA E C  SP  000015                   1,0000
+       141 QJO GRUYERE SERRABELA FRACIO   KG          17     20  VIGOR ALIMENTOS SA              SC  728794                   1,0000
+       144 MORT. EX. S/T 500GR            UN          17      2  EXCELSIOR ALIMENTOS S A         RS  204359                  12,0000
+       147 MANTEIGA PT 500G C/SAL AVIACAO UN          12     27  GONCALVES SALLES S A INDUSTRIA  MG  106100                   1,0000
+       151 MASSA CANUDO 200GR             UN          17      3  INDUSTRIA DE MASSAS ALIMENTICI  SC  CA200                    1,0000
+       161 MORCELA EXC. 250GR             UN          17      2  EXCELSIOR ALIMENTOS S A         RS  204569                  24,0000
+       165 NATURAL S/LACT VIGOR 170GR     UN          17     20  VIGOR ALIMENTOS SA              SC  731648                  12,0000
+       168 MARGARINA AMELIA S/SAL 500GR   UN          17      1  VIGOR ALIMENTOS S A             SP  330995                  12,0000
+       172 MORT FRANGO 500GR              UN          17      2  EXCELSIOR ALIMENTOS S A         RS  204299                  12,0000
+       181 IOGURTE ULTRACREMOSO C/6 F.VE  UN          17     20  VIGOR ALIMENTOS SA              SC  761648                   8,0000
+       182 IOGURTE ULTRACREMOSO C/6 MORAN UN          17      1  VIGOR ALIMENTOS S A             SP  761647                   8,0000
+       184 NATURAL VIGOR 170GR            UN          17      1  VIGOR ALIMENTOS S A             SP  330565                  12,0000
+       185 NATURAL DESNATADO 170G         UN          17      1  VIGOR ALIMENTOS S A             SP  330566                  12,0000
+       186 NATURAL AMEIXA 170G            UN          17      1  VIGOR ALIMENTOS S A             SP  330570                  12,0000
+       187 NATURAL MEL 170G               UN          17      1  VIGOR ALIMENTOS S A             SP  330567                  12,0000
+       188 NATURAL LAR/CEN/MEL 170G       UN          17      1  VIGOR ALIMENTOS S A             SP  330569                  12,0000
+       189 IOGURTE POLPA MORANGO VIGOR 54 UN          17      1  VIGOR ALIMENTOS S A             SP  666722                   8,0000
+       190 IOGURTE POLPA COCO VIGOR 540GR UN          17      1  VIGOR ALIMENTOS S A             SP  666724                   8,0000
+       191 LIQUIDO MORANGO 180G           UN          17      1  VIGOR ALIMENTOS S A             SP  738871                  28,0000
+       193 LIQUIDO FRUTAS VERMELHAS 180GR UN          17      1  VIGOR ALIMENTOS S A             SP  738869                  28,0000
+       194 IOGURTE POLPA VITAMINA 540G    UN          17      1  VIGOR ALIMENTOS S A             SP  666726                   8,0000
+       198 PETIT MORANGO VIGOR 360GR      UN          17      1  VIGOR ALIMENTOS S A             SP  330663                  12,0000
+       199 PETIT CHOCOLATE VIGOR 360GR    UN          17      1  VIGOR ALIMENTOS S A             SP  330664                  12,0000
+       202 GREGO ZERO AMORA               UN          17      1  VIGOR ALIMENTOS S A             SP  752979                  24,0000
+       203 SOBREMESA FLAN CARAMELO 220G   UN          17      1  VIGOR ALIMENTOS S A             SP  330654                  12,0000
+       205 BEBIDA DE LARANJA VIG 200ML    UN          17      1  VIGOR ALIMENTOS S A             SP  330693                  27,0000
+       206 BEBIDA DE MORANGO VIG 200ML    UN          17      1  VIGOR ALIMENTOS S A             SP  330690                  27,0000
+       207 BEBIDA DE UVA VIG 200ML        UN          17      1  VIGOR ALIMENTOS S A             SP  330688                  27,0000
+       208 BEBIDA DE MACA VIG 200ML       UN          17      1  VIGOR ALIMENTOS S A             SP  330687                  27,0000
+       210 REQUEIJAO TRAD. VIGOR 200GR    UN          17      1  VIGOR ALIMENTOS S A             SP  330805                  24,0000
+       211 REQUEIJAO LIGHT VIGOR 200GR    UN          17      1  VIGOR ALIMENTOS S A             SP  330806                  24,0000
+       214 MANTEIGA C/SAL LECO 200G       UN          12      1  VIGOR ALIMENTOS S A             SP  330894                  15,0000
+       215 MANTEIGA S/SAL LECO 200G       UN          12      1  VIGOR ALIMENTOS S A             SP  330893                  15,0000
+       216 QUEIJO CREM. COPO DANUBIO 240G UN          17      1  VIGOR ALIMENTOS S A             SP  331112                  12,0000
+       218 CHANTY MIX SPRAY 250GR         UN          17      1  VIGOR ALIMENTOS S A             SP  330795                  12,0000
+       220 MAIONESE SACHE VIGOR 200GR     UN          17      1  VIGOR ALIMENTOS S A             SP  330801                  24,0000
+       224 MARGARINA VIGOR C/SAL 500GR    UN          12      1  VIGOR ALIMENTOS S A             SP  735562                  12,0000
+       227 NATURAL AMEIXA S/LACTOSE 170G  UN          17     20  VIGOR ALIMENTOS SA              SC  731649                  12,0000
+       228 ACHOC. CHOCO. PRETO LECO 200ML UN          17      1  VIGOR ALIMENTOS S A             SP  330668                  27,0000
+       229 MARGARINA VIGOR C/SAL 250GR    UN          12      1  VIGOR ALIMENTOS S A             SP  735559                  24,0000
+       236 BEBIDA DE MARACUJA VIG200ML    UN          17      1  VIGOR ALIMENTOS S A             SP  330689                  27,0000
+       238 REQUEIJAO ZERO DANUBIO 250 GR  UN          17      1  VIGOR ALIMENTOS S A             SP  332237                  12,0000
+       241 MAIONESE MESA POTE 500GR       UN          17      1  VIGOR ALIMENTOS S A             SP  330803                  12,0000
+       244 GREGO FRU.VERM. S/LACTOSE 100G UN          17      1  VIGOR ALIMENTOS S A             SP  733579                  24,0000
+       246 MASSA ROLO 500GR               UN          17      3  INDUSTRIA DE MASSAS ALIMENTICI  SC  MR500                    1,0000
+       248 POLENGUINHO C/72 1224 KG       UN          17      4  POLENGHI INDS. ALIMENTICIAS LT  SP  10001026                12,0000
+       249 LIQUIDO MORANGO INFANTIL 180GR UN          17      1  VIGOR ALIMENTOS S A             SP  738872                  28,0000
+       253 SOBREMESA CHOCOLATE PRETO 180G UN          17      1  VIGOR ALIMENTOS S A             SP  764475                  12,0000
+       254 SOBREMESA CHOCOLATE BRANCO 180 UN          17      1  VIGOR ALIMENTOS S A             SP  764476                  12,0000
+       256 FERMENTO BIOLO SACHE 10G       UN          17     14  COMERCIAL SAO JOAO BAPTISTA S.  SC  P1637                   66,0000
+       257 FERMENTO PO QUIMICO 100G       UN          17     14  COMERCIAL SAO JOAO BAPTISTA S.  SC  P1060                    1,0000
+       260 MAIONESE TRADICION LORENZ 190G UN          17      8  GONCALVES & TORTOLA S/A         SC  00070788                12,0000
+       261 MAIONESE VERDE LORENZ 190G     UN          17      8  GONCALVES & TORTOLA S/A         SC  00070792                12,0000
+       262 MAIONESE C PIMENTA LORENZ 190G UN          17      8  GONCALVES & TORTOLA S/A         SC  00070791                12,0000
+       263 MOLHO BARBECUE LORENZ 190G     UN          17      8  GONCALVES & TORTOLA S/A         SC  00070793                12,0000
+       264 KETCHUP TRADIC LORENZ 190G     UN          17      8  GONCALVES & TORTOLA S/A         SC  00071091                12,0000
+       265 KETCHUP PICANTE LORENZ 190G    UN          17      8  GONCALVES & TORTOLA S/A         SC  00070798                12,0000
+       266 MOSTARDA AMARELA TRAD 190G     UN          17      8  GONCALVES & TORTOLA S/A         SC  00070789                12,0000
+       267 MOSTARDA ESCURA TRAD 190G      UN          17      8  GONCALVES & TORTOLA S/A         SC  00070790                12,0000
+       268 SAL MARINHO LORENZ 30X1KG      UN          12      8  GONCALVES & TORTOLA S/A         SC  00070562                 1,0000
+       269 SAL REFINADO LORENZ 30X1KG     UN          12      8  GONCALVES & TORTOLA S/A         SC  00070559                 1,0000
+       270 POLVILHO DOCE LORENZ 12X500G   UN          17      8  GONCALVES & TORTOLA S/A         SC  00068769                 1,0000
+       271 POLVILHO AZEDO LORENZ 12X500G  UN          17      8  GONCALVES & TORTOLA S/A         SC  00068767                 1,0000
+       284 REQUEIJAO TRAD. DANUBIO 250G   UN          17      1  VIGOR ALIMENTOS S A             SP  332242                  12,0000
+       288 GARRAFAO VITAMINA 1260G        UN          17      1  VIGOR ALIMENTOS S A             SP  737737                   6,0000
+       298 GARRAFAO MORANGO 1260G         UN          17      1  VIGOR ALIMENTOS S A             SP  737736                   6,0000
+       299 LIQ. VITAMINA INFANTIL 180GR   UN          17      1  VIGOR ALIMENTOS S A             SP  738873                  28,0000
+       308 NATURAL MAMAO 170G             UN          17      1  VIGOR ALIMENTOS S A             SP  582825                  12,0000
+       312 GREGO BLUEBERRY VIGOR 100G     UN          17      1  VIGOR ALIMENTOS S A             SP  737563                  24,0000
+       313 LIQUIDO COCO 180G              UN          17      1  VIGOR ALIMENTOS S A             SP  739888                  28,0000
+       315 IOGURTE POLPA MOR. INFANT.540G UN          17      1  VIGOR ALIMENTOS S A             SP  733540                   8,0000
+       316 CHANTY MIX AMELIA 200G         UN          17      1  VIGOR ALIMENTOS S A             SP  330794                  27,0000
+       319 TEMPERO COPO SEM PIMENTA 300G  UN          17      8  GONCALVES & TORTOLA S/A         SC  00068706                12,0000
+       320 TEMPERO COPO COM PIMENTA 300G  UN          17      8  GONCALVES & TORTOLA S/A         SC  00068757                12,0000
+       323 MOLHO DE ALHO FRASCO 150ML     UN          17      8  GONCALVES & TORTOLA S/A         SC  00068663                12,0000
+       324 MOLHO DE PIMENTA FRASCO 150ML  UN          17      8  GONCALVES & TORTOLA S/A         SC  00068721                12,0000
+       325 MOLHO INGLES FRASCO 150ML      UN          17      8  GONCALVES & TORTOLA S/A         SC  00068729                12,0000
+       326 DOCE DE GOIABA COPO 400G       UN          17      8  GONCALVES & TORTOLA S/A         SC  00068692                12,0000
+       327 DOCE DE MACA COPO 400G         UN          17      8  GONCALVES & TORTOLA S/A         SC  00068696                12,0000
+       328 DOCE DE MORANGO COPO 400G      UN          17      8  GONCALVES & TORTOLA S/A         SC  00068699                12,0000
+       329 DOCE DE TUTTI FRUTTI COPO 400G UN          17      8  GONCALVES & TORTOLA S/A         SC  00068702                12,0000
+       330 DOCE DE UVA COPO 400G          UN          17      8  GONCALVES & TORTOLA S/A         SC  00068703                12,0000
+       332 DOCE DE ABOBORA C/COCO CP 400G UN          17      8  GONCALVES & TORTOLA S/A         SC  00068688                12,0000
+       333 DOCE DE BANANA COPO 400G       UN          17      8  GONCALVES & TORTOLA S/A         SC  00068690                12,0000
+       334 CATCHUP TRAD. BISNAGA 200G     UN          17      8  GONCALVES & TORTOLA S/A         SC  00068669                12,0000
+       337 MAIONESE BISNAGA 200G          UN          17      8  GONCALVES & TORTOLA S/A         SC  00068717                12,0000
+       339 MOSTARDA AMARELA BISNAGA 200G  UN          17      8  GONCALVES & TORTOLA S/A         SC  00068732                12,0000
+       342 TEMPERO COPO. ALHO E SAL 300G  UN          17      8  GONCALVES & TORTOLA S/A         SC  00068759                12,0000
+       343 MOLHO DE SOJA SHOYU FRASCO 150 UN          17      8  GONCALVES & TORTOLA S/A         SC  00068727                12,0000
+       352 MOSTARDA SACHE CX/189 6GR      UN          17      8  GONCALVES & TORTOLA S/A         SC  00068740                 1,0000
+       353 IOGURTE POLPA FR.VER/COCO 540G UN          17      1  VIGOR ALIMENTOS S A             SP  753475                   8,0000
+       360 CHUCRUTE 6X500G                FD          17     11  GRUETZMACHER AGROINDUSTRIAL LT  SC  7898555850590            1,0000
+       364 CHOCOLEITE TRAD. 300ML         UN          17     12  CHOCOLEITE INDUSTRIA DE ALIMEN  SC  10004                   24,0000
+       365 CHOCOLEITE TRAD. 500ML         UN          17     12  CHOCOLEITE INDUSTRIA DE ALIMEN  SC  10005                   12,0000
+       386 AGUA DE COCO DO VALE 200ML     UN          17     15  INDUSTRIA ALIMENTICIA DO VALE   PB  9010                    27,0000
+       387 AGUA DE COCO 1L                UN          17     15  INDUSTRIA ALIMENTICIA DO VALE   PB  9013                    12,0000
+       388 AGUA DE COCO 330ML             UN          17     15  INDUSTRIA ALIMENTICIA DO VALE   PB  9014                    12,0000
+       410 CREAM CRACKER 200G             UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000052      30,0000
+       411 WAFER CHOCOLATE 115G           UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000065      40,0000
+       412 WAFER MORANGO 115G             UN          17     16  MARILAN ALIMENTOS S/A.          SP  049/097                 40,0000
+       413 WAFER BAUNY 115G               UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000099      40,0000
+       414 WAFER MARACUJA 115G            UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000142      40,0000
+       415 TORTINHA LIMAO 160G            UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000204      36,0000
+       416 TORTINHA CHOCOLATE 160G        UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000205      36,0000
+       417 TORTINHA MORANGO 160G          UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000206      36,0000
+       418 TORTINHA MARACUJA 160G         UN          17     16  MARILAN ALIMENTOS S/A.          SP  180/220                 36,0000
+       419 TORTINHA BOMBOM 160G           UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000221      36,0000
+       420 MAGIC TOAST OR. 150G           UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000232      24,0000
+       421 MAGIC TOAST INT. 150G          UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000238      24,0000
+       422 MAGIC TOAST MULT. 150G         UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000241      24,0000
+       423 AMANT. CHOCOLATE 330G          UN          17     16  MARILAN ALIMENTOS S/A.          SP  001/259                 30,0000
+       424 DISTRACAO CHOCOLATE 360G       UN          17     16  MARILAN ALIMENTOS S/A.          SP  113/260                 21,0000
+       425 AMANT. LEITE 330G              UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000269      30,0000
+       426 AMANT. NATA 330G               UN          17     16  MARILAN ALIMENTOS S/A.          SP  004/270                 30,0000
+       427 LEITE 400G                     UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000306      24,0000
+       428 MAIZENA 400G                   UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000307      24,0000
+       429 PIT STOP MISTO QUENTE 105.6G   UN          17     16  MARILAN ALIMENTOS S/A.          SP  174/320                 42,0000
+       430 CREAM CRACKER 400G             UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000321      27,0000
+       431 AGUA E SAL 400G                UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000324      27,0000
+       432 WAFER LIMAO 115G               UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000339      40,0000
+       433 PIT STOP INTEGRAL PERU 105.6G  UN          17     16  MARILAN ALIMENTOS S/A.          SP  178/374                 42,0000
+       441 COOKIE ORIGINAL 80G            UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000447      42,0000
+       442 COOKIE ORIGINAL DP.8x40G       UN          17     16  MARILAN ALIMENTOS S/A.          SP  201/463                  6,0000
+       443 COOKIE CHOCOLATE 80G           UN          17     16  MARILAN ALIMENTOS S/A.          SP  202/474                 42,0000
+       444 COOKIE CHOCOLATE DP.8x40G      UN          17     16  MARILAN ALIMENTOS S/A.          SP  202/489                  6,0000
+       445 TEENS CHOCOLATE 110G           UN          17     16  MARILAN ALIMENTOS S/A.          SP  091/640                 48,0000
+       446 TEENS CHOCOLATE BRANCO 110G    UN          17     16  MARILAN ALIMENTOS S/A.          SP  000000000000000641      48,0000
+       448 PIT STOP ORIGINAL 162G         UN          17     16  MARILAN ALIMENTOS S/A.          SP  035/653                 36,0000
+       450 PIT STOP PAO CHAPA 162G        UN          17     16  MARILAN ALIMENTOS S/A.          SP  068/659                 36,0000
+       451 PIT STOP R CHOCOLATE 124G      UN          17     16  MARILAN ALIMENTOS S/A.          SP  058/668                 42,0000
+       466 QUEIJO PRATO FATIADO 150G VENE UN           7     32  INDUSTRIA E COMERCIO DE LACTIC  SC  06                       1,0000
+       467 QUEIJO MUSSARELA FAT 150G VENE UN           7     32  INDUSTRIA E COMERCIO DE LACTIC  SC  05                       1,0000
+       468 QUEIJO MUSS SEM LACTOSE 150G V UN          17     32  INDUSTRIA E COMERCIO DE LACTIC  SC  159                      1,0000
+       470 BEB LACTEA MORANGO PACOTE 900G UN          17     32  INDUSTRIA E COMERCIO DE LACTIC  SC  09                       1,0000
+       471 BEB LACTEA COCO PACOTE 900G    UN          17     32  INDUSTRIA E COMERCIO DE LACTIC  SC  10                       1,0000
+       472 BEB LACTEA PESSEGO PACOTE 900G UN          17     32  INDUSTRIA E COMERCIO DE LACTIC  SC  11                       1,0000
+       473 BEB LACTEA AMEIXA PACOTE 900G  UN          17     32  INDUSTRIA E COMERCIO DE LACTIC  SC  12                       1,0000
+       474 BEB LACTEA VITAMIN PACOTE 900G UN          17     32  INDUSTRIA E COMERCIO DE LACTIC  SC  14                       1,0000
+       479 CHA VERDE FRUT VERM 170G VITAL UN           7      5  VITAL INDUSTRIA DE ALIMENTOS        450 M                    1,0000
+       480 CHA VERDE HIBISCO 170G VITAL   UN          17      5  VITAL INDUSTRIA DE ALIMENTOS        695 M                    1,0000
+       481 CHA VERDE LIMAO 170G VITAL     UN          17      5  VITAL INDUSTRIA DE ALIMENTOS        705 M                    1,0000
+       482 CHA VERDE ABACAXI 170G VITAL   UN          17      5  VITAL INDUSTRIA DE ALIMENTOS        452 M                    1,0000
+       483 CHA EMAGREC PESSEGO 170G       UN           7      5  VITAL INDUSTRIA DE ALIMENTOS        727 M                    1,0000
+       484 CHA EMAGREC LIMAO HORT 170G    UN           7      5  VITAL INDUSTRIA DE ALIMENTOS        703 M                    1,0000
+       485 CHA DE EMAGREC ABAC HORT 170G  UN           7      5  VITAL INDUSTRIA DE ALIMENTOS        656 M                    1,0000
+       486 CHA MATE PESSEGO 170G VITAL    UN           7      5  VITAL INDUSTRIA DE ALIMENTOS        493 M                    1,0000
+       487 CHA MATE LIMAO 170G VITAL      UN           7      5  VITAL INDUSTRIA DE ALIMENTOS        492 M                    1,0000
+       488 CHA MATE ABAC HORT 170G VITAL  UN           7      5  VITAL INDUSTRIA DE ALIMENTOS        480 M                    1,0000
+       489 COLAGENO TANGERINA 300G VITAL  UN           7      5  VITAL INDUSTRIA DE ALIMENTOS        1398 M                   1,0000
+       504 QJO EMMENTAL FRACIONADO 12UNI  KG          17      1  VIGOR ALIMENTOS S A             SP  728792                   1,0000
+       538 CAFE AVIACAO EXTRA FORTE 500G  UN          17     10  GONCALVES SALLES INDUSTRIA E C  SP  000090                   1,0000
+       553 CHA MATE NATURAL 1350ML        UN          12      6  FAMIGLIA ZAN LORENZI LTDA           2080001                  6,0000
+       554 CHA HIBISCO/CRANBERRY 900ML    UN          12      6  FAMIGLIA ZAN LORENZI LTDA           2070002                  6,0000
+       555 CHA TRES ZERO 900ML            UN          12      6  FAMIGLIA ZAN LORENZI LTDA           2070001                  6,0000
+       556 CHA VERDE GENGIBRE LIMAO 900ML UN          12      6  FAMIGLIA ZAN LORENZI LTDA           2070003                  6,0000
+       558 CHA MATE ZERO LIMAO 250ML      UN          12      6  FAMIGLIA ZAN LORENZI LTDA           2060002                  1,0000
+       564 SUCO INTEGRAL MACA 900ML       UN          12      6  FAMIGLIA ZAN LORENZI LTDA           2020003                  1,0000
+       565 SUCO INTEGRAL MANGA 900ML      UN          12      6  FAMIGLIA ZAN LORENZI LTDA           2020006                  6,0000
+       566 SUCO INTEGRAL LIMAO 900ML      UN          12      6  FAMIGLIA ZAN LORENZI LTDA           2020005                  6,0000
+       567 SUCO INTEGRAL UVA LEV 900ML    UN          12      6  FAMIGLIA ZAN LORENZI LTDA           2020001                  6,0000
+       568 SUCO INTEGRAL TANGERINA 900ML  UN          12      6  FAMIGLIA ZAN LORENZI LTDA           2020007                  6,0000
+       569 SUCO INTEGRAL LARANJA 900ML    UN          12      6  FAMIGLIA ZAN LORENZI LTDA           2020004                  6,0000
+       570 SUCO INTEGRAL LARANJA 250ML    UN          12      6  FAMIGLIA ZAN LORENZI LTDA           2010003                 12,0000
+       571 SUCO INTEGRAL MACA 250ML       UN          12      6  FAMIGLIA ZAN LORENZI LTDA           2010002                 12,0000
+       573 SUCO INTEGRAL UVA LEV 250ML    UN          12      6  FAMIGLIA ZAN LORENZI LTDA           2010001                 12,0000
+       574 SUCO FUNCI. VEGS GREEN 900ML   UN          12      6  FAMIGLIA ZAN LORENZI LTDA           2050001                  6,0000
+       575 SUCO FUNCI. ACAI/BERRIES 900ML UN          12      6  FAMIGLIA ZAN LORENZI LTDA           2050003                  6,0000
+       576 SUCO FUNCI. VEGS ORANGE 900ML  UN          12      6  FAMIGLIA ZAN LORENZI LTDA           2050002                  6,0000
+       577 SUCO INTEGRAL UVA TP 200ML     UN          12      6  FAMIGLIA ZAN LORENZI LTDA           1132071                 27,0000
+       578 SUCO INTEGRAL LARANJA TP 200ML UN          12      6  FAMIGLIA ZAN LORENZI LTDA           1132080                 27,0000
+       579 SUCO INTEGRAL MACA TP 200ML    UN          12      6  FAMIGLIA ZAN LORENZI LTDA           1132072                 27,0000
+       580 CAFE PELE SOLUVEL POUCH 100G   UN          17     13  JACOBS DOUWE EGBERTS BR COMERC  PR  9053                    12,0000
+       581 CAFE PELE SOLUVEL POUCH 50G    UN          17     13  JACOBS DOUWE EGBERTS BR COMERC  PR  1671204                 24,0000
+       583 CAFE CAPUCCINNO PELE 100G      UN          17     13  JACOBS DOUWE EGBERTS BR COMERC  PR  1671721                 12,0000
+       700 PRESUNTO FAT. 200G             UN          17     22  SEARA ALIMENTOS LTDA            SC  729221                  20,0000
+       701 MORTADELA BOL. FAT. 200G       UN          17     22  SEARA ALIMENTOS LTDA            SC  729140                  20,0000
+       702 APRESUNTADO FAT. 200G          UN          17     22  SEARA ALIMENTOS LTDA            SC  729116                  20,0000
+       708 SALAME TP ITALIANO FAT 100G    UN          17     22  SEARA ALIMENTOS LTDA            SC  555657                  30,0000
+       709 MORTADELA FRANGO T MONICA 400G UN          17     22  SEARA ALIMENTOS LTDA            SC  597830                  12,0000
+       716 PRESUNTO FAT 180G              UN          17      2  EXCELSIOR ALIMENTOS S A         RS  204268                  12,0000
+       718 EMBUT PEITO FRANGO DEF FAT 180 UN          17      2  EXCELSIOR ALIMENTOS S A         RS  204259                  12,0000
+       719 FIAMBRE C PICLES FAT 180G      UN          17      2  EXCELSIOR ALIMENTOS S A         RS  204819                  12,0000
+       720 MORTADELA S/T FAT 180G         UN          17      2  EXCELSIOR ALIMENTOS S A         RS  204399                  12,0000
+       721 MORTADELA C/T FAT 180G         UN          17      2  EXCELSIOR ALIMENTOS S A         RS  204349                  12,0000
+       722 MORTADELA DE FRANGO FAT 180G   UN          17      2  EXCELSIOR ALIMENTOS S A         RS  204369                  12,0000
+       723 MORTADELA DEFUMADA FAT 180G    UN          17      2  EXCELSIOR ALIMENTOS S A         RS  204809                  12,0000
+       777 AZEITONA VDE RECH. POUCH 170G  UN          17     23  NACOM GOYA INDUSTRIA E COMIRCI  SP  4350150                 18,0000
+       778 AZEITONA VDE S/CRC POUCH 150G  UN          17     23  NACOM GOYA INDUSTRIA E COMIRCI  SP  4360147                 18,0000
+       779 AZEITONA VDE FAT. POUCH 150G   UN          17     23  NACOM GOYA INDUSTRIA E COMIRCI  SP  4320147                 18,0000
+       780 AZEITONA VDE C/CRC POUCH 180G  UN          17     23  NACOM GOYA INDUSTRIA E COMIRCI  SP  4310152                 18,0000
+       781 CHAMPION INTEIRO POUCH 100G    UN          17     23  NACOM GOYA INDUSTRIA E COMIRCI  SP  4520145                 30,0000
+       782 CHAMPION FAT. POUCH 100G       UN          17     23  NACOM GOYA INDUSTRIA E COMIRCI  SP  4510145                 30,0000
+       785 MOSTARDA ESCURA HEMMER 200G    UN          17     26  COMPANHIA HEMMER INDUSTRIA E C  SC  40601                   25,0000
+       786 MOSTARDA AMARELA HEMMER 200G   UN          17     26  COMPANHIA HEMMER INDUSTRIA E C  SC  40501                   25,0000
+       787 KETCHUP TRAD HEMMER 320G       UN          17     26  COMPANHIA HEMMER INDUSTRIA E C  SC  40941                   15,0000
+       788 MAIONESE HEMMER 290G           UN          17     26  COMPANHIA HEMMER INDUSTRIA E C  SC  41202                   25,0000
+       789 MOLHO DE ALHO C PIMENTA 150ML  UN          17     26  COMPANHIA HEMMER INDUSTRIA E C  SC  40405                   24,0000
+       790 MOLHO INGLES HEMMER 150ML      UN          17     26  COMPANHIA HEMMER INDUSTRIA E C  SC  40206                   24,0000
+       791 PIMENTA MALAGUETA HEMMER 150ML UN          17     26  COMPANHIA HEMMER INDUSTRIA E C  SC  40306                   12,0000
+       792 MOLHO DE PIMENTA HEMMER 150ML  UN          17     26  COMPANHIA HEMMER INDUSTRIA E C  SC  40305                   12,0000
+       793 MOLHO DE ALHO HEMMER 150ML     UN          17     26  COMPANHIA HEMMER INDUSTRIA E C  SC  40404                   24,0000
+       794 AZEITONA VDE FAT HEMMER 150G   UN          17     26  COMPANHIA HEMMER INDUSTRIA E C  SC  11694                   24,0000
+       795 AZEITONA VDE RECH HEMMER 140G  UN          17     26  COMPANHIA HEMMER INDUSTRIA E C  SC  11695                   24,0000
+       796 AZEITONA VDE S/CRC HEMMER 140G UN          17     26  COMPANHIA HEMMER INDUSTRIA E C  SC  11692                   24,0000
+       797 AZEITONA VDE C/CRC HEMMER 180G UN          17     26  COMPANHIA HEMMER INDUSTRIA E C  SC  11690                   24,0000
+       798 BETERRABA PT 400G HEMMER       UN          17     26  COMPANHIA HEMMER INDUSTRIA E C  SC  10130                   15,0000
+       799 PEPINO CONDIMENTOS SUAVE 300G  UN          17     26  COMPANHIA HEMMER INDUSTRIA E C  SC  11230                   15,0000
+       900 BEB. LAC. FRU. VERM. 540G LECO UN          17     20  VIGOR ALIMENTOS SA              SC  762853                   8,0000
+       901 BEB. LAC. VITAMINA 540G LECO   UN          17      1  VIGOR ALIMENTOS S A             SP  762854                   8,0000
+       902 GARRAFAO FRUTAS VER. LECO 900G UN          17      1  VIGOR ALIMENTOS S A             SP  757869                   9,0000
+       903 GARRAFAO VITAMINA LECO 900G    UN          17      1  VIGOR ALIMENTOS S A             SP  757871                   9,0000
+       999 QJO GORGONZOLA FRACIONADO KG   KG          17      1  VIGOR ALIMENTOS S A             SP  332753                   1,0000
