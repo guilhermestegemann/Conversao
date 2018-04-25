@@ -2,8 +2,8 @@ object FrmPrincipal: TFrmPrincipal
   Left = 0
   Top = 0
   Caption = 'Conversor Prats'
-  ClientHeight = 299
-  ClientWidth = 635
+  ClientHeight = 703
+  ClientWidth = 1522
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -26,23 +26,23 @@ object FrmPrincipal: TFrmPrincipal
   object EditDatabase: TEdit
     Left = 80
     Top = 8
-    Width = 249
+    Width = 94
     Height = 21
     TabOrder = 0
   end
   object BtnConectar: TButton
-    Left = 344
-    Top = 8
-    Width = 75
+    Left = 8
+    Top = 35
+    Width = 80
     Height = 21
     Caption = 'Conectar'
     TabOrder = 1
     OnClick = BtnConectarClick
   end
   object BtnDesconectar: TButton
-    Left = 425
-    Top = 8
-    Width = 75
+    Left = 94
+    Top = 35
+    Width = 80
     Height = 21
     Caption = 'Desconectar'
     TabOrder = 2
