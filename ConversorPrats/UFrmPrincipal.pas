@@ -420,6 +420,8 @@ end;
 procedure TFrmPrincipal.ConectarDB;
 begin
   DesconectarDB;
+  FDPhysPgDriverLink1.VendorHome := ExtractFilePath(Application.ExeName);
+  FDPhysPgDriverLink1.VendorLib := 'libpq.dll';
   FDConnection1.Params.Values['database'] := EditDatabase.Text;
   FDConnection1.Connected := True;
 end;

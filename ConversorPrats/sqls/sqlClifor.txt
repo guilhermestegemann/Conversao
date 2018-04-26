@@ -1,0 +1,41 @@
+﻿SELECT 
+terceiros.tipo_fornecedor as isfornecedor,
+terceiros.tipo_cliente as iscliente,
+TERCEIROS.ID AS CODIGO,
+TERCEIROS.NOME AS FANTASIA,
+TERCEIROS.RAZAO_SOCIAL as nome,
+terceiros.cpf_cnpj as cpfcnpj,
+terceiros.rg_ie as rgie,
+terceiros.data_cadastro as data,
+terceiros.data_nascimento as datanasc,
+terceiros.nome_pai as nomepai,
+terceiros.nome_mae as nomemae,
+terceiros.id_tipologia as tipoestabelecimento, 
+terceiros.proprietario as contato, 
+logradouros.nome_completo as endereco,
+terceiros.numero as numero,
+TERCEIROS.id_cidade as cidade,
+bairros.nome_bairro as nomebairro,
+Terceiros.complemento as complemento,
+TERCEIROS.CEP,
+TERCEIROS.FONE AS telefone,
+TERCEIROS.celular AS celular,
+TERCEIROS.FONE AS telefone,
+terceiros.email as email,
+terceiros.email_nfe as emailnfe,
+terceiros.email_boleto as emailboleto,
+case when (terceiros.id_regime_icms = 1) then 'N' else 'S' end as simples,
+terceiros.indicador_insc_estadual as indicadorie,
+terceiros_dados_emp.limite_credito as limitecredito,
+terceiros_dados_emp.id_form_parc_pref as condicaopagamento,
+terceiros_dados_emp.ativo as ativo,
+terceiros_dados_emp.data_ultima_venda as datamovimento,
+terceiros_dados_emp.data_inativacao as datainativado,
+terceiros_dados_emp.observacao_entrega as obs,
+terceiros_dados_emp.id_vendedor as codigovendedor
+
+from terceiros
+left join logradouros on logradouros.id = terceiros.id_logradouro
+left join bairros on bairros.id = terceiros.id_bairro
+inner join terceiros_dados_emp on terceiros_dados_emp.id_terceiro = terceiros.id
+where ((terceiros.tipo_vendedor = false) or (terceiros.tipo_funcionario = false))
