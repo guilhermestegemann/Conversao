@@ -2,8 +2,8 @@ object FrmPrincipal: TFrmPrincipal
   Left = 0
   Top = 0
   Caption = 'Conversor Prats'
-  ClientHeight = 703
-  ClientWidth = 1522
+  ClientHeight = 838
+  ClientWidth = 1543
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -22,6 +22,13 @@ object FrmPrincipal: TFrmPrincipal
     Width = 59
     Height = 13
     Caption = 'Nome Banco'
+  end
+  object Gauge1: TGauge
+    Left = 180
+    Top = 790
+    Width = 1355
+    Height = 36
+    Progress = 0
   end
   object EditDatabase: TEdit
     Left = 80
@@ -48,7 +55,47 @@ object FrmPrincipal: TFrmPrincipal
     TabOrder = 2
     OnClick = BtnDesconectarClick
   end
+  object DBGrid1: TDBGrid
+    Left = 180
+    Top = 8
+    Width = 1355
+    Height = 385
+    DataSource = DataSource1
+    TabOrder = 3
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'Tahoma'
+    TitleFont.Style = []
+  end
+  object BtnCondicaoPagamento: TButton
+    Left = 8
+    Top = 62
+    Width = 166
+    Height = 21
+    Caption = 'Condi'#231#227'o Pagamento'
+    TabOrder = 4
+    OnClick = BtnCondicaoPagamentoClick
+  end
+  object ListBox1: TListBox
+    Left = 180
+    Top = 399
+    Width = 1355
+    Height = 385
+    ItemHeight = 13
+    TabOrder = 5
+  end
+  object BtnSalvar: TButton
+    Left = 8
+    Top = 805
+    Width = 166
+    Height = 21
+    Caption = 'Salvar'
+    TabOrder = 6
+    OnClick = BtnSalvarClick
+  end
   object FDQuery1: TFDQuery
+    Connection = FDConnection1
     Left = 72
     Top = 232
   end
@@ -66,5 +113,16 @@ object FrmPrincipal: TFrmPrincipal
       'DriverID=PG')
     Left = 24
     Top = 224
+  end
+  object DataSource1: TDataSource
+    DataSet = FDQuery1
+    Left = 80
+    Top = 136
+  end
+  object SaveTextFileDialog1: TSaveTextFileDialog
+    DefaultExt = '.txt'
+    Filter = 'Texto|*.txt'
+    Left = 80
+    Top = 600
   end
 end
