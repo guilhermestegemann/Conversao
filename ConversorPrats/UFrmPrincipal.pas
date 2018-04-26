@@ -144,8 +144,8 @@ begin
     Inc(Codigo);
     FDQuery1.Next;
     Gauge1.AddProgress(1);
-    SetHorizontalScrollBar(ListBox1);
   end;
+  SetHorizontalScrollBar(ListBox1);
 end;
 
 procedure TFrmPrincipal.BtnCidadeClick(Sender: TObject);
@@ -182,18 +182,17 @@ begin
     ListBox1.Items.Add(Format(SQLInsert,[Codigo, QuotedStr(Nome), QuotedStr(CodigoFiscal), Populacao, cSim, 0, Estado, 0]));
     FDQuery1.Next;
     Gauge1.AddProgress(1);
-    SetHorizontalScrollBar(ListBox1);
     Application.ProcessMessages;
   end;
+  SetHorizontalScrollBar(ListBox1);
 end;
 
 procedure TFrmPrincipal.BtnCliforClick(Sender: TObject);
 var
   SQLInsertClifor, SQLInsertCliforContato, SQLInsertFuncionarioClifor : String;
-  LimiteCredito : Double;
-  Codigo, TipoEstabelecimento, Cidade, IndicadorIE, CondicaoPagamento, Vendedor, Tipo : Integer;
+  Codigo, Cidade, IndicadorIE, Vendedor, Tipo : Integer;
   Fantasia, Nome, CNPJ, IE, DataCadastro, DataNascimento, NomePai, NomeMae, Contato, Endereco, Numero, NomeBairro, Complemento, Cep, Telefone, Celular,
-  Email, EmailNFe, EmailBoleto, Simples, DataMovimento, DataInativado, Obs : String;
+  Email, EmailNFe, EmailBoleto, Simples, DataMovimento, DataInativado, Obs, LimiteCredito, TipoEstabelecimento, CondicaoPagamento : String;
   IsFornecedor, IsCliente, Ativo : Boolean;
 begin
   FDQuery1.SQL.Add('select ');
@@ -237,8 +236,8 @@ begin
   FDQuery1.SQL.Add('where ((terceiros.tipo_vendedor = false) or (terceiros.tipo_funcionario = false)) ');
   SQLInsertClifor := 'INSERT INTO CLIFOR (CODIGO, FANTASIA, NOME, CNPJ, IE, DATA, DATANASC, NOMEPAI, NOMEMAE, TIPOESTABELECIMENTO, ENDERECO, NUMERO, CIDADE, BAIRRO, COMPLEMENTO, CEP, '+
                      'SIMPLES, INDICADORIE, LIMITECREDITO, CONDICAOPAGAMENTO, ATIVO, DATAMOVIMENTO, DATAINATIVADO, OBS, COMISSAO, SPC, COMISSAOFIXA, VENDARESTRITA, CONSUMIDOR, '+
-                     'DESTACARSTITEM, TIPO, CATEGORIA) VALUES (%d, %s, %s, %s, %s, %s, %s, %s, %s, %d, %s, %s, %d, (SELECT FIRST(1) CODIGO FROM BAIRRO WHERE NOME = %s), '+
-                     '%s, %s, %s, %d, %f, %d, %s, %s, %s, %s, %d, %s, %s, %s, %s, %s, %d, %d);';
+                     'DESTACARSTITEM, TIPO, CATEGORIA, FILIAL) VALUES (%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, (SELECT FIRST(1) CODIGO FROM BAIRRO WHERE NOME = %s), '+
+                     '%s, %s, %s, %d, %s, %s, %s, %s, %s, %s, %d, %s, %s, %s, %s, %s, %d, %d, %d);';
   VerificaConexao;
   AbreQuery;
   AjustaGauge;
@@ -247,9 +246,9 @@ begin
   ListBox1.Items.Add('DELETE FROM FUNCIONARIOCLIFOR; COMMIT;');
   ListBox1.Items.Add('DELETE FROM CLIFOR; COMMIT;');
   ListBox1.Items.Add('DELETE FROM TIPO; COMMIT;');
-  ListBox1.Items.Add(Format('INSERT INTO TIPO VALUES (%d, %s); COMMIT;',[1, 'CLIENTE']));
-  ListBox1.Items.Add(Format('INSERT INTO TIPO VALUES (%d, %s); COMMIT;',[2, 'FORNECEDOR']));
-  ListBox1.Items.Add(Format('INSERT INTO TIPO VALUES (%d, %s); COMMIT;',[3, 'CLIENTE/FORNECEDOR']));
+  ListBox1.Items.Add(Format('INSERT INTO TIPO VALUES (%d, %s); COMMIT;',[1, QuotedStr('CLIENTE')]));
+  ListBox1.Items.Add(Format('INSERT INTO TIPO VALUES (%d, %s); COMMIT;',[2, QuotedStr('FORNECEDOR')]));
+  ListBox1.Items.Add(Format('INSERT INTO TIPO VALUES (%d, %s); COMMIT;',[3, QuotedStr('CLIENTE/FORNECEDOR')]));
   while not FDQuery1.Eof do
   begin
     IsFornecedor := FDQuery1.FieldByName('isfornecedor').AsBoolean;
@@ -258,12 +257,12 @@ begin
     Fantasia := Copy(FDQuery1.FieldByName('fantasia').AsString, 0, 60);
     Nome := Copy(FDQuery1.FieldByName('nome').AsString, 0, 60);
     CNPJ := Numericos(FDQuery1.FieldByName('cpfcnpj').AsString);
-    IE := Numericos(FDQuery1.FieldByName('cpfcnpj').AsString);
+    IE := Numericos(FDQuery1.FieldByName('rgie').AsString);
     DataCadastro := AjustaData(FDQuery1.FieldByName('data').AsString);
     DataNascimento := AjustaData(FDQuery1.FieldByName('datanasc').AsString);
     NomePai := FDQuery1.FieldByName('nomepai').AsString;
     NomeMae := FDQuery1.FieldByName('nomemae').AsString;
-    TipoEstabelecimento := FDQuery1.FieldByName('tipoestabelecimento').AsInteger;
+    TipoEstabelecimento := FDQuery1.FieldByName('tipoestabelecimento').AsString;
     Contato := FDQuery1.FieldByName('contato').AsString;
     Endereco := FDQuery1.FieldByName('endereco').AsString;
     Numero := FDQuery1.FieldByName('numero').AsString;
@@ -278,32 +277,33 @@ begin
     EmailBoleto := FDQuery1.FieldByName('emailboleto').AsString;
     Simples := FDQuery1.FieldByName('simples').AsString;
     IndicadorIE := FDQuery1.FieldByName('indicadorie').AsInteger;
-    LimiteCredito := FDQuery1.FieldByName('limitecredito').AsFloat;
-    CondicaoPagamento := FDQuery1.FieldByName('condicaopagamento').AsInteger;
+    LimiteCredito := StringReplace(FDQuery1.FieldByName('limitecredito').AsString,',', '.', [rfReplaceAll]);
+    CondicaoPagamento := FDQuery1.FieldByName('condicaopagamento').AsString;;
     Ativo := FDQuery1.FieldByName('ativo').AsBoolean;
     DataMovimento := AjustaData(FDQuery1.FieldByName('datamovimento').AsString);
     DataInativado := AjustaData(FDQuery1.FieldByName('datainativado').AsString);
     Obs := FDQuery1.FieldByName('obs').AsString;
     Vendedor := FDQuery1.FieldByName('codigovendedor').AsInteger;
 
+    if ((IsFornecedor) and (IsCliente)) then
+      Tipo := 3
+    else if (IsCliente) then
+      Tipo := 1
+    else
+      Tipo := 2;
 
-
-    {
-     Tipo : Integer
-    }
-
-
+    if TipoEstabelecimento = EmptyStr then TipoEstabelecimento := 'NULL';
+    if CondicaoPagamento = EmptyStr then CondicaoPagamento := 'NULL';
+    if Cidade = 0 then Cidade := 1;
     if NomeBairro = EmptyStr then NomeBairro := 'CENTRO';
 
-
-    ListBox1.Items.Add(Format(SQLInsertClifor,[Codigo, QuotedStr(Fantasia), QuotedStr(Nome), QuotedStr(Cpf), QuotedStr(Rg), Data, DataNasc, QuotedStr(Endereco), Cidade, QuotedStr(NomeBairro),
-                       QuotedStr(Complemento), QuotedStr(Cep), QuotedStr(Telefone), QuotedStr(Email), cNao, cNao, cNao, cNao, cNao, cNao, 0, cSim, cSim, cSim, BooleanToStr(Vendedor),
-                       0, cNao, cNao, 0, 0]));
-
+    ListBox1.Items.Add(Format(SQLInsertClifor,[Codigo, QuotedStr(Fantasia), QuotedStr(Nome), QuotedStr(Cnpj), QuotedStr(IE), DataCadastro, DataNascimento, QuotedStr(NomePai),
+                     QuotedStr(NomeMae), TipoEstabelecimento, QuotedStr(Endereco), QuotedStr(Numero), Cidade, QuotedStr(NomeBairro), QuotedStr(Complemento), QuotedStr(Cep), QuotedStr(Simples),
+                     IndicadorIE, LimiteCredito, CondicaoPagamento, BooleanToStr(Ativo), DataMovimento, DataInativado, QuotedStr(Obs), 0, cNao, cNao, cNao, cNao, cNao, Tipo, 1, 1]));
     FDQuery1.Next;
     Gauge1.AddProgress(1);
-    SetHorizontalScrollBar(ListBox1);
   end;
+  SetHorizontalScrollBar(ListBox1);
 end;
 
 procedure TFrmPrincipal.BtnCondicaoPagamentoClick(Sender: TObject);
@@ -340,8 +340,8 @@ begin
 
     FDQuery1.Next;
     Gauge1.AddProgress(1);
-    SetHorizontalScrollBar(ListBox1);
   end;
+  SetHorizontalScrollBar(ListBox1);
 end;
 
 procedure TFrmPrincipal.BtnConectarClick(Sender: TObject);
@@ -423,8 +423,8 @@ begin
       ListBox1.Items.Add(Format('INSERT INTO CARGOFUNCIONARIO (FUNCIONARIO, CARGO, DATA) VALUES (%d, %d, %s);',[Codigo, 1, Data]));
     FDQuery1.Next;
     Gauge1.AddProgress(1);
-    SetHorizontalScrollBar(ListBox1);
   end;
+  SetHorizontalScrollBar(ListBox1);
 end;
 
 procedure TFrmPrincipal.BtnSalvarClick(Sender: TObject);
@@ -455,8 +455,8 @@ begin
 
     FDQuery1.Next;
     Gauge1.AddProgress(1);
-    SetHorizontalScrollBar(ListBox1);
   end;
+  SetHorizontalScrollBar(ListBox1);
 end;
 
 procedure TFrmPrincipal.CarregarIni;
