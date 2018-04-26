@@ -176,7 +176,7 @@ begin
     Populacao := FDQuery1.FieldByName('populacao').AsInteger;
 
     if Populacao = 0 then Populacao := 1;
-    
+
     CodigoFiscal := IntToStr(Estado) + AdjustRight(CodigoFiscal, 5, '0');
 
     ListBox1.Items.Add(Format(SQLInsert,[Codigo, QuotedStr(Nome), QuotedStr(CodigoFiscal), Populacao, cSim, 0, Estado, 0]));
@@ -189,20 +189,27 @@ end;
 
 procedure TFrmPrincipal.BtnCliforClick(Sender: TObject);
 var
-  SQLInsert : String;
-  Codigo, Cidade : Integer;
-  Fantasia, Nome, Cpf, Rg, Data, DataNasc, Endereco, NomeBairro, Complemento, Cep, Telefone, Email : String;
-  Vendedor : Boolean;
+  SQLInsertClifor, SQLInsertCliforContato, SQLInsertFuncionarioClifor : String;
+  LimiteCredito : Double;
+  Codigo, TipoEstabelecimento, Cidade, IndicadorIE, CondicaoPagamento, Vendedor, Tipo : Integer;
+  Fantasia, Nome, CNPJ, IE, DataCadastro, DataNascimento, NomePai, NomeMae, Contato, Endereco, Numero, NomeBairro, Complemento, Cep, Telefone, Celular,
+  Email, EmailNFe, EmailBoleto, Simples, DataMovimento, DataInativado, Obs : String;
+  IsFornecedor, IsCliente, Ativo : Boolean;
 begin
   FDQuery1.SQL.Add('select ');
-  FDQuery1.SQL.Add('terceiros.tipo_vendedor as vendedor, ');
+  FDQuery1.SQL.Add('terceiros.tipo_fornecedor as isfornecedor, ');
+  FDQuery1.SQL.Add('terceiros.tipo_cliente as iscliente, ');
   FDQuery1.SQL.Add('terceiros.id as codigo, ');
   FDQuery1.SQL.Add('terceiros.nome as fantasia, ');
   FDQuery1.SQL.Add('terceiros.razao_social as nome, ');
-  FDQuery1.SQL.Add('terceiros.cpf_cnpj as cpf, ');
-  FDQuery1.SQL.Add('terceiros.rg_ie as rg, ');
+  FDQuery1.SQL.Add('terceiros.cpf_cnpj as cpfcnpj, ');
+  FDQuery1.SQL.Add('terceiros.rg_ie as rgie, ');
   FDQuery1.SQL.Add('terceiros.data_cadastro as data, ');
   FDQuery1.SQL.Add('terceiros.data_nascimento as datanasc, ');
+  FDQuery1.SQL.Add('terceiros.nome_pai as nomepai, ');
+  FDQuery1.SQL.Add('terceiros.nome_mae as nomemae, ');
+  FDQuery1.SQL.Add('terceiros.id_tipologia as tipoestabelecimento, ');
+  FDQuery1.SQL.Add('terceiros.proprietario as contato, ');
   FDQuery1.SQL.Add('logradouros.nome_completo as endereco, ');
   FDQuery1.SQL.Add('terceiros.numero as numero, ');
   FDQuery1.SQL.Add('terceiros.id_cidade as cidade, ');
@@ -210,47 +217,89 @@ begin
   FDQuery1.SQL.Add('terceiros.complemento as complemento, ');
   FDQuery1.SQL.Add('terceiros.cep, ');
   FDQuery1.SQL.Add('terceiros.fone as telefone, ');
-  FDQuery1.SQL.Add('terceiros.email as email ');
+  FDQuery1.SQL.Add('terceiros.celular as celular, ');
+  FDQuery1.SQL.Add('terceiros.email as email, ');
+  FDQuery1.SQL.Add('terceiros.email_nfe as emailnfe, ');
+  FDQuery1.SQL.Add('terceiros.email_boleto as emailboleto, ');
+  FDQuery1.SQL.Add('case when (terceiros.id_regime_icms = 1) then ''N'' else ''N'' end as simples, ');
+  FDQuery1.SQL.Add('terceiros.indicador_insc_estadual as indicadorie, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.limite_credito as limitecredito, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.id_form_parc_pref as condicaopagamento, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.ativo as ativo, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.data_ultima_venda as datamovimento, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.data_inativacao as datainativado, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.observacao_entrega as obs, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.id_vendedor as codigovendedor ');
   FDQuery1.SQL.Add('from terceiros ');
   FDQuery1.SQL.Add('left join logradouros on logradouros.id = terceiros.id_logradouro ');
   FDQuery1.SQL.Add('left join bairros on bairros.id = terceiros.id_bairro ');
-  FDQuery1.SQL.Add('where ((terceiros.tipo_vendedor = true) or (terceiros.tipo_funcionario = true)) ');
-
-  SQLInsert := 'INSERT INTO FUNCIONARIO (CODIGO, FANTASIA, NOME, CPF, RG, DATA, DATANASC, ENDERECO, CIDADE, BAIRRO, COMPLEMENTO, CEP, TELEFONE, EMAIL, GERARPEDIDOBLOQUEADO, '+
-               'COMISSAOFIXA, UTILIZAGEOLOCALIZACAO, AFVLIBERARFORAROTA, ENVIARAUTOMATICO, AFVPRONTAENTREGA, COMISSAO, EXPORTAR, ATIVO, RECEBEMENSAGEM, GERARCOMISSAO, FLEX, GERARFLEX, '+
-               'UTILIZAROTA, AFVTEMPOSINCRONIZAR, LIMITEFLEX) VALUES (%d, %s, %s, %s, %s, %s, %s, %s, %d, (SELECT FIRST(1) CODIGO FROM BAIRRO WHERE NOME = %s), '+
-               '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %s, %s, %s, %s, %d, %s, %s, %d, %d);';
+  FDQuery1.SQL.Add('inner join terceiros_dados_emp on terceiros_dados_emp.id_terceiro = terceiros.id ');
+  FDQuery1.SQL.Add('where ((terceiros.tipo_vendedor = false) or (terceiros.tipo_funcionario = false)) ');
+  SQLInsertClifor := 'INSERT INTO CLIFOR (CODIGO, FANTASIA, NOME, CNPJ, IE, DATA, DATANASC, NOMEPAI, NOMEMAE, TIPOESTABELECIMENTO, ENDERECO, NUMERO, CIDADE, BAIRRO, COMPLEMENTO, CEP, '+
+                     'SIMPLES, INDICADORIE, LIMITECREDITO, CONDICAOPAGAMENTO, ATIVO, DATAMOVIMENTO, DATAINATIVADO, OBS, COMISSAO, SPC, COMISSAOFIXA, VENDARESTRITA, CONSUMIDOR, '+
+                     'DESTACARSTITEM, TIPO, CATEGORIA) VALUES (%d, %s, %s, %s, %s, %s, %s, %s, %s, %d, %s, %s, %d, (SELECT FIRST(1) CODIGO FROM BAIRRO WHERE NOME = %s), '+
+                     '%s, %s, %s, %d, %f, %d, %s, %s, %s, %s, %d, %s, %s, %s, %s, %s, %d, %d);';
   VerificaConexao;
   AbreQuery;
   AjustaGauge;
   ListBox1.Clear;
+  ListBox1.Items.Add('DELETE FROM CLIFORCONTATO; COMMIT;');
+  ListBox1.Items.Add('DELETE FROM FUNCIONARIOCLIFOR; COMMIT;');
   ListBox1.Items.Add('DELETE FROM CLIFOR; COMMIT;');
+  ListBox1.Items.Add('DELETE FROM TIPO; COMMIT;');
+  ListBox1.Items.Add(Format('INSERT INTO TIPO VALUES (%d, %s); COMMIT;',[1, 'CLIENTE']));
+  ListBox1.Items.Add(Format('INSERT INTO TIPO VALUES (%d, %s); COMMIT;',[2, 'FORNECEDOR']));
+  ListBox1.Items.Add(Format('INSERT INTO TIPO VALUES (%d, %s); COMMIT;',[3, 'CLIENTE/FORNECEDOR']));
   while not FDQuery1.Eof do
   begin
+    IsFornecedor := FDQuery1.FieldByName('isfornecedor').AsBoolean;
+    IsCliente := FDQuery1.FieldByName('iscliente').AsBoolean;
     Codigo := FDQuery1.FieldByName('codigo').AsInteger;
-    Fantasia := FDQuery1.FieldByName('fantasia').AsString;
-    Nome := Copy(FDQuery1.FieldByName('nome').AsString, 0, 40);
-    Cpf := FDQuery1.FieldByName('cpf').AsString;
-    Rg := FDQuery1.FieldByName('rg').AsString;
-    Data := AjustaData(FDQuery1.FieldByName('data').AsString);
-    DataNasc := AjustaData(FDQuery1.FieldByName('datanasc').AsString);
-    Endereco := FDQuery1.FieldByName('endereco').AsString + ', ' + FDQuery1.FieldByName('numero').AsString;
+    Fantasia := Copy(FDQuery1.FieldByName('fantasia').AsString, 0, 60);
+    Nome := Copy(FDQuery1.FieldByName('nome').AsString, 0, 60);
+    CNPJ := Numericos(FDQuery1.FieldByName('cpfcnpj').AsString);
+    IE := Numericos(FDQuery1.FieldByName('cpfcnpj').AsString);
+    DataCadastro := AjustaData(FDQuery1.FieldByName('data').AsString);
+    DataNascimento := AjustaData(FDQuery1.FieldByName('datanasc').AsString);
+    NomePai := FDQuery1.FieldByName('nomepai').AsString;
+    NomeMae := FDQuery1.FieldByName('nomemae').AsString;
+    TipoEstabelecimento := FDQuery1.FieldByName('tipoestabelecimento').AsInteger;
+    Contato := FDQuery1.FieldByName('contato').AsString;
+    Endereco := FDQuery1.FieldByName('endereco').AsString;
+    Numero := FDQuery1.FieldByName('numero').AsString;
     Cidade := FDQuery1.FieldByName('cidade').AsInteger;
     NomeBairro := FDQuery1.FieldByName('nomebairro').AsString;
     Complemento := FDQuery1.FieldByName('complemento').AsString;
     Cep := Numericos(FDQuery1.FieldByName('cep').AsString);
     Telefone := Numericos(FDQuery1.FieldByName('telefone').AsString);
+    Celular := Numericos(FDQuery1.FieldByName('celular').AsString);
     Email := FDQuery1.FieldByName('email').AsString;
-    Vendedor := FDQuery1.FieldByName('vendedor').AsBoolean;
+    EmailNFe := FDQuery1.FieldByName('emailnfe').AsString;
+    EmailBoleto := FDQuery1.FieldByName('emailboleto').AsString;
+    Simples := FDQuery1.FieldByName('simples').AsString;
+    IndicadorIE := FDQuery1.FieldByName('indicadorie').AsInteger;
+    LimiteCredito := FDQuery1.FieldByName('limitecredito').AsFloat;
+    CondicaoPagamento := FDQuery1.FieldByName('condicaopagamento').AsInteger;
+    Ativo := FDQuery1.FieldByName('ativo').AsBoolean;
+    DataMovimento := AjustaData(FDQuery1.FieldByName('datamovimento').AsString);
+    DataInativado := AjustaData(FDQuery1.FieldByName('datainativado').AsString);
+    Obs := FDQuery1.FieldByName('obs').AsString;
+    Vendedor := FDQuery1.FieldByName('codigovendedor').AsInteger;
+
+
+
+    {
+     Tipo : Integer
+    }
+
 
     if NomeBairro = EmptyStr then NomeBairro := 'CENTRO';
 
 
-    ListBox1.Items.Add(Format(SQLInsert,[Codigo, QuotedStr(Fantasia), QuotedStr(Nome), QuotedStr(Cpf), QuotedStr(Rg), Data, DataNasc, QuotedStr(Endereco), Cidade, QuotedStr(NomeBairro),
+    ListBox1.Items.Add(Format(SQLInsertClifor,[Codigo, QuotedStr(Fantasia), QuotedStr(Nome), QuotedStr(Cpf), QuotedStr(Rg), Data, DataNasc, QuotedStr(Endereco), Cidade, QuotedStr(NomeBairro),
                        QuotedStr(Complemento), QuotedStr(Cep), QuotedStr(Telefone), QuotedStr(Email), cNao, cNao, cNao, cNao, cNao, cNao, 0, cSim, cSim, cSim, BooleanToStr(Vendedor),
                        0, cNao, cNao, 0, 0]));
-    if Vendedor then
-      ListBox1.Items.Add(Format('INSERT INTO CARGOFUNCIONARIO (FUNCIONARIO, CARGO, DATA) VALUES (%d, %d, %s);',[Codigo, 1, Data]));
+
     FDQuery1.Next;
     Gauge1.AddProgress(1);
     SetHorizontalScrollBar(ListBox1);
@@ -334,7 +383,8 @@ begin
   FDQuery1.SQL.Add('from terceiros ');
   FDQuery1.SQL.Add('left join logradouros on logradouros.id = terceiros.id_logradouro ');
   FDQuery1.SQL.Add('left join bairros on bairros.id = terceiros.id_bairro ');
-  FDQuery1.SQL.Add('where ((terceiros.tipo_vendedor = true) or (terceiros.tipo_funcionario = true)) ');
+  FDQuery1.SQL.Add('where ((terceiros.tipo_vendedor = true) or (terceiros.tipo_funcionario = true) ');
+  FDQuery1.SQL.Add('or (terceiros.id in (select id_vendedor from terceiros_dados_emp))) ');
 
   SQLInsert := 'INSERT INTO FUNCIONARIO (CODIGO, FANTASIA, NOME, CPF, RG, DATA, DATANASC, ENDERECO, CIDADE, BAIRRO, COMPLEMENTO, CEP, TELEFONE, EMAIL, GERARPEDIDOBLOQUEADO, '+
                'COMISSAOFIXA, UTILIZAGEOLOCALIZACAO, AFVLIBERARFORAROTA, ENVIARAUTOMATICO, AFVPRONTAENTREGA, COMISSAO, EXPORTAR, ATIVO, RECEBEMENSAGEM, GERARCOMISSAO, FLEX, GERARFLEX, '+
