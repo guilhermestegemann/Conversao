@@ -33,7 +33,6 @@ terceiros_dados_emp.data_ultima_venda as datamovimento,
 terceiros_dados_emp.data_inativacao as datainativado,
 terceiros_dados_emp.observacao_entrega as obs,
 terceiros_dados_emp.id_vendedor as codigovendedor
-
 from terceiros
 left join logradouros on logradouros.id = terceiros.id_logradouro
 left join bairros on bairros.id = terceiros.id_bairro
