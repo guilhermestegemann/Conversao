@@ -94,6 +94,51 @@ object FrmPrincipal: TFrmPrincipal
     TabOrder = 6
     OnClick = BtnSalvarClick
   end
+  object BtnTipoEstabelecimento: TButton
+    Left = 8
+    Top = 85
+    Width = 166
+    Height = 21
+    Caption = 'Tipo Estabelecimento'
+    TabOrder = 7
+    OnClick = BtnTipoEstabelecimentoClick
+  end
+  object BtnBairro: TButton
+    Left = 8
+    Top = 108
+    Width = 166
+    Height = 21
+    Caption = 'Bairro'
+    TabOrder = 8
+    OnClick = BtnBairroClick
+  end
+  object BtnCidade: TButton
+    Left = 8
+    Top = 132
+    Width = 166
+    Height = 21
+    Caption = 'Cidade'
+    TabOrder = 9
+    OnClick = BtnCidadeClick
+  end
+  object BtnFuncionario: TButton
+    Left = 8
+    Top = 155
+    Width = 166
+    Height = 21
+    Caption = 'Funcion'#225'rio'
+    TabOrder = 10
+    OnClick = BtnFuncionarioClick
+  end
+  object BtnClifor: TButton
+    Left = 8
+    Top = 178
+    Width = 166
+    Height = 21
+    Caption = 'Clifor'
+    TabOrder = 11
+    OnClick = BtnCliforClick
+  end
   object FDQuery1: TFDQuery
     Connection = FDConnection1
     Left = 72
