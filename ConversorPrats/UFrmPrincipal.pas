@@ -123,6 +123,7 @@ var
   Codigo : Integer;
   Nome : String;
 begin
+  FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select nome_bairro ');
   FDQuery1.SQL.Add('from bairros ');
   FDQuery1.SQL.Add('where nome_bairro <> ''CENTRO'' ');
@@ -139,7 +140,6 @@ begin
   while not FDQuery1.Eof do
   begin
     Nome := FDQuery1.FieldByName('nome_bairro').AsString;
-
     ListBox1.Items.Add(Format(SQLInsert,[Codigo, QuotedStr(Nome)]));
     Inc(Codigo);
     FDQuery1.Next;
@@ -154,6 +154,7 @@ var
   Codigo, Estado, Populacao : Integer;
   Nome, CodigoFiscal : String;
 begin
+  FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select cidades.id as codigo, cidades.nome_cidade as nome, ');
   FDQuery1.SQL.Add('estados.codigo_ibge as estado, cidades.cod_ibge, cidades.populacao ');
   FDQuery1.SQL.Add('from cidades ');
@@ -192,9 +193,11 @@ var
   SQLInsertClifor, SQLInsertCliforContato, SQLInsertFuncionarioClifor : String;
   Codigo, Cidade, IndicadorIE, Vendedor, Tipo : Integer;
   Fantasia, Nome, CNPJ, IE, DataCadastro, DataNascimento, NomePai, NomeMae, Contato, Endereco, Numero, NomeBairro, Complemento, Cep, Telefone, Celular,
-  Email, EmailNFe, EmailBoleto, Simples, DataMovimento, DataInativado, Obs, LimiteCredito, TipoEstabelecimento, CondicaoPagamento : String;
+  Email, EmailNFe, EmailBoleto, Simples, DataMovimento, DataInativado, Obs, LimiteCredito, TipoEstabelecimento, CondicaoPagamento,
+  EnviarNFe, EnviarBoleto : String;
   IsFornecedor, IsCliente, Ativo : Boolean;
 begin
+  FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select ');
   FDQuery1.SQL.Add('terceiros.tipo_fornecedor as isfornecedor, ');
   FDQuery1.SQL.Add('terceiros.tipo_cliente as iscliente, ');
@@ -238,6 +241,9 @@ begin
                      'SIMPLES, INDICADORIE, LIMITECREDITO, CONDICAOPAGAMENTO, ATIVO, DATAMOVIMENTO, DATAINATIVADO, OBS, COMISSAO, SPC, COMISSAOFIXA, VENDARESTRITA, CONSUMIDOR, '+
                      'DESTACARSTITEM, TIPO, CATEGORIA, FILIAL) VALUES (%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, (SELECT FIRST(1) CODIGO FROM BAIRRO WHERE NOME = %s), '+
                      '%s, %s, %s, %d, %s, %s, %s, %s, %s, %s, %d, %s, %s, %s, %s, %s, %d, %d, %d);';
+  SQLInsertCliforContato := 'INSERT INTO CLIFORCONTATO (CLIFOR, NUMERO, NOME, EMAIL, ENVIARNFE, ENVIARDANFE, ENVIARBOLETO, ENVIARPEDIDO) ' +
+                            'VALUES (%d, %s, %s, %s, %s, %s, %s, %s);';
+  SQLInsertFuncionarioClifor := 'INSERT INTO FUNCIONARIOCLIFOR (FUNCIONARIO, CLIFOR) VALUES (%d, %d);';
   VerificaConexao;
   AbreQuery;
   AjustaGauge;
@@ -285,6 +291,13 @@ begin
     Obs := FDQuery1.FieldByName('obs').AsString;
     Vendedor := FDQuery1.FieldByName('codigovendedor').AsInteger;
 
+    if Pos(',', Email) > 0 then
+      Email := Copy(Email, 0, Pos(',', Email)-1);
+    if Pos(',', EmailNFe) > 0 then
+      EmailNFe := Copy(EmailNFe, 0, Pos(',', EmailNFe)-1);
+    if Pos(',', EmailBoleto) > 0 then
+      EmailBoleto := Copy(EmailBoleto, 0, Pos(',', EmailBoleto)-1);
+
     if ((IsFornecedor) and (IsCliente)) then
       Tipo := 3
     else if (IsCliente) then
@@ -296,10 +309,100 @@ begin
     if CondicaoPagamento = EmptyStr then CondicaoPagamento := 'NULL';
     if Cidade = 0 then Cidade := 1;
     if NomeBairro = EmptyStr then NomeBairro := 'CENTRO';
-
+    //insert clifor
     ListBox1.Items.Add(Format(SQLInsertClifor,[Codigo, QuotedStr(Fantasia), QuotedStr(Nome), QuotedStr(Cnpj), QuotedStr(IE), DataCadastro, DataNascimento, QuotedStr(NomePai),
                      QuotedStr(NomeMae), TipoEstabelecimento, QuotedStr(Endereco), QuotedStr(Numero), Cidade, QuotedStr(NomeBairro), QuotedStr(Complemento), QuotedStr(Cep), QuotedStr(Simples),
                      IndicadorIE, LimiteCredito, CondicaoPagamento, BooleanToStr(Ativo), DataMovimento, DataInativado, QuotedStr(Obs), 0, cNao, cNao, cNao, cNao, cNao, Tipo, 1, 1]));
+    //insert cliforcontato
+    EnviarNFe := QuotedStr('N');
+    EnviarBoleto := QuotedStr('N');
+    if ((Email = EmailNFe) and (EmailNfe = EmailBoleto)) then // se os 3 emails forem iguais
+    begin
+      EmailNFe := EmptyStr;
+      EmailBoleto := EmptyStr;
+      EnviarNFe := QuotedStr('S');
+      EnviarBoleto := QuotedStr('S');
+    end
+    else
+    if (Email = EmailNFe)  then
+    begin
+      EmailNFe := EmptyStr;
+      EnviarNFe := QuotedStr('S');
+    end
+    else
+    if ((Email = EmailBoleto) and (EmailNFe = EmptyStr)) then
+    begin
+      EmailBoleto := EmptyStr;
+      EnviarBoleto := QuotedStr('S');
+    end
+    else
+    if (EmailNFe = EmailBoleto) then
+    begin
+      EmailBoleto := EmptyStr;
+      EnviarBoleto := QuotedStr('S');
+    end;
+
+    if EmailNFe <> EmptyStr then
+      EnviarNFe := QuotedStr('S');
+
+    if (Telefone = Celular)  then
+      Celular := EmptyStr;
+
+    if ((Telefone <> EmptyStr) or (Celular <> EmptyStr)) then
+    begin
+      //Telefone
+      if Telefone <> EmptyStr then
+      begin
+        if Email <> EmptyStr then
+        begin
+          ListBox1.Items.Add(Format(SQLInsertCliforContato, [Codigo, QuotedStr(Telefone), QuotedStr(Contato), QuotedStr(Email), EnviarNFe, EnviarNFe, EnviarBoleto, cNao]));
+          Email := EmptyStr;
+        end;
+        if EmailNFe <> EmptyStr then
+        begin
+          ListBox1.Items.Add(Format(SQLInsertCliforContato, [Codigo, QuotedStr(Telefone), QuotedStr(Contato), QuotedStr(EmailNFe), EnviarNFe, EnviarNFe, EnviarBoleto, cNao]));
+          EmailNFe := EmptyStr;
+          EnviarNFe := QuotedStr('N');
+        end;
+        if EmailBoleto <> EmptyStr then
+        begin
+          EnviarBoleto := QuotedStr('S');
+          ListBox1.Items.Add(Format(SQLInsertCliforContato, [Codigo, QuotedStr(Telefone), QuotedStr(Contato), QuotedStr(EmailBoleto), EnviarNFe, EnviarNFe, EnviarBoleto, cNao]));
+          EmailBoleto := EmptyStr;
+          EnviarBoleto := QuotedStr('N');
+        end;
+      end;
+      //Celular
+      if Celular <> EmptyStr then
+      begin
+        if EmailBoleto <> EmptyStr then
+          ListBox1.Items.Add(Format(SQLInsertCliforContato, [Codigo, QuotedStr(Celular), QuotedStr(Contato), QuotedStr(EmailBoleto), EnviarNFe, EnviarNFe, EnviarBoleto, cNao]));
+        if EmailNFe <> EmptyStr then
+          ListBox1.Items.Add(Format(SQLInsertCliforContato, [Codigo, QuotedStr(Celular), QuotedStr(Contato), QuotedStr(EmailNFe), EnviarNFe, EnviarNFe, EnviarBoleto, cNao]));
+        if Email <> EmptyStr then
+          ListBox1.Items.Add(Format(SQLInsertCliforContato, [Codigo, QuotedStr(Celular), QuotedStr(Contato), QuotedStr(Email), EnviarNFe, EnviarNFe, EnviarBoleto, cNao]));
+        if ((Email = EmptyStr) and (EmailNFe = EmptyStr) and (EmailBoleto = EmptyStr)) then
+        begin
+          EnviarNFe := QuotedStr('N');
+          EnviarBoleto := QuotedStr('N');
+          ListBox1.Items.Add(Format(SQLInsertCliforContato, [Codigo, QuotedStr(Celular), QuotedStr(Contato), QuotedStr(Email), EnviarNFe, EnviarNFe, EnviarBoleto, cNao]));
+        end;
+      end;
+    end
+    else
+      if ((Email <> EmptyStr) or (EmailNFe <> EmptyStr) or (EmailBoleto <> EmptyStr)) then
+      begin
+        if Email <> EmptyStr then
+          ListBox1.Items.Add(Format(SQLInsertCliforContato, [Codigo, QuotedStr('11111111'), QuotedStr(Contato), QuotedStr(Email), EnviarNFe, EnviarNFe, EnviarBoleto, cNao]));
+        if EmailNFe <> EmptyStr then
+          ListBox1.Items.Add(Format(SQLInsertCliforContato, [Codigo, QuotedStr('11111111'), QuotedStr(Contato), QuotedStr(EmailNFe), EnviarNFe, EnviarNFe, EnviarBoleto, cNao]));
+        if EmailBoleto <> EmptyStr then
+          ListBox1.Items.Add(Format(SQLInsertCliforContato, [Codigo, QuotedStr('111111111'), QuotedStr(Contato), QuotedStr(EmailBoleto), EnviarNFe, EnviarNFe, EnviarBoleto, cNao]));
+      end;
+
+    //funcionarioclifor
+    if Vendedor > 0 then
+      ListBox1.Items.Add(Format(SQLInsertFuncionarioClifor, [Vendedor, Codigo]));
     FDQuery1.Next;
     Gauge1.AddProgress(1);
   end;
@@ -313,6 +416,7 @@ var
   Ativo : Boolean;
   Nome, Indicador : String;
 begin
+  FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select * from formas_parcelamento');
   SQLInsert := 'INSERT INTO CONDICAOPAGAMENTO (CODIGO, NOME, PRIMEIROVCTO, VEZES, INTERVALO, EXPORTAR, ATIVO, COMISSAO, LIBERARVENDAPENDENCIA, INDICADOR, '+
                'DIVIDIRVALORST, LIBERARVENDALIMITE, CONCEDERDESCONTO, INDICADORNFE, SOLICITARPRIMEIROVENCIMENTO, INDICE, VALORMINIMO, BLOQUEARCLIFORAUTOMATICAMENTE) '+
@@ -363,6 +467,7 @@ var
   Fantasia, Nome, Cpf, Rg, Data, DataNasc, Endereco, NomeBairro, Complemento, Cep, Telefone, Email : String;
   Vendedor : Boolean;
 begin
+  FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select ');
   FDQuery1.SQL.Add('terceiros.tipo_vendedor as vendedor, ');
   FDQuery1.SQL.Add('terceiros.id as codigo, ');
@@ -438,6 +543,7 @@ var
   Codigo : Integer;
   Nome : String;
 begin
+  FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select * from tipologias');
   SQLInsert := 'INSERT INTO TIPOESTABELECIMENTO (CODIGO, NOME, SEGMENTO, ATIVO, EXPORTAR, REVENDA) '+
                'VALUES (%d, %s, %d, %s, %s, %s);';
@@ -474,6 +580,7 @@ begin
   FDPhysPgDriverLink1.VendorLib := 'libpq.dll';
   FDConnection1.Params.Values['database'] := EditDatabase.Text;
   FDConnection1.Connected := True;
+  AjustaBotoesConexao;
 end;
 
 procedure TFrmPrincipal.DesconectarDB;
@@ -525,7 +632,8 @@ end;
 procedure TFrmPrincipal.VerificaConexao;
 begin
   if not FDConnection1.Connected then
-    raise Exception.Create('Não conectado ao banco de dados!');
+    //raise Exception.Create('Não conectado ao banco de dados!');
+    ConectarDB;
 end;
 
 procedure TFrmPrincipal.SetHorizontalScrollBar(lb : TListBox);
