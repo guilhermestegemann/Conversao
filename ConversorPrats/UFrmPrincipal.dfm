@@ -139,6 +139,51 @@ object FrmPrincipal: TFrmPrincipal
     TabOrder = 11
     OnClick = BtnCliforClick
   end
+  object BtnUnidadeMedida: TButton
+    Left = 8
+    Top = 202
+    Width = 166
+    Height = 21
+    Caption = 'Unidade de Medida'
+    TabOrder = 12
+    OnClick = BtnUnidadeMedidaClick
+  end
+  object BtnGrupo: TButton
+    Left = 8
+    Top = 226
+    Width = 166
+    Height = 21
+    Caption = 'Grupo'
+    TabOrder = 13
+    OnClick = BtnGrupoClick
+  end
+  object BtnTipoProduto: TButton
+    Left = 8
+    Top = 250
+    Width = 166
+    Height = 21
+    Caption = 'Tipo Produto'
+    TabOrder = 14
+    OnClick = BtnTipoProdutoClick
+  end
+  object BtnMarca: TButton
+    Left = 8
+    Top = 274
+    Width = 166
+    Height = 21
+    Caption = 'Marca'
+    TabOrder = 15
+    OnClick = BtnMarcaClick
+  end
+  object BtnClassificacao: TButton
+    Left = 8
+    Top = 298
+    Width = 166
+    Height = 21
+    Caption = 'Classifica'#231#227'o'
+    TabOrder = 16
+    OnClick = BtnClassificacaoClick
+  end
   object FDQuery1: TFDQuery
     Connection = FDConnection1
     Left = 72

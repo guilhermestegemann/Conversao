@@ -33,6 +33,11 @@ type
     BtnCidade: TButton;
     BtnFuncionario: TButton;
     BtnClifor: TButton;
+    BtnUnidadeMedida: TButton;
+    BtnGrupo: TButton;
+    BtnTipoProduto: TButton;
+    BtnMarca: TButton;
+    BtnClassificacao: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);
@@ -44,6 +49,11 @@ type
     procedure BtnCidadeClick(Sender: TObject);
     procedure BtnFuncionarioClick(Sender: TObject);
     procedure BtnCliforClick(Sender: TObject);
+    procedure BtnUnidadeMedidaClick(Sender: TObject);
+    procedure BtnGrupoClick(Sender: TObject);
+    procedure BtnTipoProdutoClick(Sender: TObject);
+    procedure BtnMarcaClick(Sender: TObject);
+    procedure BtnClassificacaoClick(Sender: TObject);
   private
     procedure ConectarDB;
     procedure DesconectarDB;
@@ -184,6 +194,33 @@ begin
     FDQuery1.Next;
     Gauge1.AddProgress(1);
     Application.ProcessMessages;
+  end;
+  SetHorizontalScrollBar(ListBox1);
+end;
+
+procedure TFrmPrincipal.BtnClassificacaoClick(Sender: TObject);
+var
+  SQLInsert : String;
+  Codigo : Integer;
+  Nome : String;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select * from sabores');
+  SQLInsert := 'INSERT INTO CLASSIFICACAO (CODIGO, NOME, ORDEM) VALUES (%d, %s, %d);';
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  ListBox1.Items.Add('DELETE FROM CLASSIFICACAO; COMMIT;');
+  while not FDQuery1.Eof do
+  begin
+    Codigo := FDQuery1.FieldByName('id').AsInteger;
+    Nome := FDQuery1.FieldByName('desc_sabor').AsString;
+
+    ListBox1.Items.Add(Format(SQLInsert,[Codigo, QuotedStr(Nome), 0]));
+
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
   end;
   SetHorizontalScrollBar(ListBox1);
 end;
@@ -532,6 +569,63 @@ begin
   SetHorizontalScrollBar(ListBox1);
 end;
 
+procedure TFrmPrincipal.BtnGrupoClick(Sender: TObject);
+var
+  SQLInsert : String;
+  Codigo, Ordem : Integer;
+  Nome : String;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select * from grupos_gerenciais_prod');
+  SQLInsert := 'INSERT INTO GRUPO (CODIGO, NOME, ORDEM, COMISSAO, FLEX, ORDEMTABELA, EXPORTAR, QTDEMULTIPLA, COMISSAOFIXA, COMISSAOENTREGA, LIMITESUPERIORFLEX, '+
+               'LIMITEINFERIORFLEX, FLEXFIXO, ATIVO) VALUES (%d, %s, %d, %d, %d, %d, %s, %d, %s, %d, %d, %d, %s, %s);';
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  ListBox1.Items.Add('DELETE FROM GRUPO; COMMIT;');
+  while not FDQuery1.Eof do
+  begin
+    Codigo := FDQuery1.FieldByName('id').AsInteger;
+    Nome := FDQuery1.FieldByName('desc_grupo_gerencial').AsString;
+    Ordem := FDQuery1.FieldByName('ordem_relatorio').AsInteger;
+
+    ListBox1.Items.Add(Format(SQLInsert,[Codigo, QuotedStr(Nome), Ordem, 0, 0, Ordem, cSim, 1, cNao, 0, 0, 0, cNao, cSim]));
+
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+  SetHorizontalScrollBar(ListBox1);
+end;
+
+procedure TFrmPrincipal.BtnMarcaClick(Sender: TObject);
+var
+  SQLInsert : String;
+  Codigo : Integer;
+  Nome : String;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select * from marcas');
+  SQLInsert := 'INSERT INTO MARCA (CODIGO, NOME, COMISSAO, EXPORTAR, ORDEM, ATIVO, COMISSAOFIXA, FLEX, LIMITESUPERIORFLEX, LIMITEINFERIORFLEX, FLEXFIXO) '+
+               'VALUES (%d, %s, %d, %s, %d, %s, %s, %d, %d, %d, %s);';
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  ListBox1.Items.Add('DELETE FROM MARCA; COMMIT;');
+  while not FDQuery1.Eof do
+  begin
+    Codigo := FDQuery1.FieldByName('id').AsInteger;
+    Nome := FDQuery1.FieldByName('desc_marca').AsString;
+
+    ListBox1.Items.Add(Format(SQLInsert,[Codigo, QuotedStr(Nome), 0, cSim, 0, cSim, cNao, 0, 0, 0, cNao]));
+
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+  SetHorizontalScrollBar(ListBox1);
+end;
+
 procedure TFrmPrincipal.BtnSalvarClick(Sender: TObject);
 begin
   SalvarArquivo;
@@ -558,6 +652,65 @@ begin
     Nome := FDQuery1.FieldByName('desc_tipologia').AsString;
 
     ListBox1.Items.Add(Format(SQLInsert,[Codigo, QuotedStr(Nome), 1, cSim, cSim, cSim]));
+
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+  SetHorizontalScrollBar(ListBox1);
+end;
+
+procedure TFrmPrincipal.BtnTipoProdutoClick(Sender: TObject);
+var
+  SQLInsert : String;
+  Codigo : Integer;
+  Nome : String;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select * from subgrupos_prod');
+  SQLInsert := 'INSERT INTO TIPOPRODUTO (CODIGO, NOME, TIPO) VALUES (%d, %s, %s);';
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  ListBox1.Items.Add('DELETE FROM TIPOPRODUTO; COMMIT;');
+  while not FDQuery1.Eof do
+  begin
+    Codigo := FDQuery1.FieldByName('id').AsInteger;
+    Nome := FDQuery1.FieldByName('nome_subgrupo').AsString;
+
+    ListBox1.Items.Add(Format(SQLInsert,[Codigo, QuotedStr(Nome), QuotedStr('O')]));
+
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+  SetHorizontalScrollBar(ListBox1);
+end;
+
+procedure TFrmPrincipal.BtnUnidadeMedidaClick(Sender: TObject);
+var
+  SQLInsert : String;
+  Sigla, Descricao : String;
+
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select unidades_venda.abreviacao as sigla, unidades_venda.desc_unid_venda as descricao ');
+  FDQuery1.SQL.Add('from unidades_venda ');
+  FDQuery1.SQL.Add('union ');
+  FDQuery1.SQL.Add('select unidades.sigla as sigla, unidades.desc_unidade as descricao ');
+  FDQuery1.SQL.Add('from unidades ');
+  SQLInsert := 'INSERT INTO UNIDADEMEDIDA (CODIGO, NOME) '+
+               'VALUES (%s, %s);';
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  ListBox1.Items.Add('DELETE FROM UNIDADEMEDIDA; COMMIT;');
+  while not FDQuery1.Eof do
+  begin
+    Sigla := Copy(FDQuery1.FieldByName('sigla').AsString,0,3);
+    Descricao := FDQuery1.FieldByName('descricao').AsString;
+
+    ListBox1.Items.Add(Format(SQLInsert,[Quotedstr(Sigla), QuotedStr(Descricao)]));
 
     FDQuery1.Next;
     Gauge1.AddProgress(1);
