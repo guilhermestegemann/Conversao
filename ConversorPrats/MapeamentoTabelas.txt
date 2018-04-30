@@ -26,3 +26,6 @@ produtos_fornecedor (clifor dos produtos)
 
 tabelas de preco ok
 clifortabelapreco ok
+
+contas_pagar ok
+contas_receber ok

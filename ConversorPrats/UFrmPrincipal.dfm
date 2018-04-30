@@ -238,13 +238,23 @@ object FrmPrincipal: TFrmPrincipal
     TabOrder = 22
     OnClick = BtnProdutoCliforClick
   end
-  object Button1: TButton
+  object BtnContasAPagar: TButton
     Left = 8
     Top = 463
     Width = 166
     Height = 21
     Caption = 'Contas a Pagar'
     TabOrder = 23
+    OnClick = BtnContasAPagarClick
+  end
+  object BtnContasReceber: TButton
+    Left = 8
+    Top = 490
+    Width = 166
+    Height = 21
+    Caption = 'Contas a Receber'
+    TabOrder = 24
+    OnClick = BtnContasReceberClick
   end
   object FDQuery1: TFDQuery
     Connection = FDConnection1

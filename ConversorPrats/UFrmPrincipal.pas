@@ -44,7 +44,8 @@ type
     BtnItemTabelaPreco: TButton;
     BtnCliforTabelaPreco: TButton;
     BtnProdutoClifor: TButton;
-    Button1: TButton;
+    BtnContasAPagar: TButton;
+    BtnContasReceber: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);
@@ -67,6 +68,8 @@ type
     procedure BtnItemTabelaPrecoClick(Sender: TObject);
     procedure BtnCliforTabelaPrecoClick(Sender: TObject);
     procedure BtnProdutoCliforClick(Sender: TObject);
+    procedure BtnContasAPagarClick(Sender: TObject);
+    procedure BtnContasReceberClick(Sender: TObject);
   private
     procedure ConectarDB;
     procedure DesconectarDB;
@@ -531,6 +534,158 @@ procedure TFrmPrincipal.BtnConectarClick(Sender: TObject);
 begin
   ConectarDB;
   AjustaBotoesConexao;
+end;
+
+procedure TFrmPrincipal.BtnContasAPagarClick(Sender: TObject);
+var
+  SQLInsert : String;
+  Clifor : Integer;
+  Documento, Ordem, DataEmissao, DataVcto, DataBaixa, ValorTitulo, Obs, Juros, Desconto, ValorDevedor, DataAgendamento, Multa, ValorBaixa, Parcela: String;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select ');
+  FDQuery1.SQL.Add('contas_pagar.id_terceiro as clifor, ');
+  FDQuery1.SQL.Add('contas_pagar.documento as documento, ');
+  FDQuery1.SQL.Add('contas_pagar.tipo_doc || contas_pagar.documento as ordem, ');
+  FDQuery1.SQL.Add('contas_pagar.referencia as parcela, ');
+  FDQuery1.SQL.Add('contas_pagar.data_emissao as dataemissao, ');
+  FDQuery1.SQL.Add('contas_pagar.data_vencimento as datavcto, ');
+  FDQuery1.SQL.Add('contas_pagar.data_quitacao as databaixa, ');
+  FDQuery1.SQL.Add('contas_pagar.valor as valortitulo, ');
+  FDQuery1.SQL.Add('contas_pagar.valor_total_amortizado as valorbaixa, ');
+  FDQuery1.SQL.Add('contas_pagar.observacao as obs, ');
+  FDQuery1.SQL.Add('contas_pagar.valor_total_juros as juro, ');
+  FDQuery1.SQL.Add('contas_pagar.valor_total_desconto as desconto, ');
+  FDQuery1.SQL.Add('contas_pagar.valor_devedor as valordevedor, ');
+  FDQuery1.SQL.Add('contas_pagar.data_agend_pagto as agendamento, ');
+  FDQuery1.SQL.Add('contas_pagar.valor_total_multa as multa ');
+  FDQuery1.SQL.Add('from contas_pagar ');
+    SQLInsert := 'INSERT INTO FINANCEIRO (TIPO, FILIAL, CLIFOR, DOCUMENTO, ORDEM, DATAEMISSAO, DATAVCTO, DATABAIXA, VALOR, OBS, JURO, DESCONTO, VALORBAIXA, DATAAGENDAMENTO, MULTA,  '+
+                 'IMPRIMIR, IMPRESSO) VALUES (%s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);';
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  ListBox1.Items.Add('DELETE FROM FINANCEIRO FIN WHERE TIPO = ''D'' AND FIN.ORDEM NOT IN (SELECT OC.ORDEM FROM OCORRENCIAFINANCEIRO OC WHERE OC.ORDEM = FIN.ORDEM AND OC.CLIFOR = FIN.CLIFOR '+
+                     'AND OC.FILIAL = FIN.FILIAL AND OC.DATAEMISSAO = FIN.DATAEMISSAO); COMMIT;');
+  while not FDQuery1.Eof do
+  begin
+    Clifor := FDQuery1.FieldByName('clifor').AsInteger;
+    Documento := Numericos(FDQuery1.FieldByName('documento').AsString);
+    Ordem := FDQuery1.FieldByName('ordem').AsString;
+    Parcela := FDQuery1.FieldByName('parcela').AsString;
+    DataEmissao := AjustaData(FDQuery1.FieldByName('dataemissao').AsString);
+    DataVcto := AjustaData(FDQuery1.FieldByName('datavcto').AsString);
+    DataBaixa := AjustaData(FDQuery1.FieldByName('databaixa').AsString);
+    ValorTitulo := StringReplace(FDQuery1.FieldByName('valortitulo').AsString,',','.',[rfReplaceAll]);
+    Valorbaixa := StringReplace(FDQuery1.FieldByName('valorbaixa').AsString,',','.',[rfReplaceAll]);
+    Obs := FDQuery1.FieldByName('obs').AsString;
+    Juros := StringReplace(FDQuery1.FieldByName('juro').AsString,',','.',[rfReplaceAll]);
+    Desconto := StringReplace(FDQuery1.FieldByName('desconto').AsString,',','.',[rfReplaceAll]);
+    ValorDevedor := StringReplace(FDQuery1.FieldByName('valordevedor').AsString,',','.',[rfReplaceAll]);
+    DataAgendamento := AjustaData(FDQuery1.FieldByName('agendamento').AsString);
+    Multa := StringReplace(FDQuery1.FieldByName('multa').AsString,',','.',[rfReplaceAll]);
+
+
+    if (FDQuery1.FieldByName('datavcto').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) then
+      DataVcto := DataEmissao;
+    if (FDQuery1.FieldByName('agendamento').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) then
+      DataAgendamento := DataEmissao;
+
+    Ordem := Ordem + '-' + Parcela;
+
+    if ValorBaixa = '0.00' then
+    begin
+      ValorBaixa := 'NULL';
+      ValorTitulo := ValorDevedor;
+    end;
+    if Juros = '0.00' then Juros := 'NULL';
+    if Desconto = '0.00' then Desconto := 'NULL';
+    if Multa = '0.00' then Multa := 'NULL';
+
+    ListBox1.Items.Add(Format(SQLInsert,[QuotedStr('D'), 1, Clifor, Documento, QuotedStr(Ordem), DataEmissao, DataVcto, DataBaixa, ValorTitulo, QuotedStr(Obs), Juros, Desconto,
+                       ValorBaixa, DataAgendamento, Multa, cNao, cNao]));
+
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+  SetHorizontalScrollBar(ListBox1);
+end;
+
+procedure TFrmPrincipal.BtnContasReceberClick(Sender: TObject);
+var
+  SQLInsert : String;
+  Clifor : Integer;
+  Documento, Ordem, DataEmissao, DataVcto, DataBaixa, ValorTitulo, Obs, Juros, Desconto, ValorDevedor, DataAgendamento, Multa, ValorBaixa, Parcela: String;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select ');
+  FDQuery1.SQL.Add('contas_receber.id_terceiro as clifor, ');
+  FDQuery1.SQL.Add('contas_receber.documento as documento, ');
+  FDQuery1.SQL.Add('contas_receber.tipo_doc || contas_receber.documento as ordem, ');
+  FDQuery1.SQL.Add('contas_receber.referencia as parcela, ');
+  FDQuery1.SQL.Add('contas_receber.data_emissao as dataemissao, ');
+  FDQuery1.SQL.Add('contas_receber.data_vencimento as datavcto, ');
+  FDQuery1.SQL.Add('contas_receber.data_quitacao as databaixa, ');
+  FDQuery1.SQL.Add('contas_receber.valor as valortitulo, ');
+  FDQuery1.SQL.Add('contas_receber.valor_total_amortizado as valorbaixa, ');
+  FDQuery1.SQL.Add('contas_receber.observacao as obs, ');
+  FDQuery1.SQL.Add('contas_receber.valor_total_juros as juro, ');
+  FDQuery1.SQL.Add('contas_receber.valor_total_desconto as desconto, ');
+  FDQuery1.SQL.Add('contas_receber.valor_devedor as valordevedor, ');
+  FDQuery1.SQL.Add('contas_receber.data_agend_pagto as agendamento, ');
+  FDQuery1.SQL.Add('contas_receber.valor_total_multa as multa ');
+  FDQuery1.SQL.Add('from contas_receber ');
+    SQLInsert := 'INSERT INTO FINANCEIRO (TIPO, FILIAL, CLIFOR, DOCUMENTO, ORDEM, DATAEMISSAO, DATAVCTO, DATABAIXA, VALOR, OBS, JURO, DESCONTO, VALORBAIXA, DATAAGENDAMENTO, MULTA,  '+
+                 'IMPRIMIR, IMPRESSO) VALUES (%s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);';
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  ListBox1.Items.Add('DELETE FROM FINANCEIRO FIN WHERE TIPO = ''C'' AND FIN.ORDEM NOT IN (SELECT OC.ORDEM FROM OCORRENCIAFINANCEIRO OC WHERE OC.ORDEM = FIN.ORDEM AND OC.CLIFOR = FIN.CLIFOR '+
+                     'AND OC.FILIAL = FIN.FILIAL AND OC.DATAEMISSAO = FIN.DATAEMISSAO); COMMIT;');
+  while not FDQuery1.Eof do
+  begin
+    Clifor := FDQuery1.FieldByName('clifor').AsInteger;
+    Documento := Numericos(FDQuery1.FieldByName('documento').AsString);
+    Ordem := FDQuery1.FieldByName('ordem').AsString;
+    Parcela := FDQuery1.FieldByName('parcela').AsString;
+    DataEmissao := AjustaData(FDQuery1.FieldByName('dataemissao').AsString);
+    DataVcto := AjustaData(FDQuery1.FieldByName('datavcto').AsString);
+    DataBaixa := AjustaData(FDQuery1.FieldByName('databaixa').AsString);
+    ValorTitulo := StringReplace(FDQuery1.FieldByName('valortitulo').AsString,',','.',[rfReplaceAll]);
+    Valorbaixa := StringReplace(FDQuery1.FieldByName('valorbaixa').AsString,',','.',[rfReplaceAll]);
+    Obs := FDQuery1.FieldByName('obs').AsString;
+    Juros := StringReplace(FDQuery1.FieldByName('juro').AsString,',','.',[rfReplaceAll]);
+    Desconto := StringReplace(FDQuery1.FieldByName('desconto').AsString,',','.',[rfReplaceAll]);
+    ValorDevedor := StringReplace(FDQuery1.FieldByName('valordevedor').AsString,',','.',[rfReplaceAll]);
+    DataAgendamento := AjustaData(FDQuery1.FieldByName('agendamento').AsString);
+    Multa := StringReplace(FDQuery1.FieldByName('multa').AsString,',','.',[rfReplaceAll]);
+
+
+    if (FDQuery1.FieldByName('datavcto').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) then
+      DataVcto := DataEmissao;
+    if (FDQuery1.FieldByName('agendamento').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) then
+      DataAgendamento := DataEmissao;
+
+    Ordem := Ordem + '-' + Parcela;
+
+    if ValorBaixa = '0.00' then
+    begin
+      ValorBaixa := 'NULL';
+      ValorTitulo := ValorDevedor;
+    end;
+    if Juros = '0.00' then Juros := 'NULL';
+    if Desconto = '0.00' then Desconto := 'NULL';
+    if Multa = '0.00' then Multa := 'NULL';
+
+    ListBox1.Items.Add(Format(SQLInsert,[QuotedStr('C'), 1, Clifor, Documento, QuotedStr(Ordem), DataEmissao, DataVcto, DataBaixa, ValorTitulo, QuotedStr(Obs), Juros, Desconto,
+                       ValorBaixa, DataAgendamento, Multa, cNao, cNao]));
+
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+  SetHorizontalScrollBar(ListBox1);
 end;
 
 procedure TFrmPrincipal.BtnDesconectarClick(Sender: TObject);
