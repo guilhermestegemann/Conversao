@@ -19,9 +19,10 @@ subgrupos_prod TIPOPRODUTO ok
 marcas MARCA ok
 sabores CLASSIFICACAO ok
 
-produtos_dados_emp -> dados de estoque
+produtos_dados_emp -> dados de estoque - pegar tipoitem na tabelaproduto ok
 
 produtos_fornecedor (clifor dos produtos)
 
 
-tabelas de preco
+tabelas de preco ok
+clifortabelapreco ok

@@ -1,0 +1,18 @@
+﻿select
+produtos.id as codigo,
+produtos.desc_produto as nome,
+produtos.codigo_barras as barras,
+produtos.id_subgrupo as tipoproduto,
+produtos.id_marca as marca,
+produtos.id_sabor as classificacao,
+produtos.peso as pesoliquido,
+produtos.peso_embalado as pesobruto,
+produtos.data_criacao as data,
+unidades.sigla as uncompra,
+classif_fiscal.codigo_ncm as codigoncm,
+produtos.ordem_relatorio as ordem,
+produtos.id_grupo_gerencial as grupo,
+produtos.codigo_cest as cest
+from produtos
+inner join unidades on unidades.id = produtos.id_unidade
+left join classif_fiscal on classif_fiscal.id = produtos.id_classif_fiscal

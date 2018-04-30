@@ -38,6 +38,13 @@ type
     BtnTipoProduto: TButton;
     BtnMarca: TButton;
     BtnClassificacao: TButton;
+    BtnProduto: TButton;
+    BtnEstoque: TButton;
+    BtnTabelaPreco: TButton;
+    BtnItemTabelaPreco: TButton;
+    BtnCliforTabelaPreco: TButton;
+    BtnProdutoClifor: TButton;
+    Button1: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);
@@ -54,6 +61,12 @@ type
     procedure BtnTipoProdutoClick(Sender: TObject);
     procedure BtnMarcaClick(Sender: TObject);
     procedure BtnClassificacaoClick(Sender: TObject);
+    procedure BtnProdutoClick(Sender: TObject);
+    procedure BtnEstoqueClick(Sender: TObject);
+    procedure BtnTabelaPrecoClick(Sender: TObject);
+    procedure BtnItemTabelaPrecoClick(Sender: TObject);
+    procedure BtnCliforTabelaPrecoClick(Sender: TObject);
+    procedure BtnProdutoCliforClick(Sender: TObject);
   private
     procedure ConectarDB;
     procedure DesconectarDB;
@@ -446,6 +459,35 @@ begin
   SetHorizontalScrollBar(ListBox1);
 end;
 
+procedure TFrmPrincipal.BtnCliforTabelaPrecoClick(Sender: TObject);
+var
+  SQLInsert : String;
+  TabelaPreco, Clifor : Integer;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.id_terceiro as clifor, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.id_tabela_precos as tabelapreco ');
+  FDQuery1.SQL.Add('from terceiros_dados_emp where id_tabela_precos > 0');
+  SQLInsert := 'INSERT INTO CLIFORTABELAPRECO (CLIFOR, TABELAPRECO, PADRAO) VALUES (%d, %d, %s);';
+
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  while not FDQuery1.Eof do
+  begin
+    TabelaPreco := FDQuery1.FieldByName('tabelapreco').AsInteger;
+    Clifor := FDQuery1.FieldByName('clifor').AsInteger;
+
+    ListBox1.Items.Add(Format(SQLInsert,[Clifor, TabelaPreco, cNao]));
+
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+  SetHorizontalScrollBar(ListBox1);
+end;
+
 procedure TFrmPrincipal.BtnCondicaoPagamentoClick(Sender: TObject);
 var
   SQLInsert : String;
@@ -495,6 +537,47 @@ procedure TFrmPrincipal.BtnDesconectarClick(Sender: TObject);
 begin
   DesconectarDB;
   AjustaBotoesConexao;
+end;
+
+procedure TFrmPrincipal.BtnEstoqueClick(Sender: TObject);
+var
+  SQLUpdate : String;
+  Codigo, TipoItem : Integer;
+  CustoMedio, CustoTabela: String;
+  Venda, Exportar : Boolean;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select ');
+  FDQuery1.SQL.Add('produtos.id as produto, ');
+  FDQuery1.SQL.Add('produtos.tipo as tipoitem, ');
+  FDQuery1.SQL.Add('produtos_dados_emp.custo_mpm as customedio, ');
+  FDQuery1.SQL.Add('produtos_dados_emp.custo_reposicao as custotabela, ');
+  FDQuery1.SQL.Add('produtos_dados_emp.vende as venda, ');
+  FDQuery1.SQL.Add('produtos_dados_emp.exporta_pda as exportar ');
+  FDQuery1.SQL.Add('from produtos ');
+  FDQuery1.SQL.Add('left join produtos_dados_emp on produtos_dados_emp.id_produto = produtos.id ');
+  SQLUpdate := 'UPDATE ESTOQUE SET TIPOITEM = %d, VALORMEDIO = %s, VALORCUSTOTABELA = %s, VALORCUSTO = %s, VENDA = %s, EXPORTAR = %s WHERE FILIAL = 1 AND PRODUTO = %d;';
+
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  ListBox1.Items.Add('UPDATE ESTOQUE SET TRIBUTACAOPIS = 1, TRIBUTACAOCOFINS = 1; COMMIT;');
+  while not FDQuery1.Eof do
+  begin
+    Codigo := FDQuery1.FieldByName('produto').AsInteger;
+    TipoItem := FDQuery1.FieldByName('tipoitem').AsInteger;
+    CustoMedio := StringReplace(FDQuery1.FieldByName('customedio').AsString, ',', '.', [rfReplaceAll]);
+    CustoTabela := StringReplace(FDQuery1.FieldByName('custotabela').AsString, ',', '.', [rfReplaceAll]);
+    Venda := FDQuery1.FieldByName('venda').AsBoolean;
+    Exportar := FDQuery1.FieldByName('exportar').AsBoolean;
+
+    ListBox1.Items.Add(Format(SQLUpdate,[TipoItem, CustoMedio, CustoTabela, CustoTabela, BooleanToStr(Venda), BooleanToStr(Exportar), Codigo]));
+
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+  SetHorizontalScrollBar(ListBox1);
 end;
 
 procedure TFrmPrincipal.BtnFuncionarioClick(Sender: TObject);
@@ -598,6 +681,35 @@ begin
   SetHorizontalScrollBar(ListBox1);
 end;
 
+procedure TFrmPrincipal.BtnItemTabelaPrecoClick(Sender: TObject);
+var
+  SQLUpdate : String;
+  TabelaPreco, Produto : Integer;
+  ValorMinimo, ValorVenda : String;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select * from produtos_precos');
+  SQLUpdate := 'UPDATE ITEMTABELAPRECO SET VALORVENDA = %s, VALORMINIMO = %s WHERE TABELAPRECO = %d AND PRODUTO = %d;';
+
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  while not FDQuery1.Eof do
+  begin
+    TabelaPreco := FDQuery1.FieldByName('id_tabela').AsInteger;
+    Produto := FDQuery1.FieldByName('id_produto').AsInteger;
+    ValorMinimo := StringReplace(FDQuery1.FieldByName('valor_minimo').AsString,',','.',[rfReplaceAll]);
+    ValorVenda := StringReplace(FDQuery1.FieldByName('valor').AsString,',','.',[rfReplaceAll]);
+
+    ListBox1.Items.Add(Format(SQLUpdate,[ValorVenda, ValorMinimo, TabelaPreco, Produto]));
+
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+  SetHorizontalScrollBar(ListBox1);
+end;
+
 procedure TFrmPrincipal.BtnMarcaClick(Sender: TObject);
 var
   SQLInsert : String;
@@ -626,9 +738,143 @@ begin
   SetHorizontalScrollBar(ListBox1);
 end;
 
+procedure TFrmPrincipal.BtnProdutoClick(Sender: TObject);
+var
+  SQLInsert, SQLInsertGrupo : String;
+  Codigo,  Grupo, Ordem : Integer;
+  Nome, Barras, PesoLiquido, PesoBruto, Data, UnCompra, CodigoNcm,  Cest, TipoProduto, Marca, Classificacao: String;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select ');
+  FDQuery1.SQL.Add('produtos.id as codigo, ');
+  FDQuery1.SQL.Add('produtos.desc_produto as nome, ');
+  FDQuery1.SQL.Add('produtos.codigo_barras as barras, ');
+  FDQuery1.SQL.Add('produtos.id_subgrupo as tipoproduto, ');
+  FDQuery1.SQL.Add('produtos.id_marca as marca, ');
+  FDQuery1.SQL.Add('produtos.id_sabor as classificacao, ');
+  FDQuery1.SQL.Add('produtos.peso as pesoliquido, ');
+  FDQuery1.SQL.Add('produtos.peso_embalado as pesobruto, ');
+  FDQuery1.SQL.Add('produtos.data_criacao as data, ');
+  FDQuery1.SQL.Add('unidades.sigla as uncompra, ');
+  FDQuery1.SQL.Add('classif_fiscal.codigo_ncm as codigoncm, ');
+  FDQuery1.SQL.Add('produtos.ordem_relatorio as ordem, ');
+  FDQuery1.SQL.Add('produtos.id_grupo_gerencial as grupo, ');
+  FDQuery1.SQL.Add('produtos.codigo_cest as cest ');
+  FDQuery1.SQL.Add('from produtos ');
+  FDQuery1.SQL.Add('inner join unidades on unidades.id = produtos.id_unidade ');
+  FDQuery1.SQL.Add('left join classif_fiscal on classif_fiscal.id = produtos.id_classif_fiscal ');
+
+  SQLInsert := 'INSERT INTO PRODUTO (CODIGO, NOME, BARRAS, TIPOPRODUTO, MARCA, CLASSIFICACAO, PESOLIQUIDO, PESOBRUTO, DATA, UNCOMPRA, CODIGONCM, ORDEM, GRUPO, CEST, '+
+               'PESOEMBALAGEM, QTDEREFERENCIA, UNREFERENCIA, QTDEMULTIPLAEMBALAGEM, VOLUME, PROFUNDIDADE, LARGURA, ALTURA, VENDACONTROLADA, QTDETROCA, UNTROCA, QTDEMULTIPLA, '+
+               'QTDEPADRAO, TRIBUTACAO, QTDECARREGAMENTO, UNCARREGAMENTO, QTDEVENDA, UNVENDA, QTDECOMPRA) VALUES (%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %s, %d, %d, %s, %d, %d, '+
+               '%d, %d, %d, %s, %d, %s, %d, %d, %d, %d, %s, %d, %s, %d);';
+  SQLInsertGrupo := 'INSERT INTO GRUPO (CODIGO, NOME, ORDEM, COMISSAO, FLEX, ORDEMTABELA, EXPORTAR, QTDEMULTIPLA, COMISSAOFIXA, COMISSAOENTREGA, LIMITESUPERIORFLEX, '+
+                    'LIMITEINFERIORFLEX, FLEXFIXO, ATIVO) VALUES (%d, %s, %d, %d, %d, %d, %s, %d, %s, %d, %d, %d, %s, %s);';
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  ListBox1.Items.Add('DELETE FROM PRODUTO; COMMIT;');
+  ListBox1.Items.Add('DELETE FROM GRUPO WHERE CODIGO = 9999; COMMIT;');
+  ListBox1.Items.Add(Format(SQLInsertGrupo,[9999, QuotedStr('VERIFICAR'), 0, 0, 0, 0, cSim, 1, cNao, 0, 0, 0, cNao, cSim]));
+  while not FDQuery1.Eof do
+  begin
+    Codigo := FDQuery1.FieldByName('codigo').AsInteger;
+    Nome := Copy(FDQuery1.FieldByName('nome').AsString,0,60);
+    Barras := FDQuery1.FieldByName('barras').AsString;
+    TipoProduto := FDQuery1.FieldByName('tipoproduto').AsString;
+    Marca := FDQuery1.FieldByName('marca').AsString;
+    Classificacao := FDQuery1.FieldByName('classificacao').AsString;
+    PesoLiquido := StringReplace(FDQuery1.FieldByName('pesoliquido').AsString, ',', '.', [rfReplaceAll]);
+    PesoBruto := StringReplace(FDQuery1.FieldByName('pesobruto').AsString, ',', '.', [rfReplaceAll]);
+    Data := AjustaData(FDQuery1.FieldByName('data').AsString);
+    UnCompra := Copy(FDQuery1.FieldByName('uncompra').AsString,0,3);
+    CodigoNcm := Numericos(FDQuery1.FieldByName('codigoncm').AsString);
+    Ordem := FDQuery1.FieldByName('ordem').AsInteger;
+    Grupo := FDQuery1.FieldByName('grupo').AsInteger;
+    Cest := Numericos(FDQuery1.FieldByName('cest').AsString);
+
+    if TipoProduto = EmptyStr then TipoProduto := 'NULL';
+    if Marca = EmptyStr then Marca := 'NULL';
+    if Classificacao = EmptyStr then Classificacao := 'NULL';
+    if Grupo = 0 then Grupo := 9999;
+    if Length(Barras) = 3 then Barras := IntToStr(Codigo);
+    
+
+    ListBox1.Items.Add(Format(SQLInsert,[Codigo, QuotedStr(Nome), QuotedStr(Barras), TipoProduto, Marca, Classificacao, PesoLiquido, PesoBruto, Data, QuotedStr(UnCompra),
+                       QuotedStr(CodigoNcm), Ordem, Grupo, QuotedStr(Cest), 0, 1, QuotedStr(UnCompra), 1, 0, 0, 0, 0, cNao, 1, QuotedStr(UnCompra), 1, 1, 1, 1, QuotedStr(UnCompra),
+                       1, QuotedStr(UnCompra), 1]));
+
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+  SetHorizontalScrollBar(ListBox1);
+end;
+
+procedure TFrmPrincipal.BtnProdutoCliforClick(Sender: TObject);
+var
+  SQLUpdate : String;
+  Produto, Clifor : Integer;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select ');
+  FDQuery1.SQL.Add('produtos_fornecedores.id_produto as produto, ');
+  FDQuery1.SQL.Add('produtos_fornecedores.id_terceiro as clifor ');
+  FDQuery1.SQL.Add('from produtos_fornecedores');
+  SQLUpdate := 'UPDATE PRODUTO SET CLIFOR = %d WHERE CODIGO = %d;';
+
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  while not FDQuery1.Eof do
+  begin
+    Produto := FDQuery1.FieldByName('produto').AsInteger;
+    Clifor := FDQuery1.FieldByName('clifor').AsInteger;
+
+    ListBox1.Items.Add(Format(SQLUpdate,[Clifor, Produto]));
+
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+  SetHorizontalScrollBar(ListBox1);
+end;
+
 procedure TFrmPrincipal.BtnSalvarClick(Sender: TObject);
 begin
   SalvarArquivo;
+end;
+
+procedure TFrmPrincipal.BtnTabelaPrecoClick(Sender: TObject);
+var
+  SQLInsert : String;
+  Codigo : Integer;
+  Nome, DataInicial : String;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select * from tabelas_precos');
+  SQLInsert := 'INSERT INTO TABELAPRECO (CODIGO, FILIAL, NOME, INDICE, BASE, PROMOCAO, DATAINICIAL, DATAFINAL, EXPORTAR, VALORMINIMO, COMISSAO, ATUALIZARVALORVENDA, ' +
+               'ATUALIZARVALORMINIMO, ATUALIZARDESCONTOMAXIMO, BLOQUEAR, VINCULARCLIFORAUTOMATICAMENTE, COMISSAOFIXA, INCLUIRPRODUTOAUTOMATICO, VALORMAXIMO, VALORMINIMOINICIAL) '+
+               'VALUES (%d, %d, %s, %d, %s, %s, %s, %s, %s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %d, %d);';
+
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  ListBox1.Items.Add('DELETE FROM ITEMTABELAPRECO; COMMIT;');
+  ListBox1.Items.Add('DELETE FROM TABELAPRECO; COMMIT;');
+  while not FDQuery1.Eof do
+  begin
+    Codigo := FDQuery1.FieldByName('id').AsInteger;
+    Nome := Copy(FDQuery1.FieldByName('desc_tabela').AsString,0,60);
+    DataInicial := AjustaData(FDQuery1.FieldByName('data_criacao').AsString);
+
+    ListBox1.Items.Add(Format(SQLInsert,[Codigo, 1, QuotedStr(Nome), 1, QuotedStr('V'), cNao, DataInicial, QuotedStr('31.12.2020'), cSim, 0, 0, cSim, cSim, cSim, cNao, cNao, cNao, cSim, 0, 0]));
+
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+  SetHorizontalScrollBar(ListBox1);
 end;
 
 procedure TFrmPrincipal.BtnTipoEstabelecimentoClick(Sender: TObject);

@@ -1,0 +1,2 @@
+﻿update estoque set valorvenda = (select valorvenda from itemtabelapreco where tabelapreco = 2 and itemtabelapreco.produto = estoque.produto),
+                   valorminimo = (select valorminimo from itemtabelapreco where tabelapreco = 2 and itemtabelapreco.produto = estoque.produto)
