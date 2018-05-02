@@ -15,7 +15,6 @@ type
     SaveTextFileDialog1: TSaveTextFileDialog;
     btnBairro: TButton;
     salvar: TMenuItem;
-    btnCondicaoPagamento: TButton;
     btnRota: TButton;
     btnCidade: TButton;
     btnFuncionario: TButton;
@@ -95,10 +94,10 @@ const
   cCodigoFiscalCidade : Integer = 137;
   cNomeRota : Integer = 123;
   CInicioCliente : Integer = 2;
-  cFimCliente : Integer = 2490;
+  cFimCliente : Integer = 2680;
 
   //produto
-  cCodigoProduto : Integer       = 1;
+  cCodigoProduto : Integer       = 2;
   cDataCadastroProduto : Integer = 4;
   cNomeProduto : Integer         = 6;
   cCodigoFornecedor : Integer    = 7;
@@ -121,7 +120,7 @@ const
   cCodigoNCM : Integer           = 94;
   cCest : Integer                = 197;
   cInicioProduto : Integer       = 2;
-  cFimProduto : Integer          = 149;
+  cFimProduto : Integer          = 114;
 
   //financeiro
   cFinClifor            : Integer = 1;
@@ -143,8 +142,8 @@ const
   cFinSequencial        : Integer = 17;
   cInicioContasAPagar   : Integer = 2;
   cFimContasAPagar      : Integer = 2267;
-  cInicioContasAReceber : Integer = 2;
-  cFimContasAReceber    : Integer = 12538;
+  cInicioContasAReceber : Integer = 0;
+  cFimContasAReceber    : Integer = 0;
 var
   Form1: TForm1;
     Excel, Planilha : OleVariant;
@@ -160,7 +159,7 @@ begin
   Result := 'NULL';
   if Length(data) = 10 then
   begin
-    Splited := data.Split(['/']);
+    Splited := data.Split(['-']);
     if StrToInt(Splited[0]) > 2017 then Splited[0] := '2017';
     if StrToInt(Splited[0]) = 1882 then Splited[0] := '1982';
     Result := QuotedStr(Splited[2] + '.' + Splited[1] + '.' + Splited[0]);
@@ -629,7 +628,7 @@ begin
       if ValorCusto = EmptyStr then ValorCusto := '0';
       if DescontoMaximo = EmptyStr then DescontoMaximo := '0';
       if EstoqueMinimo = EmptyStr then EstoqueMinimo := '0';
-      
+      if ValorVenda = EmptyStr then ValorVenda := '0';
       
       
       if TipoItem = 'Material Uso e Consumo' then
@@ -821,7 +820,8 @@ end;
 procedure TForm1.CarregarExcelCliente;
 begin
   Excel := CreateOleObject('Excel.Application');
-  Excel.WorkBooks.open('C:\Users\Topsystem\Desktop\guilherme\Dados Clientes\Bacat\CLIENTE E FORNECEDOR - 01032018.xlsx');
+  //Excel.WorkBooks.open('C:\Users\Topsystem\Desktop\guilherme\Dados Clientes\Bacat\CLIENTE E FORNECEDOR - 01032018.xlsx');
+  Excel.WorkBooks.open('C:\Users\Topsystem\Desktop\guilherme\Dados Clientes\Bacat\Novo\clientes 26 04 2018.xlsx');
   Planilha := Excel.WorkSheets[1];
 end;
 
@@ -842,7 +842,8 @@ end;
 procedure TForm1.CarregarExcelProduto;
 begin
   Excel := CreateOleObject('Excel.Application');
-  Excel.WorkBooks.open('C:\Users\Topsystem\Desktop\guilherme\Dados Clientes\Bacat\PRODUTO - 01032018.xlsx');
+  //Excel.WorkBooks.open('C:\Users\Topsystem\Desktop\guilherme\Dados Clientes\Bacat\PRODUTO - 01032018.xlsx');
+  Excel.WorkBooks.open('C:\Users\Topsystem\Desktop\guilherme\Dados Clientes\Bacat\Novo\produtos 27 04 2018.xlsx');
   Planilha := Excel.WorkSheets[1];
 end;
 

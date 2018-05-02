@@ -39,21 +39,14 @@ object Form1: TForm1
     TabOrder = 1
     OnClick = btnBairroClick
   end
-  object btnCondicaoPagamento: TButton
-    Left = 8
-    Top = 132
-    Width = 138
-    Height = 25
-    Caption = 'Condi'#231#227'o Pagamento'
-    TabOrder = 2
-  end
   object btnRota: TButton
     Left = 8
     Top = 101
     Width = 138
     Height = 25
     Caption = 'Rota'
-    TabOrder = 3
+    Enabled = False
+    TabOrder = 2
     OnClick = btnRotaClick
   end
   object btnCidade: TButton
@@ -62,7 +55,7 @@ object Form1: TForm1
     Width = 138
     Height = 25
     Caption = 'Cidade'
-    TabOrder = 4
+    TabOrder = 3
     OnClick = btnCidadeClick
   end
   object btnFuncionario: TButton
@@ -71,7 +64,7 @@ object Form1: TForm1
     Width = 138
     Height = 25
     Caption = 'Funcionario'
-    TabOrder = 5
+    TabOrder = 4
     OnClick = btnFuncionarioClick
   end
   object btnCliente: TButton
@@ -80,7 +73,7 @@ object Form1: TForm1
     Width = 138
     Height = 25
     Caption = 'Cliente'
-    TabOrder = 6
+    TabOrder = 5
     OnClick = btnClienteClick
   end
   object btnFornecedor: TButton
@@ -89,7 +82,7 @@ object Form1: TForm1
     Width = 138
     Height = 25
     Caption = 'Fornecedor'
-    TabOrder = 7
+    TabOrder = 6
     OnClick = btnFornecedorClick
   end
   object btnUnidadeMedida: TButton
@@ -98,7 +91,7 @@ object Form1: TForm1
     Width = 138
     Height = 25
     Caption = 'Unidade Medida'
-    TabOrder = 8
+    TabOrder = 7
     OnClick = btnUnidadeMedidaClick
   end
   object btnTipoProduto: TButton
@@ -107,7 +100,7 @@ object Form1: TForm1
     Width = 138
     Height = 25
     Caption = 'Tipo Produto'
-    TabOrder = 9
+    TabOrder = 8
     OnClick = btnTipoProdutoClick
   end
   object btnGrupo: TButton
@@ -116,7 +109,7 @@ object Form1: TForm1
     Width = 138
     Height = 25
     Caption = 'Grupo'
-    TabOrder = 10
+    TabOrder = 9
     OnClick = btnGrupoClick
   end
   object btnProduto: TButton
@@ -125,7 +118,7 @@ object Form1: TForm1
     Width = 138
     Height = 25
     Caption = 'Produto'
-    TabOrder = 11
+    TabOrder = 10
     OnClick = btnProdutoClick
   end
   object btnClasse: TButton
@@ -134,7 +127,7 @@ object Form1: TForm1
     Width = 138
     Height = 25
     Caption = 'Classe'
-    TabOrder = 12
+    TabOrder = 11
     OnClick = btnClasseClick
   end
   object btnEstoque: TButton
@@ -143,7 +136,7 @@ object Form1: TForm1
     Width = 138
     Height = 25
     Caption = 'Estoque'
-    TabOrder = 13
+    TabOrder = 12
     OnClick = btnEstoqueClick
   end
   object btnContasAPagar: TButton
@@ -152,7 +145,7 @@ object Form1: TForm1
     Width = 138
     Height = 25
     Caption = 'Contas a Pagar'
-    TabOrder = 14
+    TabOrder = 13
     OnClick = btnContasAPagarClick
   end
   object btnContasAReceber: TButton
@@ -161,7 +154,7 @@ object Form1: TForm1
     Width = 138
     Height = 25
     Caption = 'Contas a Receber'
-    TabOrder = 15
+    TabOrder = 14
     OnClick = btnContasAReceberClick
   end
   object PopupMenu1: TPopupMenu
