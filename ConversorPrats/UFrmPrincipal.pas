@@ -46,6 +46,8 @@ type
     BtnProdutoClifor: TButton;
     BtnContasAPagar: TButton;
     BtnContasReceber: TButton;
+    CheckBoxInserirDeleteAntes: TCheckBox;
+    CheckBoxSalvarAutomaticamente: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);
@@ -163,6 +165,10 @@ begin
   AjustaGauge;
   ListBox1.Clear;
   Codigo := 2;
+  if CheckBoxInserirDeleteAntes.Checked then
+  begin
+    ListBox1.Items.Add('DELETE FROM BAIRRO; COMMIT;');
+  end;
   while not FDQuery1.Eof do
   begin
     Nome := FDQuery1.FieldByName('nome_bairro').AsString;
@@ -172,6 +178,8 @@ begin
     Gauge1.AddProgress(1);
   end;
   SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivo;
 end;
 
 procedure TFrmPrincipal.BtnCidadeClick(Sender: TObject);
@@ -194,6 +202,10 @@ begin
   AbreQuery;
   AjustaGauge;
   ListBox1.Clear;
+  if CheckBoxInserirDeleteAntes.Checked then
+  begin
+    ListBox1.Items.Add('DELETE FROM CIDADE; COMMIT;');
+  end;
   while not FDQuery1.Eof do
   begin
     Codigo := FDQuery1.FieldByName('codigo').AsInteger;
@@ -212,6 +224,8 @@ begin
     Application.ProcessMessages;
   end;
   SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivo;
 end;
 
 procedure TFrmPrincipal.BtnClassificacaoClick(Sender: TObject);
@@ -227,7 +241,10 @@ begin
   AbreQuery;
   AjustaGauge;
   ListBox1.Clear;
-  ListBox1.Items.Add('DELETE FROM CLASSIFICACAO; COMMIT;');
+  if CheckBoxInserirDeleteAntes.Checked then
+  begin
+    ListBox1.Items.Add('DELETE FROM CLASSIFICACAO; COMMIT;');
+  end;
   while not FDQuery1.Eof do
   begin
     Codigo := FDQuery1.FieldByName('id').AsInteger;
@@ -239,6 +256,8 @@ begin
     Gauge1.AddProgress(1);
   end;
   SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivo;
 end;
 
 procedure TFrmPrincipal.BtnCliforClick(Sender: TObject);
@@ -301,13 +320,16 @@ begin
   AbreQuery;
   AjustaGauge;
   ListBox1.Clear;
-  ListBox1.Items.Add('DELETE FROM CLIFORCONTATO; COMMIT;');
-  ListBox1.Items.Add('DELETE FROM FUNCIONARIOCLIFOR; COMMIT;');
-  ListBox1.Items.Add('DELETE FROM CLIFOR; COMMIT;');
-  ListBox1.Items.Add('DELETE FROM TIPO; COMMIT;');
-  ListBox1.Items.Add(Format('INSERT INTO TIPO VALUES (%d, %s); COMMIT;',[1, QuotedStr('CLIENTE')]));
-  ListBox1.Items.Add(Format('INSERT INTO TIPO VALUES (%d, %s); COMMIT;',[2, QuotedStr('FORNECEDOR')]));
-  ListBox1.Items.Add(Format('INSERT INTO TIPO VALUES (%d, %s); COMMIT;',[3, QuotedStr('CLIENTE/FORNECEDOR')]));
+  if CheckBoxInserirDeleteAntes.Checked then
+  begin
+    ListBox1.Items.Add('DELETE FROM CLIFORCONTATO; COMMIT;');
+    ListBox1.Items.Add('DELETE FROM FUNCIONARIOCLIFOR; COMMIT;');
+    ListBox1.Items.Add('DELETE FROM CLIFOR; COMMIT;');
+    ListBox1.Items.Add('DELETE FROM TIPO; COMMIT;');
+  end;
+  ListBox1.Items.Add(Format('UPDATE OR INSERT INTO TIPO (CODIGO, NOME) VALUES (%d, %s) MATCHING (CODIGO); COMMIT;',[1, QuotedStr('CLIENTE')]));
+  ListBox1.Items.Add(Format('UPDATE OR INSERT INTO TIPO (CODIGO, NOME) VALUES (%d, %s) MATCHING (CODIGO); COMMIT;',[2, QuotedStr('FORNECEDOR')]));
+  ListBox1.Items.Add(Format('UPDATE OR INSERT INTO TIPO (CODIGO, NOME) VALUES (%d, %s) MATCHING (CODIGO); COMMIT;',[3, QuotedStr('CLIENTE/FORNECEDOR')]));
   while not FDQuery1.Eof do
   begin
     IsFornecedor := FDQuery1.FieldByName('isfornecedor').AsBoolean;
@@ -460,6 +482,8 @@ begin
     Gauge1.AddProgress(1);
   end;
   SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivo;
 end;
 
 procedure TFrmPrincipal.BtnCliforTabelaPrecoClick(Sender: TObject);
@@ -478,6 +502,10 @@ begin
   AbreQuery;
   AjustaGauge;
   ListBox1.Clear;
+  if CheckBoxInserirDeleteAntes.Checked then
+  begin
+    ListBox1.Items.Add('DELETE FROM CLIFORTABELAPRECO; COMMIT;');
+  end;
   while not FDQuery1.Eof do
   begin
     TabelaPreco := FDQuery1.FieldByName('tabelapreco').AsInteger;
@@ -489,6 +517,8 @@ begin
     Gauge1.AddProgress(1);
   end;
   SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivo;
 end;
 
 procedure TFrmPrincipal.BtnCondicaoPagamentoClick(Sender: TObject);
@@ -507,7 +537,10 @@ begin
   AbreQuery;
   AjustaGauge;
   ListBox1.Clear;
-  ListBox1.Items.Add('DELETE FROM CONDICAOPAGAMENTO; COMMIT;');
+  if CheckBoxInserirDeleteAntes.Checked then
+  begin
+    ListBox1.Items.Add('DELETE FROM CONDICAOPAGAMENTO; COMMIT;');
+  end;
   while not FDQuery1.Eof do
   begin
     Codigo := FDQuery1.FieldByName('id').AsInteger;
@@ -528,6 +561,8 @@ begin
     Gauge1.AddProgress(1);
   end;
   SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivo;
 end;
 
 procedure TFrmPrincipal.BtnConectarClick(Sender: TObject);
@@ -566,8 +601,11 @@ begin
   AbreQuery;
   AjustaGauge;
   ListBox1.Clear;
-  ListBox1.Items.Add('DELETE FROM FINANCEIRO FIN WHERE TIPO = ''D'' AND FIN.ORDEM NOT IN (SELECT OC.ORDEM FROM OCORRENCIAFINANCEIRO OC WHERE OC.ORDEM = FIN.ORDEM AND OC.CLIFOR = FIN.CLIFOR '+
-                     'AND OC.FILIAL = FIN.FILIAL AND OC.DATAEMISSAO = FIN.DATAEMISSAO); COMMIT;');
+  if CheckBoxInserirDeleteAntes.Checked then
+  begin
+    ListBox1.Items.Add('DELETE FROM FINANCEIRO FIN WHERE TIPO = ''D'' AND FIN.ORDEM NOT IN (SELECT OC.ORDEM FROM OCORRENCIAFINANCEIRO OC WHERE OC.ORDEM = FIN.ORDEM AND OC.CLIFOR = FIN.CLIFOR '+
+                       'AND OC.FILIAL = FIN.FILIAL AND OC.DATAEMISSAO = FIN.DATAEMISSAO); COMMIT;');
+  end;
   while not FDQuery1.Eof do
   begin
     Clifor := FDQuery1.FieldByName('clifor').AsInteger;
@@ -610,6 +648,8 @@ begin
     Gauge1.AddProgress(1);
   end;
   SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivo;
 end;
 
 procedure TFrmPrincipal.BtnContasReceberClick(Sender: TObject);
@@ -642,8 +682,11 @@ begin
   AbreQuery;
   AjustaGauge;
   ListBox1.Clear;
-  ListBox1.Items.Add('DELETE FROM FINANCEIRO FIN WHERE TIPO = ''C'' AND FIN.ORDEM NOT IN (SELECT OC.ORDEM FROM OCORRENCIAFINANCEIRO OC WHERE OC.ORDEM = FIN.ORDEM AND OC.CLIFOR = FIN.CLIFOR '+
-                     'AND OC.FILIAL = FIN.FILIAL AND OC.DATAEMISSAO = FIN.DATAEMISSAO); COMMIT;');
+  if CheckBoxInserirDeleteAntes.Checked then
+  begin
+    ListBox1.Items.Add('DELETE FROM FINANCEIRO FIN WHERE TIPO = ''C'' AND FIN.ORDEM NOT IN (SELECT OC.ORDEM FROM OCORRENCIAFINANCEIRO OC WHERE OC.ORDEM = FIN.ORDEM AND OC.CLIFOR = FIN.CLIFOR '+
+                       'AND OC.FILIAL = FIN.FILIAL AND OC.DATAEMISSAO = FIN.DATAEMISSAO); COMMIT;');
+  end;
   while not FDQuery1.Eof do
   begin
     Clifor := FDQuery1.FieldByName('clifor').AsInteger;
@@ -686,6 +729,8 @@ begin
     Gauge1.AddProgress(1);
   end;
   SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivo;
 end;
 
 procedure TFrmPrincipal.BtnDesconectarClick(Sender: TObject);
@@ -733,6 +778,8 @@ begin
     Gauge1.AddProgress(1);
   end;
   SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivo;
 end;
 
 procedure TFrmPrincipal.BtnFuncionarioClick(Sender: TObject);
@@ -774,7 +821,11 @@ begin
   AbreQuery;
   AjustaGauge;
   ListBox1.Clear;
-  ListBox1.Items.Add('DELETE FROM FUNCIONARIO; COMMIT;');
+  if CheckBoxInserirDeleteAntes.Checked then
+  begin
+    ListBox1.Items.Add('DELETE FROM CARGOFUNCIONARIO; COMMIT;');
+    ListBox1.Items.Add('DELETE FROM FUNCIONARIO; COMMIT;');
+  end;
   while not FDQuery1.Eof do
   begin
     Codigo := FDQuery1.FieldByName('codigo').AsInteger;
@@ -805,6 +856,8 @@ begin
     Gauge1.AddProgress(1);
   end;
   SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivo;
 end;
 
 procedure TFrmPrincipal.BtnGrupoClick(Sender: TObject);
@@ -821,7 +874,10 @@ begin
   AbreQuery;
   AjustaGauge;
   ListBox1.Clear;
-  ListBox1.Items.Add('DELETE FROM GRUPO; COMMIT;');
+  if CheckBoxInserirDeleteAntes.Checked then
+  begin
+    ListBox1.Items.Add('DELETE FROM GRUPO; COMMIT;');
+  end;
   while not FDQuery1.Eof do
   begin
     Codigo := FDQuery1.FieldByName('id').AsInteger;
@@ -834,6 +890,8 @@ begin
     Gauge1.AddProgress(1);
   end;
   SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivo;
 end;
 
 procedure TFrmPrincipal.BtnItemTabelaPrecoClick(Sender: TObject);
@@ -863,6 +921,8 @@ begin
     Gauge1.AddProgress(1);
   end;
   SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivo;
 end;
 
 procedure TFrmPrincipal.BtnMarcaClick(Sender: TObject);
@@ -879,7 +939,10 @@ begin
   AbreQuery;
   AjustaGauge;
   ListBox1.Clear;
-  ListBox1.Items.Add('DELETE FROM MARCA; COMMIT;');
+  if CheckBoxInserirDeleteAntes.Checked then
+  begin
+    ListBox1.Items.Add('DELETE FROM MARCA; COMMIT;');
+  end;
   while not FDQuery1.Eof do
   begin
     Codigo := FDQuery1.FieldByName('id').AsInteger;
@@ -891,6 +954,8 @@ begin
     Gauge1.AddProgress(1);
   end;
   SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivo;
 end;
 
 procedure TFrmPrincipal.BtnProdutoClick(Sender: TObject);
@@ -929,7 +994,10 @@ begin
   AbreQuery;
   AjustaGauge;
   ListBox1.Clear;
-  ListBox1.Items.Add('DELETE FROM PRODUTO; COMMIT;');
+  if CheckBoxInserirDeleteAntes.Checked then
+  begin
+    ListBox1.Items.Add('DELETE FROM PRODUTO; COMMIT;');
+  end;
   ListBox1.Items.Add('DELETE FROM GRUPO WHERE CODIGO = 9999; COMMIT;');
   ListBox1.Items.Add(Format(SQLInsertGrupo,[9999, QuotedStr('VERIFICAR'), 0, 0, 0, 0, cSim, 1, cNao, 0, 0, 0, cNao, cSim]));
   while not FDQuery1.Eof do
@@ -964,6 +1032,8 @@ begin
     Gauge1.AddProgress(1);
   end;
   SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivo;
 end;
 
 procedure TFrmPrincipal.BtnProdutoCliforClick(Sender: TObject);
@@ -993,6 +1063,8 @@ begin
     Gauge1.AddProgress(1);
   end;
   SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivo;
 end;
 
 procedure TFrmPrincipal.BtnSalvarClick(Sender: TObject);
@@ -1016,8 +1088,11 @@ begin
   AbreQuery;
   AjustaGauge;
   ListBox1.Clear;
-  ListBox1.Items.Add('DELETE FROM ITEMTABELAPRECO; COMMIT;');
-  ListBox1.Items.Add('DELETE FROM TABELAPRECO; COMMIT;');
+  if CheckBoxInserirDeleteAntes.Checked then
+  begin
+    ListBox1.Items.Add('DELETE FROM ITEMTABELAPRECO; COMMIT;');
+    ListBox1.Items.Add('DELETE FROM TABELAPRECO; COMMIT;');
+  end;
   while not FDQuery1.Eof do
   begin
     Codigo := FDQuery1.FieldByName('id').AsInteger;
@@ -1030,6 +1105,8 @@ begin
     Gauge1.AddProgress(1);
   end;
   SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivo;
 end;
 
 procedure TFrmPrincipal.BtnTipoEstabelecimentoClick(Sender: TObject);
@@ -1046,7 +1123,10 @@ begin
   AbreQuery;
   AjustaGauge;
   ListBox1.Clear;
-  ListBox1.Items.Add('DELETE FROM TIPOESTABELECIMENTO; COMMIT;');
+  if CheckBoxInserirDeleteAntes.Checked then
+  begin
+    ListBox1.Items.Add('DELETE FROM TIPOESTABELECIMENTO; COMMIT;');
+  end;
   while not FDQuery1.Eof do
   begin
     Codigo := FDQuery1.FieldByName('id').AsInteger;
@@ -1058,6 +1138,8 @@ begin
     Gauge1.AddProgress(1);
   end;
   SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivo;
 end;
 
 procedure TFrmPrincipal.BtnTipoProdutoClick(Sender: TObject);
@@ -1073,7 +1155,10 @@ begin
   AbreQuery;
   AjustaGauge;
   ListBox1.Clear;
-  ListBox1.Items.Add('DELETE FROM TIPOPRODUTO; COMMIT;');
+  if CheckBoxInserirDeleteAntes.Checked then
+  begin
+    ListBox1.Items.Add('DELETE FROM TIPOPRODUTO; COMMIT;');
+  end;
   while not FDQuery1.Eof do
   begin
     Codigo := FDQuery1.FieldByName('id').AsInteger;
@@ -1085,6 +1170,8 @@ begin
     Gauge1.AddProgress(1);
   end;
   SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivo;
 end;
 
 procedure TFrmPrincipal.BtnUnidadeMedidaClick(Sender: TObject);
@@ -1105,7 +1192,10 @@ begin
   AbreQuery;
   AjustaGauge;
   ListBox1.Clear;
-  ListBox1.Items.Add('DELETE FROM UNIDADEMEDIDA; COMMIT;');
+  if CheckBoxInserirDeleteAntes.Checked then
+  begin
+    ListBox1.Items.Add('DELETE FROM UNIDADEMEDIDA; COMMIT;');
+  end;
   while not FDQuery1.Eof do
   begin
     Sigla := Copy(FDQuery1.FieldByName('sigla').AsString,0,3);
@@ -1117,6 +1207,8 @@ begin
     Gauge1.AddProgress(1);
   end;
   SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivo;
 end;
 
 procedure TFrmPrincipal.CarregarIni;
@@ -1125,6 +1217,8 @@ var
 begin
   INI := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'conversor.ini');
   EditDataBase.Text := INI.ReadString('Geral', 'database', EmptyStr);
+  CheckBoxInserirDeleteAntes.Checked := INI.ReadBool('Geral', 'inserirdelete', True);
+  CheckBoxSalvarAutomaticamente.Checked := INI.ReadBool('Geral', 'salvarautomaticamente', True);
 end;
 
 procedure TFrmPrincipal.ConectarDB;
@@ -1181,6 +1275,8 @@ var
 begin
   INI := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'conversor.ini');
   INI.WriteString('Geral', 'database', EditDatabase.Text);
+  INI.WriteBool('Geral', 'inserirdelete', CheckBoxInserirDeleteAntes.Checked);
+  INI.WriteBool('Geral', 'salvarautomaticamente', CheckBoxSalvarAutomaticamente.Checked);
 end;
 
 procedure TFrmPrincipal.VerificaConexao;
