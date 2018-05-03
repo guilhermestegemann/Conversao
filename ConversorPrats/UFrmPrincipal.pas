@@ -48,6 +48,7 @@ type
     BtnContasReceber: TButton;
     CheckBoxInserirDeleteAntes: TCheckBox;
     CheckBoxSalvarAutomaticamente: TCheckBox;
+    BtnGerarTodos: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);
@@ -72,6 +73,7 @@ type
     procedure BtnProdutoCliforClick(Sender: TObject);
     procedure BtnContasAPagarClick(Sender: TObject);
     procedure BtnContasReceberClick(Sender: TObject);
+    procedure BtnGerarTodosClick(Sender: TObject);
   private
     procedure ConectarDB;
     procedure DesconectarDB;
@@ -167,7 +169,7 @@ begin
   Codigo := 2;
   if CheckBoxInserirDeleteAntes.Checked then
   begin
-    ListBox1.Items.Add('DELETE FROM BAIRRO; COMMIT;');
+    ListBox1.Items.Add('DELETE FROM BAIRRO WHERE NOME <> ''CENTRO''; COMMIT;');
   end;
   while not FDQuery1.Eof do
   begin
@@ -204,7 +206,7 @@ begin
   ListBox1.Clear;
   if CheckBoxInserirDeleteAntes.Checked then
   begin
-    ListBox1.Items.Add('DELETE FROM CIDADE; COMMIT;');
+    ListBox1.Items.Add('DELETE FROM CIDADE WHERE CODIGO NOT IN (SELECT CIDADE FROM TRANSPORTADOR) AND CODIGO NOT IN (SELECT CIDADE FROM FILIAL); COMMIT;');
   end;
   while not FDQuery1.Eof do
   begin
@@ -308,7 +310,7 @@ begin
   FDQuery1.SQL.Add('left join logradouros on logradouros.id = terceiros.id_logradouro ');
   FDQuery1.SQL.Add('left join bairros on bairros.id = terceiros.id_bairro ');
   FDQuery1.SQL.Add('inner join terceiros_dados_emp on terceiros_dados_emp.id_terceiro = terceiros.id ');
-  FDQuery1.SQL.Add('where ((terceiros.tipo_vendedor = false) or (terceiros.tipo_funcionario = false)) ');
+  FDQuery1.SQL.Add('where ((terceiros.tipo_cliente = true) or (terceiros.tipo_fornecedor = true)) ');
   SQLInsertClifor := 'INSERT INTO CLIFOR (CODIGO, FANTASIA, NOME, CNPJ, IE, DATA, DATANASC, NOMEPAI, NOMEMAE, TIPOESTABELECIMENTO, ENDERECO, NUMERO, CIDADE, BAIRRO, COMPLEMENTO, CEP, '+
                      'SIMPLES, INDICADORIE, LIMITECREDITO, CONDICAOPAGAMENTO, ATIVO, DATAMOVIMENTO, DATAINATIVADO, OBS, COMISSAO, SPC, COMISSAOFIXA, VENDARESTRITA, CONSUMIDOR, '+
                      'DESTACARSTITEM, TIPO, CATEGORIA, FILIAL) VALUES (%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, (SELECT FIRST(1) CODIGO FROM BAIRRO WHERE NOME = %s), '+
@@ -860,6 +862,30 @@ begin
     SalvarArquivo;
 end;
 
+procedure TFrmPrincipal.BtnGerarTodosClick(Sender: TObject);
+begin
+  CheckBoxSalvarAutomaticamente.Checked := True;
+  BtnCondicaoPagamentoClick(Self);
+  BtnTipoEstabelecimentoClick(Self);
+  BtnBairroClick(Self);
+  BtnCidadeClick(Self);
+  BtnFuncionarioClick(Self);
+  BtnCliforClick(Self);
+  BtnUnidadeMedidaClick(Self);
+  BtnGrupoClick(Self);
+  BtnTipoProdutoClick(Self);
+  BtnMarcaClick(Self);
+  BtnClassificacaoClick(Self);
+  BtnProdutoClick(Self);
+  BtnProdutoCliforClick(Self);
+  BtnEstoqueClick(Self);
+  BtnTabelaPrecoClick(Self);
+  BtnItemTabelaPrecoClick(Self);
+  BtnCliforTabelaPrecoClick(Self);
+  BtnContasAPagarClick(Self);
+  BtnContasReceberClick(Self);
+end;
+
 procedure TFrmPrincipal.BtnGrupoClick(Sender: TObject);
 var
   SQLInsert : String;
@@ -1096,7 +1122,7 @@ begin
   while not FDQuery1.Eof do
   begin
     Codigo := FDQuery1.FieldByName('id').AsInteger;
-    Nome := Copy(FDQuery1.FieldByName('desc_tabela').AsString,0,60);
+    Nome := Copy(FDQuery1.FieldByName('desc_tabela').AsString,0,40);
     DataInicial := AjustaData(FDQuery1.FieldByName('data_criacao').AsString);
 
     ListBox1.Items.Add(Format(SQLInsert,[Codigo, 1, QuotedStr(Nome), 1, QuotedStr('V'), cNao, DataInicial, QuotedStr('31.12.2020'), cSim, 0, 0, cSim, cSim, cSim, cNao, cNao, cNao, cSim, 0, 0]));

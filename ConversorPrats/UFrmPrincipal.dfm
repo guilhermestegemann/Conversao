@@ -222,7 +222,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnCliforTabelaPreco: TButton
     Left = 8
-    Top = 468
+    Top = 467
     Width = 166
     Height = 21
     Caption = 'Clifor Tabela Pre'#231'o'
@@ -240,7 +240,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnContasAPagar: TButton
     Left = 8
-    Top = 495
+    Top = 490
     Width = 166
     Height = 21
     Caption = 'Contas a Pagar'
@@ -249,7 +249,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnContasReceber: TButton
     Left = 8
-    Top = 522
+    Top = 513
     Width = 166
     Height = 21
     Caption = 'Contas a Receber'
@@ -283,6 +283,15 @@ object FrmPrincipal: TFrmPrincipal
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 26
+  end
+  object BtnGerarTodos: TButton
+    Left = 8
+    Top = 763
+    Width = 166
+    Height = 21
+    Caption = 'Gerar Todos'
+    TabOrder = 27
+    OnClick = BtnGerarTodosClick
   end
   object FDQuery1: TFDQuery
     Connection = FDConnection1
