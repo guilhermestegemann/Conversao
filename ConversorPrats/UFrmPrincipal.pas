@@ -49,6 +49,11 @@ type
     CheckBoxInserirDeleteAntes: TCheckBox;
     CheckBoxSalvarAutomaticamente: TCheckBox;
     BtnGerarTodos: TButton;
+    EditCaminhoScripts: TEdit;
+    Label2: TLabel;
+    BtnContasPagarProcedure: TButton;
+    Label3: TLabel;
+    EditIdEmpresa: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);
@@ -71,9 +76,11 @@ type
     procedure BtnItemTabelaPrecoClick(Sender: TObject);
     procedure BtnCliforTabelaPrecoClick(Sender: TObject);
     procedure BtnProdutoCliforClick(Sender: TObject);
-    procedure BtnContasAPagarClick(Sender: TObject);
     procedure BtnContasReceberClick(Sender: TObject);
     procedure BtnGerarTodosClick(Sender: TObject);
+    procedure GerarContasAPagar(UsaProcedure : Boolean);
+    procedure BtnContasPagarProcedureClick(Sender: TObject);
+    procedure BtnContasAPagarClick(Sender: TObject);
   private
     procedure ConectarDB;
     procedure DesconectarDB;
@@ -84,6 +91,7 @@ type
     procedure AjustaGauge;
     procedure SetHorizontalScrollBar(lb : TListBox);
     procedure SalvarArquivo;
+    procedure SalvarArquivoAutomatico(Caminho : String);
     procedure AbreQuery;
     function BooleanToStr (p : Boolean) : String;
     function  AdjustRight(st: string;tam:integer;ch:char):string;
@@ -181,7 +189,7 @@ begin
   end;
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
-    SalvarArquivo;
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '03-bairro.txt');
 end;
 
 procedure TFrmPrincipal.BtnCidadeClick(Sender: TObject);
@@ -227,7 +235,7 @@ begin
   end;
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
-    SalvarArquivo;
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '04-cidade.txt');
 end;
 
 procedure TFrmPrincipal.BtnClassificacaoClick(Sender: TObject);
@@ -259,7 +267,7 @@ begin
   end;
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
-    SalvarArquivo;
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '11-classificacao.txt');
 end;
 
 procedure TFrmPrincipal.BtnCliforClick(Sender: TObject);
@@ -269,12 +277,14 @@ var
   Fantasia, Nome, CNPJ, IE, DataCadastro, DataNascimento, NomePai, NomeMae, Contato, Endereco, Numero, NomeBairro, Complemento, Cep, Telefone, Celular,
   Email, EmailNFe, EmailBoleto, Simples, DataMovimento, DataInativado, Obs, LimiteCredito, TipoEstabelecimento, CondicaoPagamento,
   EnviarNFe, EnviarBoleto : String;
-  IsFornecedor, IsCliente, Ativo : Boolean;
+  IsFornecedor, IsCliente, IsFuncionario, IsTransportador, Ativo : Boolean;
 begin
   FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select ');
   FDQuery1.SQL.Add('terceiros.tipo_fornecedor as isfornecedor, ');
   FDQuery1.SQL.Add('terceiros.tipo_cliente as iscliente, ');
+  FDQuery1.SQL.Add('terceiros.tipo_funcionario as isfuncionario, ');
+  FDQuery1.SQL.Add('terceiros.tipo_transportadora as istransportador, ');
   FDQuery1.SQL.Add('terceiros.id as codigo, ');
   FDQuery1.SQL.Add('terceiros.nome as fantasia, ');
   FDQuery1.SQL.Add('terceiros.razao_social as nome, ');
@@ -297,7 +307,7 @@ begin
   FDQuery1.SQL.Add('terceiros.email as email, ');
   FDQuery1.SQL.Add('terceiros.email_nfe as emailnfe, ');
   FDQuery1.SQL.Add('terceiros.email_boleto as emailboleto, ');
-  FDQuery1.SQL.Add('case when (terceiros.id_regime_icms = 1) then ''N'' else ''N'' end as simples, ');
+  FDQuery1.SQL.Add('case when (terceiros.id_regime_icms = 1) then ''N'' else ''S'' end as simples, ');
   FDQuery1.SQL.Add('terceiros.indicador_insc_estadual as indicadorie, ');
   FDQuery1.SQL.Add('terceiros_dados_emp.limite_credito as limitecredito, ');
   FDQuery1.SQL.Add('terceiros_dados_emp.id_form_parc_pref as condicaopagamento, ');
@@ -310,7 +320,9 @@ begin
   FDQuery1.SQL.Add('left join logradouros on logradouros.id = terceiros.id_logradouro ');
   FDQuery1.SQL.Add('left join bairros on bairros.id = terceiros.id_bairro ');
   FDQuery1.SQL.Add('inner join terceiros_dados_emp on terceiros_dados_emp.id_terceiro = terceiros.id ');
-  FDQuery1.SQL.Add('where ((terceiros.tipo_cliente = true) or (terceiros.tipo_fornecedor = true)) ');
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('and terceiros_dados_emp.id_empresa = %s',[EditIdEmpresa.Text]));
+//  FDQuery1.SQL.Add('where ((terceiros.tipo_cliente = true) or (terceiros.tipo_fornecedor = true) or terceiros.id in (select distinct(produtos_fornecedores.id_terceiro) from produtos_fornecedores)) ');
   SQLInsertClifor := 'INSERT INTO CLIFOR (CODIGO, FANTASIA, NOME, CNPJ, IE, DATA, DATANASC, NOMEPAI, NOMEMAE, TIPOESTABELECIMENTO, ENDERECO, NUMERO, CIDADE, BAIRRO, COMPLEMENTO, CEP, '+
                      'SIMPLES, INDICADORIE, LIMITECREDITO, CONDICAOPAGAMENTO, ATIVO, DATAMOVIMENTO, DATAINATIVADO, OBS, COMISSAO, SPC, COMISSAOFIXA, VENDARESTRITA, CONSUMIDOR, '+
                      'DESTACARSTITEM, TIPO, CATEGORIA, FILIAL) VALUES (%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, (SELECT FIRST(1) CODIGO FROM BAIRRO WHERE NOME = %s), '+
@@ -332,10 +344,14 @@ begin
   ListBox1.Items.Add(Format('UPDATE OR INSERT INTO TIPO (CODIGO, NOME) VALUES (%d, %s) MATCHING (CODIGO); COMMIT;',[1, QuotedStr('CLIENTE')]));
   ListBox1.Items.Add(Format('UPDATE OR INSERT INTO TIPO (CODIGO, NOME) VALUES (%d, %s) MATCHING (CODIGO); COMMIT;',[2, QuotedStr('FORNECEDOR')]));
   ListBox1.Items.Add(Format('UPDATE OR INSERT INTO TIPO (CODIGO, NOME) VALUES (%d, %s) MATCHING (CODIGO); COMMIT;',[3, QuotedStr('CLIENTE/FORNECEDOR')]));
+  ListBox1.Items.Add(Format('UPDATE OR INSERT INTO TIPO (CODIGO, NOME) VALUES (%d, %s) MATCHING (CODIGO); COMMIT;',[4, QuotedStr('FUNCIONARIO')]));
+  ListBox1.Items.Add(Format('UPDATE OR INSERT INTO TIPO (CODIGO, NOME) VALUES (%d, %s) MATCHING (CODIGO); COMMIT;',[5, QuotedStr('TRANSPORTADOR')]));
   while not FDQuery1.Eof do
   begin
     IsFornecedor := FDQuery1.FieldByName('isfornecedor').AsBoolean;
     IsCliente := FDQuery1.FieldByName('iscliente').AsBoolean;
+    IsFuncionario := FDQuery1.FieldByName('isfuncionario').AsBoolean;
+    IsTransportador := FDQuery1.FieldByName('istransportador').AsBoolean;
     Codigo := FDQuery1.FieldByName('codigo').AsInteger;
     Fantasia := Copy(FDQuery1.FieldByName('fantasia').AsString, 0, 60);
     Nome := Copy(FDQuery1.FieldByName('nome').AsString, 0, 60);
@@ -353,8 +369,8 @@ begin
     NomeBairro := FDQuery1.FieldByName('nomebairro').AsString;
     Complemento := FDQuery1.FieldByName('complemento').AsString;
     Cep := Numericos(FDQuery1.FieldByName('cep').AsString);
-    Telefone := Numericos(FDQuery1.FieldByName('telefone').AsString);
-    Celular := Numericos(FDQuery1.FieldByName('celular').AsString);
+    Telefone := Copy(Numericos(FDQuery1.FieldByName('telefone').AsString),0,12);
+    Celular := Copy(Numericos(FDQuery1.FieldByName('celular').AsString),0,12);
     Email := FDQuery1.FieldByName('email').AsString;
     EmailNFe := FDQuery1.FieldByName('emailnfe').AsString;
     EmailBoleto := FDQuery1.FieldByName('emailboleto').AsString;
@@ -367,20 +383,39 @@ begin
     DataInativado := AjustaData(FDQuery1.FieldByName('datainativado').AsString);
     Obs := FDQuery1.FieldByName('obs').AsString;
     Vendedor := FDQuery1.FieldByName('codigovendedor').AsInteger;
-
+    //separados por virgula
     if Pos(',', Email) > 0 then
       Email := Copy(Email, 0, Pos(',', Email)-1);
     if Pos(',', EmailNFe) > 0 then
       EmailNFe := Copy(EmailNFe, 0, Pos(',', EmailNFe)-1);
     if Pos(',', EmailBoleto) > 0 then
       EmailBoleto := Copy(EmailBoleto, 0, Pos(',', EmailBoleto)-1);
+    //separados por ;
+    if Pos(';', Email) > 0 then
+      Email := Copy(Email, 0, Pos(';', Email)-1);
+    if Pos(';', EmailNFe) > 0 then
+      EmailNFe := Copy(EmailNFe, 0, Pos(';', EmailNFe)-1);
+    if Pos(';', EmailBoleto) > 0 then
+      EmailBoleto := Copy(EmailBoleto, 0, Pos(';', EmailBoleto)-1);
+    //separados por espaço vazio
+    if Pos(' ', Email) > 0 then
+      Email := Copy(Email, 0, Pos(' ', Email)-1);
+    if Pos(' ', EmailNFe) > 0 then
+      EmailNFe := Copy(EmailNFe, 0, Pos(' ', EmailNFe)-1);
+    if Pos(' ', EmailBoleto) > 0 then
+      EmailBoleto := Copy(EmailBoleto, 0, Pos(' ', EmailBoleto)-1);
+
 
     if ((IsFornecedor) and (IsCliente)) then
       Tipo := 3
     else if (IsCliente) then
       Tipo := 1
-    else
-      Tipo := 2;
+    else if (IsFornecedor) then
+      Tipo := 2
+    else if (IsFuncionario) then
+      Tipo := 4
+    else if (IsTransportador) then
+      Tipo := 5;
 
     if TipoEstabelecimento = EmptyStr then TipoEstabelecimento := 'NULL';
     if CondicaoPagamento = EmptyStr then CondicaoPagamento := 'NULL';
@@ -485,7 +520,7 @@ begin
   end;
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
-    SalvarArquivo;
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '06-clifor.txt');
 end;
 
 procedure TFrmPrincipal.BtnCliforTabelaPrecoClick(Sender: TObject);
@@ -498,6 +533,8 @@ begin
   FDQuery1.SQL.Add('terceiros_dados_emp.id_terceiro as clifor, ');
   FDQuery1.SQL.Add('terceiros_dados_emp.id_tabela_precos as tabelapreco ');
   FDQuery1.SQL.Add('from terceiros_dados_emp where id_tabela_precos > 0');
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('where terceiros_dados_emp.id_empresa = %s'),[EditIdEmpresa.Text]);
   SQLInsert := 'INSERT INTO CLIFORTABELAPRECO (CLIFOR, TABELAPRECO, PADRAO) VALUES (%d, %d, %s);';
 
   VerificaConexao;
@@ -520,7 +557,7 @@ begin
   end;
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
-    SalvarArquivo;
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '17-clifortabelapreco.txt');
 end;
 
 procedure TFrmPrincipal.BtnCondicaoPagamentoClick(Sender: TObject);
@@ -532,6 +569,8 @@ var
 begin
   FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select * from formas_parcelamento');
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('where id_empresa = %s',[EditIdEmpresa.Text]));
   SQLInsert := 'INSERT INTO CONDICAOPAGAMENTO (CODIGO, NOME, PRIMEIROVCTO, VEZES, INTERVALO, EXPORTAR, ATIVO, COMISSAO, LIBERARVENDAPENDENCIA, INDICADOR, '+
                'DIVIDIRVALORST, LIBERARVENDALIMITE, CONCEDERDESCONTO, INDICADORNFE, SOLICITARPRIMEIROVENCIMENTO, INDICE, VALORMINIMO, BLOQUEARCLIFORAUTOMATICAMENTE) '+
                'VALUES (%d, %s, %d, %d, %d, %s, %s, %d, %s, %s, %s, %s, %s, %s, %s, %d, %d, %s);';
@@ -564,7 +603,7 @@ begin
   end;
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
-    SalvarArquivo;
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '01-condicaopagamento.txt');
 end;
 
 procedure TFrmPrincipal.BtnConectarClick(Sender: TObject);
@@ -574,84 +613,13 @@ begin
 end;
 
 procedure TFrmPrincipal.BtnContasAPagarClick(Sender: TObject);
-var
-  SQLInsert : String;
-  Clifor : Integer;
-  Documento, Ordem, DataEmissao, DataVcto, DataBaixa, ValorTitulo, Obs, Juros, Desconto, ValorDevedor, DataAgendamento, Multa, ValorBaixa, Parcela: String;
 begin
-  FDQuery1.SQL.Clear;
-  FDQuery1.SQL.Add('select ');
-  FDQuery1.SQL.Add('contas_pagar.id_terceiro as clifor, ');
-  FDQuery1.SQL.Add('contas_pagar.documento as documento, ');
-  FDQuery1.SQL.Add('contas_pagar.tipo_doc || contas_pagar.documento as ordem, ');
-  FDQuery1.SQL.Add('contas_pagar.referencia as parcela, ');
-  FDQuery1.SQL.Add('contas_pagar.data_emissao as dataemissao, ');
-  FDQuery1.SQL.Add('contas_pagar.data_vencimento as datavcto, ');
-  FDQuery1.SQL.Add('contas_pagar.data_quitacao as databaixa, ');
-  FDQuery1.SQL.Add('contas_pagar.valor as valortitulo, ');
-  FDQuery1.SQL.Add('contas_pagar.valor_total_amortizado as valorbaixa, ');
-  FDQuery1.SQL.Add('contas_pagar.observacao as obs, ');
-  FDQuery1.SQL.Add('contas_pagar.valor_total_juros as juro, ');
-  FDQuery1.SQL.Add('contas_pagar.valor_total_desconto as desconto, ');
-  FDQuery1.SQL.Add('contas_pagar.valor_devedor as valordevedor, ');
-  FDQuery1.SQL.Add('contas_pagar.data_agend_pagto as agendamento, ');
-  FDQuery1.SQL.Add('contas_pagar.valor_total_multa as multa ');
-  FDQuery1.SQL.Add('from contas_pagar ');
-    SQLInsert := 'INSERT INTO FINANCEIRO (TIPO, FILIAL, CLIFOR, DOCUMENTO, ORDEM, DATAEMISSAO, DATAVCTO, DATABAIXA, VALOR, OBS, JURO, DESCONTO, VALORBAIXA, DATAAGENDAMENTO, MULTA,  '+
-                 'IMPRIMIR, IMPRESSO) VALUES (%s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);';
-  VerificaConexao;
-  AbreQuery;
-  AjustaGauge;
-  ListBox1.Clear;
-  if CheckBoxInserirDeleteAntes.Checked then
-  begin
-    ListBox1.Items.Add('DELETE FROM FINANCEIRO FIN WHERE TIPO = ''D'' AND FIN.ORDEM NOT IN (SELECT OC.ORDEM FROM OCORRENCIAFINANCEIRO OC WHERE OC.ORDEM = FIN.ORDEM AND OC.CLIFOR = FIN.CLIFOR '+
-                       'AND OC.FILIAL = FIN.FILIAL AND OC.DATAEMISSAO = FIN.DATAEMISSAO); COMMIT;');
-  end;
-  while not FDQuery1.Eof do
-  begin
-    Clifor := FDQuery1.FieldByName('clifor').AsInteger;
-    Documento := Numericos(FDQuery1.FieldByName('documento').AsString);
-    Ordem := FDQuery1.FieldByName('ordem').AsString;
-    Parcela := FDQuery1.FieldByName('parcela').AsString;
-    DataEmissao := AjustaData(FDQuery1.FieldByName('dataemissao').AsString);
-    DataVcto := AjustaData(FDQuery1.FieldByName('datavcto').AsString);
-    DataBaixa := AjustaData(FDQuery1.FieldByName('databaixa').AsString);
-    ValorTitulo := StringReplace(FDQuery1.FieldByName('valortitulo').AsString,',','.',[rfReplaceAll]);
-    Valorbaixa := StringReplace(FDQuery1.FieldByName('valorbaixa').AsString,',','.',[rfReplaceAll]);
-    Obs := FDQuery1.FieldByName('obs').AsString;
-    Juros := StringReplace(FDQuery1.FieldByName('juro').AsString,',','.',[rfReplaceAll]);
-    Desconto := StringReplace(FDQuery1.FieldByName('desconto').AsString,',','.',[rfReplaceAll]);
-    ValorDevedor := StringReplace(FDQuery1.FieldByName('valordevedor').AsString,',','.',[rfReplaceAll]);
-    DataAgendamento := AjustaData(FDQuery1.FieldByName('agendamento').AsString);
-    Multa := StringReplace(FDQuery1.FieldByName('multa').AsString,',','.',[rfReplaceAll]);
+  GerarContasAPagar(False);
+end;
 
-
-    if (FDQuery1.FieldByName('datavcto').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) then
-      DataVcto := DataEmissao;
-    if (FDQuery1.FieldByName('agendamento').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) then
-      DataAgendamento := DataEmissao;
-
-    Ordem := Ordem + '-' + Parcela;
-
-    if ValorBaixa = '0.00' then
-    begin
-      ValorBaixa := 'NULL';
-      ValorTitulo := ValorDevedor;
-    end;
-    if Juros = '0.00' then Juros := 'NULL';
-    if Desconto = '0.00' then Desconto := 'NULL';
-    if Multa = '0.00' then Multa := 'NULL';
-
-    ListBox1.Items.Add(Format(SQLInsert,[QuotedStr('D'), 1, Clifor, Documento, QuotedStr(Ordem), DataEmissao, DataVcto, DataBaixa, ValorTitulo, QuotedStr(Obs), Juros, Desconto,
-                       ValorBaixa, DataAgendamento, Multa, cNao, cNao]));
-
-    FDQuery1.Next;
-    Gauge1.AddProgress(1);
-  end;
-  SetHorizontalScrollBar(ListBox1);
-  if CheckBoxSalvarAutomaticamente.Checked then
-    SalvarArquivo;
+procedure TFrmPrincipal.BtnContasPagarProcedureClick(Sender: TObject);
+begin
+  GerarContasAPagar(True);
 end;
 
 procedure TFrmPrincipal.BtnContasReceberClick(Sender: TObject);
@@ -678,6 +646,8 @@ begin
   FDQuery1.SQL.Add('contas_receber.data_agend_pagto as agendamento, ');
   FDQuery1.SQL.Add('contas_receber.valor_total_multa as multa ');
   FDQuery1.SQL.Add('from contas_receber ');
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('and contas_receber.id_empresa = %s',[EditIdEmpresa.Text]));
     SQLInsert := 'INSERT INTO FINANCEIRO (TIPO, FILIAL, CLIFOR, DOCUMENTO, ORDEM, DATAEMISSAO, DATAVCTO, DATABAIXA, VALOR, OBS, JURO, DESCONTO, VALORBAIXA, DATAAGENDAMENTO, MULTA,  '+
                  'IMPRIMIR, IMPRESSO) VALUES (%s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);';
   VerificaConexao;
@@ -692,8 +662,8 @@ begin
   while not FDQuery1.Eof do
   begin
     Clifor := FDQuery1.FieldByName('clifor').AsInteger;
-    Documento := Numericos(FDQuery1.FieldByName('documento').AsString);
-    Ordem := FDQuery1.FieldByName('ordem').AsString;
+    Documento := Copy(Numericos(FDQuery1.FieldByName('documento').AsString),0,9);
+    Ordem := Copy(FDQuery1.FieldByName('ordem').AsString,0,18);
     Parcela := FDQuery1.FieldByName('parcela').AsString;
     DataEmissao := AjustaData(FDQuery1.FieldByName('dataemissao').AsString);
     DataVcto := AjustaData(FDQuery1.FieldByName('datavcto').AsString);
@@ -712,6 +682,8 @@ begin
       DataVcto := DataEmissao;
     if (FDQuery1.FieldByName('agendamento').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) then
       DataAgendamento := DataEmissao;
+    if (FDQuery1.FieldByName('databaixa').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) then
+      DataBaixa := DataEmissao;
 
     Ordem := Ordem + '-' + Parcela;
 
@@ -732,7 +704,7 @@ begin
   end;
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
-    SalvarArquivo;
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '19-contasreceber.txt');
 end;
 
 procedure TFrmPrincipal.BtnDesconectarClick(Sender: TObject);
@@ -758,6 +730,8 @@ begin
   FDQuery1.SQL.Add('produtos_dados_emp.exporta_pda as exportar ');
   FDQuery1.SQL.Add('from produtos ');
   FDQuery1.SQL.Add('left join produtos_dados_emp on produtos_dados_emp.id_produto = produtos.id ');
+  if EditIdEmpresa <> EmptyStr then
+    FDQuery1.SQL.Add(Format('where produtos.id_empresa = %s'),[EditIdEmpresa.Text]);
   SQLUpdate := 'UPDATE ESTOQUE SET TIPOITEM = %d, VALORMEDIO = %s, VALORCUSTOTABELA = %s, VALORCUSTO = %s, VENDA = %s, EXPORTAR = %s WHERE FILIAL = 1 AND PRODUTO = %d;';
 
   VerificaConexao;
@@ -781,7 +755,7 @@ begin
   end;
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
-    SalvarArquivo;
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '14-estoque.txt');
 end;
 
 procedure TFrmPrincipal.BtnFuncionarioClick(Sender: TObject);
@@ -859,31 +833,51 @@ begin
   end;
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
-    SalvarArquivo;
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '05-funcionario.txt');
 end;
 
 procedure TFrmPrincipal.BtnGerarTodosClick(Sender: TObject);
 begin
   CheckBoxSalvarAutomaticamente.Checked := True;
+  Application.ProcessMessages;
   BtnCondicaoPagamentoClick(Self);
+  Application.ProcessMessages;
   BtnTipoEstabelecimentoClick(Self);
+  Application.ProcessMessages;
   BtnBairroClick(Self);
+  Application.ProcessMessages;
   BtnCidadeClick(Self);
+  Application.ProcessMessages;
   BtnFuncionarioClick(Self);
+  Application.ProcessMessages;
   BtnCliforClick(Self);
+  Application.ProcessMessages;
   BtnUnidadeMedidaClick(Self);
+  Application.ProcessMessages;
   BtnGrupoClick(Self);
+  Application.ProcessMessages;
   BtnTipoProdutoClick(Self);
+  Application.ProcessMessages;
   BtnMarcaClick(Self);
+  Application.ProcessMessages;
   BtnClassificacaoClick(Self);
+  Application.ProcessMessages;
   BtnProdutoClick(Self);
+  Application.ProcessMessages;
   BtnProdutoCliforClick(Self);
+  Application.ProcessMessages;
   BtnEstoqueClick(Self);
+  Application.ProcessMessages;
   BtnTabelaPrecoClick(Self);
+  Application.ProcessMessages;
   BtnItemTabelaPrecoClick(Self);
+  Application.ProcessMessages;
   BtnCliforTabelaPrecoClick(Self);
+  Application.ProcessMessages;
   BtnContasAPagarClick(Self);
+  Application.ProcessMessages;
   BtnContasReceberClick(Self);
+  Application.ProcessMessages;
 end;
 
 procedure TFrmPrincipal.BtnGrupoClick(Sender: TObject);
@@ -917,7 +911,7 @@ begin
   end;
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
-    SalvarArquivo;
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '08-grupo.txt');
 end;
 
 procedure TFrmPrincipal.BtnItemTabelaPrecoClick(Sender: TObject);
@@ -928,6 +922,8 @@ var
 begin
   FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select * from produtos_precos');
+  if EditIdEmpresa <> EmptyStr then
+    FDQuery1.SQL.Add(Format('where produtos_precos.id_tabela in (select id from tabelas_precos where tabelas_precos.id_empresa = %s'),[EditIdEmpresa.Text]);
   SQLUpdate := 'UPDATE ITEMTABELAPRECO SET VALORVENDA = %s, VALORMINIMO = %s WHERE TABELAPRECO = %d AND PRODUTO = %d;';
 
   VerificaConexao;
@@ -948,7 +944,7 @@ begin
   end;
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
-    SalvarArquivo;
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '16-itemtabelapreco.txt');
 end;
 
 procedure TFrmPrincipal.BtnMarcaClick(Sender: TObject);
@@ -981,7 +977,7 @@ begin
   end;
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
-    SalvarArquivo;
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '10-marca.txt');
 end;
 
 procedure TFrmPrincipal.BtnProdutoClick(Sender: TObject);
@@ -1009,6 +1005,8 @@ begin
   FDQuery1.SQL.Add('from produtos ');
   FDQuery1.SQL.Add('inner join unidades on unidades.id = produtos.id_unidade ');
   FDQuery1.SQL.Add('left join classif_fiscal on classif_fiscal.id = produtos.id_classif_fiscal ');
+  if EditIdEmpresa <> EmptyStr then
+    FDQuery1.SQL.Add(Format('where produtos.id_empresa = %s'),[EditIdEmpresa.Text]);
 
   SQLInsert := 'INSERT INTO PRODUTO (CODIGO, NOME, BARRAS, TIPOPRODUTO, MARCA, CLASSIFICACAO, PESOLIQUIDO, PESOBRUTO, DATA, UNCOMPRA, CODIGONCM, ORDEM, GRUPO, CEST, '+
                'PESOEMBALAGEM, QTDEREFERENCIA, UNREFERENCIA, QTDEMULTIPLAEMBALAGEM, VOLUME, PROFUNDIDADE, LARGURA, ALTURA, VENDACONTROLADA, QTDETROCA, UNTROCA, QTDEMULTIPLA, '+
@@ -1047,7 +1045,7 @@ begin
     if Marca = EmptyStr then Marca := 'NULL';
     if Classificacao = EmptyStr then Classificacao := 'NULL';
     if Grupo = 0 then Grupo := 9999;
-    if Length(Barras) = 3 then Barras := IntToStr(Codigo);
+    if ((Length(Barras) = 3) or (Length(Barras) = 4)) then Barras := IntToStr(Codigo);
     
 
     ListBox1.Items.Add(Format(SQLInsert,[Codigo, QuotedStr(Nome), QuotedStr(Barras), TipoProduto, Marca, Classificacao, PesoLiquido, PesoBruto, Data, QuotedStr(UnCompra),
@@ -1059,7 +1057,7 @@ begin
   end;
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
-    SalvarArquivo;
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '12-produto.txt');
 end;
 
 procedure TFrmPrincipal.BtnProdutoCliforClick(Sender: TObject);
@@ -1072,6 +1070,8 @@ begin
   FDQuery1.SQL.Add('produtos_fornecedores.id_produto as produto, ');
   FDQuery1.SQL.Add('produtos_fornecedores.id_terceiro as clifor ');
   FDQuery1.SQL.Add('from produtos_fornecedores');
+  if EditIdEmpresa <> EmptyStr then
+    FDQuery1.SQL.Add(Format('where produtos_fornecedores.id_empresa = %s'),[EditIdEmpresa.Text]);
   SQLUpdate := 'UPDATE PRODUTO SET CLIFOR = %d WHERE CODIGO = %d;';
 
   VerificaConexao;
@@ -1090,7 +1090,7 @@ begin
   end;
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
-    SalvarArquivo;
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '13-produtoclifor.txt');
 end;
 
 procedure TFrmPrincipal.BtnSalvarClick(Sender: TObject);
@@ -1106,6 +1106,8 @@ var
 begin
   FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select * from tabelas_precos');
+  if EditIdEmpresa <> EmptyStr then
+    FDQuery1.SQL.Add(Format('where tabelas_precos.id_empresa = %s'),[EditIdEmpresa.Text]);
   SQLInsert := 'INSERT INTO TABELAPRECO (CODIGO, FILIAL, NOME, INDICE, BASE, PROMOCAO, DATAINICIAL, DATAFINAL, EXPORTAR, VALORMINIMO, COMISSAO, ATUALIZARVALORVENDA, ' +
                'ATUALIZARVALORMINIMO, ATUALIZARDESCONTOMAXIMO, BLOQUEAR, VINCULARCLIFORAUTOMATICAMENTE, COMISSAOFIXA, INCLUIRPRODUTOAUTOMATICO, VALORMAXIMO, VALORMINIMOINICIAL) '+
                'VALUES (%d, %d, %s, %d, %s, %s, %s, %s, %s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %d, %d);';
@@ -1132,7 +1134,7 @@ begin
   end;
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
-    SalvarArquivo;
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '15-tabelapreco.txt');
 end;
 
 procedure TFrmPrincipal.BtnTipoEstabelecimentoClick(Sender: TObject);
@@ -1156,7 +1158,7 @@ begin
   while not FDQuery1.Eof do
   begin
     Codigo := FDQuery1.FieldByName('id').AsInteger;
-    Nome := FDQuery1.FieldByName('desc_tipologia').AsString;
+    Nome := Copy(FDQuery1.FieldByName('desc_tipologia').AsString,0,40);
 
     ListBox1.Items.Add(Format(SQLInsert,[Codigo, QuotedStr(Nome), 1, cSim, cSim, cSim]));
 
@@ -1165,7 +1167,7 @@ begin
   end;
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
-    SalvarArquivo;
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '02-tipoestabelecimento.txt');
 end;
 
 procedure TFrmPrincipal.BtnTipoProdutoClick(Sender: TObject);
@@ -1197,7 +1199,7 @@ begin
   end;
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
-    SalvarArquivo;
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '09-tipoproduto.txt');
 end;
 
 procedure TFrmPrincipal.BtnUnidadeMedidaClick(Sender: TObject);
@@ -1234,7 +1236,7 @@ begin
   end;
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
-    SalvarArquivo;
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '07-unidademedida.txt');
 end;
 
 procedure TFrmPrincipal.CarregarIni;
@@ -1243,6 +1245,8 @@ var
 begin
   INI := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'conversor.ini');
   EditDataBase.Text := INI.ReadString('Geral', 'database', EmptyStr);
+  EditCaminhoScripts.Text := INI.ReadString('Geral', 'caminhoscripts', EmptyStr);
+  EditIdEmpresa.Text := INI.ReadString('Geral', 'idempresa', EmptyStr);
   CheckBoxInserirDeleteAntes.Checked := INI.ReadBool('Geral', 'inserirdelete', True);
   CheckBoxSalvarAutomaticamente.Checked := INI.ReadBool('Geral', 'salvarautomaticamente', True);
 end;
@@ -1275,6 +1279,100 @@ begin
   AjustaBotoesConexao;
 end;
 
+procedure TFrmPrincipal.GerarContasAPagar(UsaProcedure: Boolean);
+var
+  SQLInsert : String;
+  Clifor : Integer;
+  Documento, Ordem, DataEmissao, DataVcto, DataBaixa, ValorTitulo, Obs, Juros, Desconto, ValorDevedor, DataAgendamento, Multa, ValorBaixa, Parcela, Id: String;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select ');
+  FDQuery1.SQL.Add('contas_pagar.id as id, ');
+  FDQuery1.SQL.Add('contas_pagar.id_terceiro as clifor, ');
+  FDQuery1.SQL.Add('contas_pagar.documento as documento, ');
+  FDQuery1.SQL.Add('contas_pagar.tipo_doc || contas_pagar.documento as ordem, ');
+  FDQuery1.SQL.Add('contas_pagar.referencia as parcela, ');
+  FDQuery1.SQL.Add('contas_pagar.data_emissao as dataemissao, ');
+  FDQuery1.SQL.Add('contas_pagar.data_vencimento as datavcto, ');
+  FDQuery1.SQL.Add('contas_pagar.data_quitacao as databaixa, ');
+  FDQuery1.SQL.Add('contas_pagar.valor as valortitulo, ');
+  FDQuery1.SQL.Add('contas_pagar.valor_total_amortizado as valorbaixa, ');
+  FDQuery1.SQL.Add('contas_pagar.observacao as obs, ');
+  FDQuery1.SQL.Add('contas_pagar.valor_total_juros as juro, ');
+  FDQuery1.SQL.Add('contas_pagar.valor_total_desconto as desconto, ');
+  FDQuery1.SQL.Add('contas_pagar.valor_devedor as valordevedor, ');
+  FDQuery1.SQL.Add('contas_pagar.data_agend_pagto as agendamento, ');
+  FDQuery1.SQL.Add('contas_pagar.valor_total_multa as multa ');
+  FDQuery1.SQL.Add('from contas_pagar ');
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('and contas_pagar.id_empresa = %s',[EditIdEmpresa.Text]));
+  FDQuery1.SQL.Add('order by contas_pagar.id ');
+  SQLInsert := 'INSERT INTO FINANCEIRO (TIPO, FILIAL, CLIFOR, DOCUMENTO, ORDEM, DATAEMISSAO, DATAVCTO, DATABAIXA, VALOR, OBS, JURO, DESCONTO, VALORBAIXA, DATAAGENDAMENTO, MULTA,  '+
+               'IMPRIMIR, IMPRESSO) VALUES (%s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);';
+  if UsaProcedure then
+    SQLInsert := 'EXECUTE PROCEDURE CUSTOM_SET_FINANCEIRO(%s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);';
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  if CheckBoxInserirDeleteAntes.Checked then
+  begin
+    ListBox1.Items.Add('DELETE FROM FINANCEIRO FIN WHERE TIPO = ''D'' AND FIN.ORDEM NOT IN (SELECT OC.ORDEM FROM OCORRENCIAFINANCEIRO OC WHERE OC.ORDEM = FIN.ORDEM AND OC.CLIFOR = FIN.CLIFOR '+
+                       'AND OC.FILIAL = FIN.FILIAL AND OC.DATAEMISSAO = FIN.DATAEMISSAO); COMMIT;');
+  end;
+  while not FDQuery1.Eof do
+  begin
+    Id := FDQuery1.FieldByName('id').AsString;
+    Clifor := FDQuery1.FieldByName('clifor').AsInteger;
+    Documento := Copy(Numericos(FDQuery1.FieldByName('documento').AsString),0,9);
+    Ordem := Copy(FDQuery1.FieldByName('ordem').AsString,0,18);
+    Parcela := FDQuery1.FieldByName('parcela').AsString;
+    DataEmissao := AjustaData(FDQuery1.FieldByName('dataemissao').AsString);
+    DataVcto := AjustaData(FDQuery1.FieldByName('datavcto').AsString);
+    DataBaixa := AjustaData(FDQuery1.FieldByName('databaixa').AsString);
+    ValorTitulo := StringReplace(FDQuery1.FieldByName('valortitulo').AsString,',','.',[rfReplaceAll]);
+    Valorbaixa := StringReplace(FDQuery1.FieldByName('valorbaixa').AsString,',','.',[rfReplaceAll]);
+    Obs := FDQuery1.FieldByName('obs').AsString;
+    Juros := StringReplace(FDQuery1.FieldByName('juro').AsString,',','.',[rfReplaceAll]);
+    Desconto := StringReplace(FDQuery1.FieldByName('desconto').AsString,',','.',[rfReplaceAll]);
+    ValorDevedor := StringReplace(FDQuery1.FieldByName('valordevedor').AsString,',','.',[rfReplaceAll]);
+    DataAgendamento := AjustaData(FDQuery1.FieldByName('agendamento').AsString);
+    Multa := StringReplace(FDQuery1.FieldByName('multa').AsString,',','.',[rfReplaceAll]);
+
+
+    if (FDQuery1.FieldByName('datavcto').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) then
+      DataVcto := DataEmissao;
+    if (FDQuery1.FieldByName('agendamento').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) then
+      DataAgendamento := DataEmissao;
+    if (FDQuery1.FieldByName('databaixa').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) then
+      DataBaixa := DataEmissao;
+    Ordem := Ordem + '-' + Parcela;
+
+    if ValorBaixa = '0.00' then
+    begin
+      ValorBaixa := 'NULL';
+      ValorTitulo := ValorDevedor;
+    end;
+    if Juros = '0.00' then Juros := 'NULL';
+    if Desconto = '0.00' then Desconto := 'NULL';
+    if Multa = '0.00' then Multa := 'NULL';
+    if Documento = EmptyStr then Documento := 'NULL';
+
+    if UsaProcedure then
+      ListBox1.Items.Add(Format(SQLInsert,[QuotedStr('D'), 1, Clifor, Documento, QuotedStr(Ordem), DataEmissao, DataVcto, DataBaixa, ValorTitulo, QuotedStr(Obs), Juros, Desconto,
+                         ValorBaixa, DataAgendamento, Multa, cNao, cNao, QuotedStr(Id)]))
+    else
+      ListBox1.Items.Add(Format(SQLInsert,[QuotedStr('D'), 1, Clifor, Documento, QuotedStr(Ordem), DataEmissao, DataVcto, DataBaixa, ValorTitulo, QuotedStr(Obs), Juros, Desconto,
+                         ValorBaixa, DataAgendamento, Multa, cNao, cNao]));
+
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+  SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '18-contaspagar.txt');
+end;
+
 function TFrmPrincipal.Numericos(st: string): string;
 const
      Nums = ['0'..'9'];
@@ -1295,12 +1393,19 @@ begin
     ListBox1.Items.SaveToFile(SaveTextFileDialog1.FileName);
 end;
 
+procedure TFrmPrincipal.SalvarArquivoAutomatico(Caminho: String);
+begin
+  ListBox1.Items.SaveToFile(Caminho);
+end;
+
 procedure TFrmPrincipal.SalvarIni;
 var
   INI : TIniFile;
 begin
   INI := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'conversor.ini');
   INI.WriteString('Geral', 'database', EditDatabase.Text);
+  INI.WriteString('Geral', 'caminhoscripts', EditCaminhoScripts.Text);
+  INI.WriteString('Geral', 'idempresa', EditIdEmpresa.Text);
   INI.WriteBool('Geral', 'inserirdelete', CheckBoxInserirDeleteAntes.Checked);
   INI.WriteBool('Geral', 'salvarautomaticamente', CheckBoxSalvarAutomaticamente.Checked);
 end;
