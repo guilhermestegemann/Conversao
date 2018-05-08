@@ -273,7 +273,7 @@ end;
 procedure TFrmPrincipal.BtnCliforClick(Sender: TObject);
 var
   SQLInsertClifor, SQLInsertCliforContato, SQLInsertFuncionarioClifor : String;
-  Codigo, Cidade, IndicadorIE, Vendedor, Tipo : Integer;
+  Codigo, Cidade, IndicadorIE, Vendedor, Tipo, Filial : Integer;
   Fantasia, Nome, CNPJ, IE, DataCadastro, DataNascimento, NomePai, NomeMae, Contato, Endereco, Numero, NomeBairro, Complemento, Cep, Telefone, Celular,
   Email, EmailNFe, EmailBoleto, Simples, DataMovimento, DataInativado, Obs, LimiteCredito, TipoEstabelecimento, CondicaoPagamento,
   EnviarNFe, EnviarBoleto : String;
@@ -282,6 +282,7 @@ begin
   FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select ');
   FDQuery1.SQL.Add('terceiros.tipo_fornecedor as isfornecedor, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.id_empresa as filial, ');
   FDQuery1.SQL.Add('terceiros.tipo_cliente as iscliente, ');
   FDQuery1.SQL.Add('terceiros.tipo_funcionario as isfuncionario, ');
   FDQuery1.SQL.Add('terceiros.tipo_transportadora as istransportador, ');
@@ -352,6 +353,7 @@ begin
     IsCliente := FDQuery1.FieldByName('iscliente').AsBoolean;
     IsFuncionario := FDQuery1.FieldByName('isfuncionario').AsBoolean;
     IsTransportador := FDQuery1.FieldByName('istransportador').AsBoolean;
+    Filial := FDQuery1.FieldByName('filial').AsInteger;
     Codigo := FDQuery1.FieldByName('codigo').AsInteger;
     Fantasia := Copy(FDQuery1.FieldByName('fantasia').AsString, 0, 60);
     Nome := Copy(FDQuery1.FieldByName('nome').AsString, 0, 60);
@@ -424,7 +426,7 @@ begin
     //insert clifor
     ListBox1.Items.Add(Format(SQLInsertClifor,[Codigo, QuotedStr(Fantasia), QuotedStr(Nome), QuotedStr(Cnpj), QuotedStr(IE), DataCadastro, DataNascimento, QuotedStr(NomePai),
                      QuotedStr(NomeMae), TipoEstabelecimento, QuotedStr(Endereco), QuotedStr(Numero), Cidade, QuotedStr(NomeBairro), QuotedStr(Complemento), QuotedStr(Cep), QuotedStr(Simples),
-                     IndicadorIE, LimiteCredito, CondicaoPagamento, BooleanToStr(Ativo), DataMovimento, DataInativado, QuotedStr(Obs), 0, cNao, cNao, cNao, cNao, cNao, Tipo, 1, 1]));
+                     IndicadorIE, LimiteCredito, CondicaoPagamento, BooleanToStr(Ativo), DataMovimento, DataInativado, QuotedStr(Obs), 0, cNao, cNao, cNao, cNao, cNao, Tipo, 1, Filial]));
     //insert cliforcontato
     EnviarNFe := QuotedStr('N');
     EnviarBoleto := QuotedStr('N');
@@ -534,7 +536,7 @@ begin
   FDQuery1.SQL.Add('terceiros_dados_emp.id_tabela_precos as tabelapreco ');
   FDQuery1.SQL.Add('from terceiros_dados_emp where id_tabela_precos > 0');
   if EditIdEmpresa.Text <> EmptyStr then
-    FDQuery1.SQL.Add(Format('where terceiros_dados_emp.id_empresa = %s'),[EditIdEmpresa.Text]);
+    FDQuery1.SQL.Add(Format('where terceiros_dados_emp.id_empresa = %s',[EditIdEmpresa.Text]));
   SQLInsert := 'INSERT INTO CLIFORTABELAPRECO (CLIFOR, TABELAPRECO, PADRAO) VALUES (%d, %d, %s);';
 
   VerificaConexao;
@@ -625,12 +627,13 @@ end;
 procedure TFrmPrincipal.BtnContasReceberClick(Sender: TObject);
 var
   SQLInsert : String;
-  Clifor : Integer;
+  Clifor, Filial : Integer;
   Documento, Ordem, DataEmissao, DataVcto, DataBaixa, ValorTitulo, Obs, Juros, Desconto, ValorDevedor, DataAgendamento, Multa, ValorBaixa, Parcela: String;
 begin
   FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select ');
   FDQuery1.SQL.Add('contas_receber.id_terceiro as clifor, ');
+  FDQuery1.SQL.Add('contas_receber.id_empresa as filial, ');
   FDQuery1.SQL.Add('contas_receber.documento as documento, ');
   FDQuery1.SQL.Add('contas_receber.tipo_doc || contas_receber.documento as ordem, ');
   FDQuery1.SQL.Add('contas_receber.referencia as parcela, ');
@@ -661,6 +664,7 @@ begin
   end;
   while not FDQuery1.Eof do
   begin
+    Filial := FDQuery1.FieldByName('filial').AsInteger;
     Clifor := FDQuery1.FieldByName('clifor').AsInteger;
     Documento := Copy(Numericos(FDQuery1.FieldByName('documento').AsString),0,9);
     Ordem := Copy(FDQuery1.FieldByName('ordem').AsString,0,18);
@@ -696,7 +700,7 @@ begin
     if Desconto = '0.00' then Desconto := 'NULL';
     if Multa = '0.00' then Multa := 'NULL';
 
-    ListBox1.Items.Add(Format(SQLInsert,[QuotedStr('C'), 1, Clifor, Documento, QuotedStr(Ordem), DataEmissao, DataVcto, DataBaixa, ValorTitulo, QuotedStr(Obs), Juros, Desconto,
+    ListBox1.Items.Add(Format(SQLInsert,[QuotedStr('C'), Filial, Clifor, Documento, QuotedStr(Ordem), DataEmissao, DataVcto, DataBaixa, ValorTitulo, QuotedStr(Obs), Juros, Desconto,
                        ValorBaixa, DataAgendamento, Multa, cNao, cNao]));
 
     FDQuery1.Next;
@@ -716,12 +720,13 @@ end;
 procedure TFrmPrincipal.BtnEstoqueClick(Sender: TObject);
 var
   SQLUpdate : String;
-  Codigo, TipoItem : Integer;
+  Codigo, TipoItem, Filial : Integer;
   CustoMedio, CustoTabela: String;
   Venda, Exportar : Boolean;
 begin
   FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select ');
+  FDQuery1.SQL.Add('produtos.id_empresa as filial, ');
   FDQuery1.SQL.Add('produtos.id as produto, ');
   FDQuery1.SQL.Add('produtos.tipo as tipoitem, ');
   FDQuery1.SQL.Add('produtos_dados_emp.custo_mpm as customedio, ');
@@ -730,9 +735,9 @@ begin
   FDQuery1.SQL.Add('produtos_dados_emp.exporta_pda as exportar ');
   FDQuery1.SQL.Add('from produtos ');
   FDQuery1.SQL.Add('left join produtos_dados_emp on produtos_dados_emp.id_produto = produtos.id ');
-  if EditIdEmpresa <> EmptyStr then
-    FDQuery1.SQL.Add(Format('where produtos.id_empresa = %s'),[EditIdEmpresa.Text]);
-  SQLUpdate := 'UPDATE ESTOQUE SET TIPOITEM = %d, VALORMEDIO = %s, VALORCUSTOTABELA = %s, VALORCUSTO = %s, VENDA = %s, EXPORTAR = %s WHERE FILIAL = 1 AND PRODUTO = %d;';
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('where produtos.id_empresa = %s',[EditIdEmpresa.Text]));
+  SQLUpdate := 'UPDATE ESTOQUE SET TIPOITEM = %d, VALORMEDIO = %s, VALORCUSTOTABELA = %s, VALORCUSTO = %s, VENDA = %s, EXPORTAR = %s WHERE FILIAL = %d AND PRODUTO = %d;';
 
   VerificaConexao;
   AbreQuery;
@@ -741,6 +746,7 @@ begin
   ListBox1.Items.Add('UPDATE ESTOQUE SET TRIBUTACAOPIS = 1, TRIBUTACAOCOFINS = 1; COMMIT;');
   while not FDQuery1.Eof do
   begin
+    Filial := FDQuery1.FieldByName('filial').AsInteger;
     Codigo := FDQuery1.FieldByName('produto').AsInteger;
     TipoItem := FDQuery1.FieldByName('tipoitem').AsInteger;
     CustoMedio := StringReplace(FDQuery1.FieldByName('customedio').AsString, ',', '.', [rfReplaceAll]);
@@ -748,7 +754,7 @@ begin
     Venda := FDQuery1.FieldByName('venda').AsBoolean;
     Exportar := FDQuery1.FieldByName('exportar').AsBoolean;
 
-    ListBox1.Items.Add(Format(SQLUpdate,[TipoItem, CustoMedio, CustoTabela, CustoTabela, BooleanToStr(Venda), BooleanToStr(Exportar), Codigo]));
+    ListBox1.Items.Add(Format(SQLUpdate,[TipoItem, CustoMedio, CustoTabela, CustoTabela, BooleanToStr(Venda), BooleanToStr(Exportar), Filial, Codigo]));
 
     FDQuery1.Next;
     Gauge1.AddProgress(1);
@@ -922,8 +928,8 @@ var
 begin
   FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select * from produtos_precos');
-  if EditIdEmpresa <> EmptyStr then
-    FDQuery1.SQL.Add(Format('where produtos_precos.id_tabela in (select id from tabelas_precos where tabelas_precos.id_empresa = %s'),[EditIdEmpresa.Text]);
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('where produtos_precos.id_tabela in (select id from tabelas_precos where tabelas_precos.id_empresa = %s',[EditIdEmpresa.Text]));
   SQLUpdate := 'UPDATE ITEMTABELAPRECO SET VALORVENDA = %s, VALORMINIMO = %s WHERE TABELAPRECO = %d AND PRODUTO = %d;';
 
   VerificaConexao;
@@ -1005,8 +1011,8 @@ begin
   FDQuery1.SQL.Add('from produtos ');
   FDQuery1.SQL.Add('inner join unidades on unidades.id = produtos.id_unidade ');
   FDQuery1.SQL.Add('left join classif_fiscal on classif_fiscal.id = produtos.id_classif_fiscal ');
-  if EditIdEmpresa <> EmptyStr then
-    FDQuery1.SQL.Add(Format('where produtos.id_empresa = %s'),[EditIdEmpresa.Text]);
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('where produtos.id_empresa = %s',[EditIdEmpresa.Text]));
 
   SQLInsert := 'INSERT INTO PRODUTO (CODIGO, NOME, BARRAS, TIPOPRODUTO, MARCA, CLASSIFICACAO, PESOLIQUIDO, PESOBRUTO, DATA, UNCOMPRA, CODIGONCM, ORDEM, GRUPO, CEST, '+
                'PESOEMBALAGEM, QTDEREFERENCIA, UNREFERENCIA, QTDEMULTIPLAEMBALAGEM, VOLUME, PROFUNDIDADE, LARGURA, ALTURA, VENDACONTROLADA, QTDETROCA, UNTROCA, QTDEMULTIPLA, '+
@@ -1070,8 +1076,8 @@ begin
   FDQuery1.SQL.Add('produtos_fornecedores.id_produto as produto, ');
   FDQuery1.SQL.Add('produtos_fornecedores.id_terceiro as clifor ');
   FDQuery1.SQL.Add('from produtos_fornecedores');
-  if EditIdEmpresa <> EmptyStr then
-    FDQuery1.SQL.Add(Format('where produtos_fornecedores.id_empresa = %s'),[EditIdEmpresa.Text]);
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('where produtos_fornecedores.id_empresa = %s',[EditIdEmpresa.Text]));
   SQLUpdate := 'UPDATE PRODUTO SET CLIFOR = %d WHERE CODIGO = %d;';
 
   VerificaConexao;
@@ -1101,13 +1107,13 @@ end;
 procedure TFrmPrincipal.BtnTabelaPrecoClick(Sender: TObject);
 var
   SQLInsert : String;
-  Codigo : Integer;
+  Codigo, Filial : Integer;
   Nome, DataInicial : String;
 begin
   FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select * from tabelas_precos');
-  if EditIdEmpresa <> EmptyStr then
-    FDQuery1.SQL.Add(Format('where tabelas_precos.id_empresa = %s'),[EditIdEmpresa.Text]);
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('where tabelas_precos.id_empresa = %s',[EditIdEmpresa.Text]));
   SQLInsert := 'INSERT INTO TABELAPRECO (CODIGO, FILIAL, NOME, INDICE, BASE, PROMOCAO, DATAINICIAL, DATAFINAL, EXPORTAR, VALORMINIMO, COMISSAO, ATUALIZARVALORVENDA, ' +
                'ATUALIZARVALORMINIMO, ATUALIZARDESCONTOMAXIMO, BLOQUEAR, VINCULARCLIFORAUTOMATICAMENTE, COMISSAOFIXA, INCLUIRPRODUTOAUTOMATICO, VALORMAXIMO, VALORMINIMOINICIAL) '+
                'VALUES (%d, %d, %s, %d, %s, %s, %s, %s, %s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %d, %d);';
@@ -1124,10 +1130,11 @@ begin
   while not FDQuery1.Eof do
   begin
     Codigo := FDQuery1.FieldByName('id').AsInteger;
+    Filial := FDQuery1.FieldByName('id_empresa').AsInteger;
     Nome := Copy(FDQuery1.FieldByName('desc_tabela').AsString,0,40);
     DataInicial := AjustaData(FDQuery1.FieldByName('data_criacao').AsString);
 
-    ListBox1.Items.Add(Format(SQLInsert,[Codigo, 1, QuotedStr(Nome), 1, QuotedStr('V'), cNao, DataInicial, QuotedStr('31.12.2020'), cSim, 0, 0, cSim, cSim, cSim, cNao, cNao, cNao, cSim, 0, 0]));
+    ListBox1.Items.Add(Format(SQLInsert,[Codigo, Filial, QuotedStr(Nome), 1, QuotedStr('V'), cNao, DataInicial, QuotedStr('31.12.2020'), cSim, 0, 0, cSim, cSim, cSim, cNao, cNao, cNao, cSim, 0, 0]));
 
     FDQuery1.Next;
     Gauge1.AddProgress(1);
@@ -1282,12 +1289,13 @@ end;
 procedure TFrmPrincipal.GerarContasAPagar(UsaProcedure: Boolean);
 var
   SQLInsert : String;
-  Clifor : Integer;
+  Clifor, Filial : Integer;
   Documento, Ordem, DataEmissao, DataVcto, DataBaixa, ValorTitulo, Obs, Juros, Desconto, ValorDevedor, DataAgendamento, Multa, ValorBaixa, Parcela, Id: String;
 begin
   FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select ');
   FDQuery1.SQL.Add('contas_pagar.id as id, ');
+  FDQuery1.SQL.Add('contas_pagar.id_empresa as filial, ');
   FDQuery1.SQL.Add('contas_pagar.id_terceiro as clifor, ');
   FDQuery1.SQL.Add('contas_pagar.documento as documento, ');
   FDQuery1.SQL.Add('contas_pagar.tipo_doc || contas_pagar.documento as ordem, ');
@@ -1323,6 +1331,7 @@ begin
   while not FDQuery1.Eof do
   begin
     Id := FDQuery1.FieldByName('id').AsString;
+    Filial := FDQuery1.FieldByName('filial').AsInteger;
     Clifor := FDQuery1.FieldByName('clifor').AsInteger;
     Documento := Copy(Numericos(FDQuery1.FieldByName('documento').AsString),0,9);
     Ordem := Copy(FDQuery1.FieldByName('ordem').AsString,0,18);
@@ -1359,10 +1368,10 @@ begin
     if Documento = EmptyStr then Documento := 'NULL';
 
     if UsaProcedure then
-      ListBox1.Items.Add(Format(SQLInsert,[QuotedStr('D'), 1, Clifor, Documento, QuotedStr(Ordem), DataEmissao, DataVcto, DataBaixa, ValorTitulo, QuotedStr(Obs), Juros, Desconto,
+      ListBox1.Items.Add(Format(SQLInsert,[QuotedStr('D'), Filial, Clifor, Documento, QuotedStr(Ordem), DataEmissao, DataVcto, DataBaixa, ValorTitulo, QuotedStr(Obs), Juros, Desconto,
                          ValorBaixa, DataAgendamento, Multa, cNao, cNao, QuotedStr(Id)]))
     else
-      ListBox1.Items.Add(Format(SQLInsert,[QuotedStr('D'), 1, Clifor, Documento, QuotedStr(Ordem), DataEmissao, DataVcto, DataBaixa, ValorTitulo, QuotedStr(Obs), Juros, Desconto,
+      ListBox1.Items.Add(Format(SQLInsert,[QuotedStr('D'), Filial, Clifor, Documento, QuotedStr(Ordem), DataEmissao, DataVcto, DataBaixa, ValorTitulo, QuotedStr(Obs), Juros, Desconto,
                          ValorBaixa, DataAgendamento, Multa, cNao, cNao]));
 
     FDQuery1.Next;

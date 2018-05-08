@@ -158,7 +158,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnClifor: TButton
     Left = 8
-    Top = 229
+    Top = 232
     Width = 166
     Height = 21
     Caption = 'Clifor'
