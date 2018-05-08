@@ -536,7 +536,7 @@ begin
   FDQuery1.SQL.Add('terceiros_dados_emp.id_tabela_precos as tabelapreco ');
   FDQuery1.SQL.Add('from terceiros_dados_emp where id_tabela_precos > 0');
   if EditIdEmpresa.Text <> EmptyStr then
-    FDQuery1.SQL.Add(Format('where terceiros_dados_emp.id_empresa = %s',[EditIdEmpresa.Text]));
+    FDQuery1.SQL.Add(Format('and terceiros_dados_emp.id_empresa = %s',[EditIdEmpresa.Text]));
   SQLInsert := 'INSERT INTO CLIFORTABELAPRECO (CLIFOR, TABELAPRECO, PADRAO) VALUES (%d, %d, %s);';
 
   VerificaConexao;
@@ -650,7 +650,7 @@ begin
   FDQuery1.SQL.Add('contas_receber.valor_total_multa as multa ');
   FDQuery1.SQL.Add('from contas_receber ');
   if EditIdEmpresa.Text <> EmptyStr then
-    FDQuery1.SQL.Add(Format('and contas_receber.id_empresa = %s',[EditIdEmpresa.Text]));
+    FDQuery1.SQL.Add(Format('where contas_receber.id_empresa = %s',[EditIdEmpresa.Text]));
     SQLInsert := 'INSERT INTO FINANCEIRO (TIPO, FILIAL, CLIFOR, DOCUMENTO, ORDEM, DATAEMISSAO, DATAVCTO, DATABAIXA, VALOR, OBS, JURO, DESCONTO, VALORBAIXA, DATAAGENDAMENTO, MULTA,  '+
                  'IMPRIMIR, IMPRESSO) VALUES (%s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);';
   VerificaConexao;
@@ -682,11 +682,11 @@ begin
     Multa := StringReplace(FDQuery1.FieldByName('multa').AsString,',','.',[rfReplaceAll]);
 
 
-    if (FDQuery1.FieldByName('datavcto').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) then
+    if ((FDQuery1.FieldByName('datavcto').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) and (DataVcto <> 'NULL')) then
       DataVcto := DataEmissao;
-    if (FDQuery1.FieldByName('agendamento').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) then
+    if ((FDQuery1.FieldByName('agendamento').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) and (DataAgendamento <> 'NULL')) then
       DataAgendamento := DataEmissao;
-    if (FDQuery1.FieldByName('databaixa').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) then
+    if ((FDQuery1.FieldByName('databaixa').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) and (DataBaixa <> 'NULL')) then
       DataBaixa := DataEmissao;
 
     Ordem := Ordem + '-' + Parcela;
@@ -696,9 +696,12 @@ begin
       ValorBaixa := 'NULL';
       ValorTitulo := ValorDevedor;
     end;
+    if DataBaixa = 'NULL' then
+      ValorTitulo := ValorDevedor;
     if Juros = '0.00' then Juros := 'NULL';
     if Desconto = '0.00' then Desconto := 'NULL';
     if Multa = '0.00' then Multa := 'NULL';
+    if Documento = EmptyStr then Documento := 'NULL';
 
     ListBox1.Items.Add(Format(SQLInsert,[QuotedStr('C'), Filial, Clifor, Documento, QuotedStr(Ordem), DataEmissao, DataVcto, DataBaixa, ValorTitulo, QuotedStr(Obs), Juros, Desconto,
                        ValorBaixa, DataAgendamento, Multa, cNao, cNao]));
@@ -726,7 +729,7 @@ var
 begin
   FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select ');
-  FDQuery1.SQL.Add('produtos.id_empresa as filial, ');
+  FDQuery1.SQL.Add('produtos_dados_emp.id_empresa as filial, ');
   FDQuery1.SQL.Add('produtos.id as produto, ');
   FDQuery1.SQL.Add('produtos.tipo as tipoitem, ');
   FDQuery1.SQL.Add('produtos_dados_emp.custo_mpm as customedio, ');
@@ -736,7 +739,7 @@ begin
   FDQuery1.SQL.Add('from produtos ');
   FDQuery1.SQL.Add('left join produtos_dados_emp on produtos_dados_emp.id_produto = produtos.id ');
   if EditIdEmpresa.Text <> EmptyStr then
-    FDQuery1.SQL.Add(Format('where produtos.id_empresa = %s',[EditIdEmpresa.Text]));
+    FDQuery1.SQL.Add(Format('and produtos_dados_emp.id_empresa = %s',[EditIdEmpresa.Text]));
   SQLUpdate := 'UPDATE ESTOQUE SET TIPOITEM = %d, VALORMEDIO = %s, VALORCUSTOTABELA = %s, VALORCUSTO = %s, VENDA = %s, EXPORTAR = %s WHERE FILIAL = %d AND PRODUTO = %d;';
 
   VerificaConexao;
@@ -929,7 +932,7 @@ begin
   FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select * from produtos_precos');
   if EditIdEmpresa.Text <> EmptyStr then
-    FDQuery1.SQL.Add(Format('where produtos_precos.id_tabela in (select id from tabelas_precos where tabelas_precos.id_empresa = %s',[EditIdEmpresa.Text]));
+    FDQuery1.SQL.Add(Format('where produtos_precos.id_tabela in (select id from tabelas_precos where tabelas_precos.id_empresa = %s)',[EditIdEmpresa.Text]));
   SQLUpdate := 'UPDATE ITEMTABELAPRECO SET VALORVENDA = %s, VALORMINIMO = %s WHERE TABELAPRECO = %d AND PRODUTO = %d;';
 
   VerificaConexao;
@@ -1011,8 +1014,8 @@ begin
   FDQuery1.SQL.Add('from produtos ');
   FDQuery1.SQL.Add('inner join unidades on unidades.id = produtos.id_unidade ');
   FDQuery1.SQL.Add('left join classif_fiscal on classif_fiscal.id = produtos.id_classif_fiscal ');
-  if EditIdEmpresa.Text <> EmptyStr then
-    FDQuery1.SQL.Add(Format('where produtos.id_empresa = %s',[EditIdEmpresa.Text]));
+  //if EditIdEmpresa.Text <> EmptyStr then
+  //  FDQuery1.SQL.Add(Format('where produtos.id_empresa = %s',[EditIdEmpresa.Text]));
 
   SQLInsert := 'INSERT INTO PRODUTO (CODIGO, NOME, BARRAS, TIPOPRODUTO, MARCA, CLASSIFICACAO, PESOLIQUIDO, PESOBRUTO, DATA, UNCOMPRA, CODIGONCM, ORDEM, GRUPO, CEST, '+
                'PESOEMBALAGEM, QTDEREFERENCIA, UNREFERENCIA, QTDEMULTIPLAEMBALAGEM, VOLUME, PROFUNDIDADE, LARGURA, ALTURA, VENDACONTROLADA, QTDETROCA, UNTROCA, QTDEMULTIPLA, '+
@@ -1313,7 +1316,7 @@ begin
   FDQuery1.SQL.Add('contas_pagar.valor_total_multa as multa ');
   FDQuery1.SQL.Add('from contas_pagar ');
   if EditIdEmpresa.Text <> EmptyStr then
-    FDQuery1.SQL.Add(Format('and contas_pagar.id_empresa = %s',[EditIdEmpresa.Text]));
+    FDQuery1.SQL.Add(Format('where contas_pagar.id_empresa = %s',[EditIdEmpresa.Text]));
   FDQuery1.SQL.Add('order by contas_pagar.id ');
   SQLInsert := 'INSERT INTO FINANCEIRO (TIPO, FILIAL, CLIFOR, DOCUMENTO, ORDEM, DATAEMISSAO, DATAVCTO, DATABAIXA, VALOR, OBS, JURO, DESCONTO, VALORBAIXA, DATAAGENDAMENTO, MULTA,  '+
                'IMPRIMIR, IMPRESSO) VALUES (%s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);';
@@ -1349,11 +1352,11 @@ begin
     Multa := StringReplace(FDQuery1.FieldByName('multa').AsString,',','.',[rfReplaceAll]);
 
 
-    if (FDQuery1.FieldByName('datavcto').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) then
+    if ((FDQuery1.FieldByName('datavcto').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) and (DataVcto <> 'NULL')) then
       DataVcto := DataEmissao;
-    if (FDQuery1.FieldByName('agendamento').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) then
+    if ((FDQuery1.FieldByName('agendamento').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) and (DataAgendamento <> 'NULL')) then
       DataAgendamento := DataEmissao;
-    if (FDQuery1.FieldByName('databaixa').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) then
+    if ((FDQuery1.FieldByName('databaixa').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) and (DataBaixa <> 'NULL')) then
       DataBaixa := DataEmissao;
     Ordem := Ordem + '-' + Parcela;
 
@@ -1362,6 +1365,8 @@ begin
       ValorBaixa := 'NULL';
       ValorTitulo := ValorDevedor;
     end;
+    if DataBaixa = 'NULL' then
+      ValorTitulo := ValorDevedor;
     if Juros = '0.00' then Juros := 'NULL';
     if Desconto = '0.00' then Desconto := 'NULL';
     if Multa = '0.00' then Multa := 'NULL';
