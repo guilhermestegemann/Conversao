@@ -1,0 +1,11 @@
+﻿update produto set codigo =	1	 where barras = '7898953148015';
+update produto set codigo =	1279 where barras = '7898953148169';
+update produto set codigo =	1384 where barras = '7898953148176';
+update produto set codigo =	1438 where barras = '7898953148213';
+update produto set codigo =	1557 where barras = '7898953148220';
+update produto set codigo =	1558 where barras = '7898953148237';
+update produto set codigo =	1980 where barras = '7898953148268';
+update produto set codigo =	1981 where barras = '7898953148275';
+update produto set codigo =	4128 where barras = '7898953148428';
+update produto set codigo =	4129 where barras = '7898953148435';
+update produto set codigo =	9421 where barras = '7898953148541';
