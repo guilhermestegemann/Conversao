@@ -744,7 +744,7 @@ begin
   FDQuery1.SQL.Add('left join produtos_dados_emp on produtos_dados_emp.id_produto = produtos.id ');
   if EditIdEmpresa.Text <> EmptyStr then
     FDQuery1.SQL.Add(Format('and produtos_dados_emp.id_empresa = %s',[EditIdEmpresa.Text]));
-  SQLUpdate := 'UPDATE ESTOQUE SET TIPOITEM = %d, VALORMEDIO = %s, VALORCUSTOTABELA = %s, VALORCUSTO = %s, VENDA = %s, EXPORTAR = %s WHERE FILIAL = %d AND PRODUTO = %d;';
+  SQLUpdate := 'UPDATE ESTOQUE SET TIPOITEM = %d, VALORMEDIO = %s, VALORCUSTOTABELA = %s, VALORCUSTO = %s, VENDA = %s, EXPORTAR = %s WHERE FILIAL = %d AND PRODUTO = (SELECT CODIGO FROM PRODUTO WHERE PRAZOVALIDADE = %d);';
 
   VerificaConexao;
   AbreQuery;
@@ -941,7 +941,7 @@ begin
   FDQuery1.SQL.Add('select * from produtos_precos');
   if EditIdEmpresa.Text <> EmptyStr then
     FDQuery1.SQL.Add(Format('where produtos_precos.id_tabela in (select id from tabelas_precos where tabelas_precos.id_empresa = %s)',[EditIdEmpresa.Text]));
-  SQLUpdate := 'UPDATE ITEMTABELAPRECO SET VALORVENDA = %s, VALORMINIMO = %s WHERE TABELAPRECO = %d AND PRODUTO = %d;';
+  SQLUpdate := 'UPDATE ITEMTABELAPRECO SET VALORVENDA = %s, VALORMINIMO = %s WHERE TABELAPRECO = %d AND PRODUTO = (SELECT CODIGO FROM PRODUTO WHERE PRAZOVALIDADE = %d);';
 
   VerificaConexao;
   AbreQuery;
@@ -1089,7 +1089,7 @@ begin
   FDQuery1.SQL.Add('from produtos_fornecedores');
   if EditIdEmpresa.Text <> EmptyStr then
     FDQuery1.SQL.Add(Format('where produtos_fornecedores.id_empresa = %s',[EditIdEmpresa.Text]));
-  SQLUpdate := 'UPDATE PRODUTO SET CLIFOR = %d WHERE CODIGO = %d;';
+  SQLUpdate := 'UPDATE PRODUTO SET CLIFOR = %d WHERE CODIGO = (SELECT CODIGO FROM PRODUTO WHERE PRAZOVALIDADE = %d);';
 
   VerificaConexao;
   AbreQuery;
