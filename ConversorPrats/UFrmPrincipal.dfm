@@ -212,7 +212,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnProduto: TButton
     Left = 8
-    Top = 373
+    Top = 372
     Width = 166
     Height = 21
     Caption = 'Produto'

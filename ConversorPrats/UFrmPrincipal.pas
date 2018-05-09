@@ -1000,12 +1000,13 @@ end;
 procedure TFrmPrincipal.BtnProdutoClick(Sender: TObject);
 var
   SQLInsert, SQLInsertGrupo : String;
-  Codigo,  Grupo, Ordem : Integer;
+  Codigo,  Grupo, Ordem, CodigoAntigo : Integer;
   Nome, Barras, PesoLiquido, PesoBruto, Data, UnCompra, CodigoNcm,  Cest, TipoProduto, Marca, Classificacao: String;
 begin
   FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select ');
   FDQuery1.SQL.Add('produtos.id as codigo, ');
+  FDQuery1.SQL.Add('produtos.id as codigoantigo, ');
   FDQuery1.SQL.Add('produtos.desc_produto as nome, ');
   FDQuery1.SQL.Add('produtos.codigo_barras as barras, ');
   FDQuery1.SQL.Add('produtos.id_subgrupo as tipoproduto, ');
@@ -1027,8 +1028,8 @@ begin
 
   SQLInsert := 'INSERT INTO PRODUTO (CODIGO, NOME, BARRAS, TIPOPRODUTO, MARCA, CLASSIFICACAO, PESOLIQUIDO, PESOBRUTO, DATA, UNCOMPRA, CODIGONCM, ORDEM, GRUPO, CEST, '+
                'PESOEMBALAGEM, QTDEREFERENCIA, UNREFERENCIA, QTDEMULTIPLAEMBALAGEM, VOLUME, PROFUNDIDADE, LARGURA, ALTURA, VENDACONTROLADA, QTDETROCA, UNTROCA, QTDEMULTIPLA, '+
-               'QTDEPADRAO, TRIBUTACAO, QTDECARREGAMENTO, UNCARREGAMENTO, QTDEVENDA, UNVENDA, QTDECOMPRA) VALUES (%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %s, %d, %d, %s, %d, %d, '+
-               '%d, %d, %d, %s, %d, %s, %d, %d, %d, %d, %s, %d, %s, %d);';
+               'QTDEPADRAO, TRIBUTACAO, QTDECARREGAMENTO, UNCARREGAMENTO, QTDEVENDA, UNVENDA, QTDECOMPRA, PRAZOVALIDADE) VALUES (%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %s, %d, %d, %s, %d, %d, '+
+               '%d, %d, %d, %s, %d, %s, %d, %d, %d, %d, %s, %d, %s, %d, %d);';
   SQLInsertGrupo := 'INSERT INTO GRUPO (CODIGO, NOME, ORDEM, COMISSAO, FLEX, ORDEMTABELA, EXPORTAR, QTDEMULTIPLA, COMISSAOFIXA, COMISSAOENTREGA, LIMITESUPERIORFLEX, '+
                     'LIMITEINFERIORFLEX, FLEXFIXO, ATIVO) VALUES (%d, %s, %d, %d, %d, %d, %s, %d, %s, %d, %d, %d, %s, %s);';
   VerificaConexao;
@@ -1044,6 +1045,7 @@ begin
   while not FDQuery1.Eof do
   begin
     Codigo := FDQuery1.FieldByName('codigo').AsInteger;
+    CodigoAntigo := FDQuery1.FieldByName('codigoantigo').AsInteger;
     Nome := Copy(FDQuery1.FieldByName('nome').AsString,0,60);
     Barras := FDQuery1.FieldByName('barras').AsString;
     TipoProduto := FDQuery1.FieldByName('tipoproduto').AsString;
@@ -1067,7 +1069,7 @@ begin
 
     ListBox1.Items.Add(Format(SQLInsert,[Codigo, QuotedStr(Nome), QuotedStr(Barras), TipoProduto, Marca, Classificacao, PesoLiquido, PesoBruto, Data, QuotedStr(UnCompra),
                        QuotedStr(CodigoNcm), Ordem, Grupo, QuotedStr(Cest), 0, 1, QuotedStr(UnCompra), 1, 0, 0, 0, 0, cNao, 1, QuotedStr(UnCompra), 1, 1, 1, 1, QuotedStr(UnCompra),
-                       1, QuotedStr(UnCompra), 1]));
+                       1, QuotedStr(UnCompra), 1, CodigoAntigo]));
 
     FDQuery1.Next;
     Gauge1.AddProgress(1);
