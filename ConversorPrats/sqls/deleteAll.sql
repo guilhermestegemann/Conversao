@@ -1,6 +1,6 @@
 ﻿delete from clifortabelapreco; commit;
 delete from itemtabelapreco; commit;
-delete from tabelapreco; commit
+delete from tabelapreco; commit;
 delete from estoque; commit;
 delete from produtoclifor; commit;
 delete from produto; commit;
@@ -13,8 +13,8 @@ delete from cliforcontato; commit;
 delete from funcionarioclifor; commit;
 delete from alteraclifor; commit; 
 delete from clifor; commit;
-delete from cidade; commit;
-delete from bairro; commit;
+DELETE FROM CIDADE WHERE CODIGO NOT IN (SELECT CIDADE FROM TRANSPORTADOR) AND CODIGO NOT IN (SELECT CIDADE FROM FILIAL); COMMIT;
+DELETE FROM BAIRRO WHERE NOME <> 'CENTRO'; COMMIT;
 delete from condicaopagamento; commit;
 delete from tipoestabelecimento; commit;
 delete from cargofuncionario; commit;
