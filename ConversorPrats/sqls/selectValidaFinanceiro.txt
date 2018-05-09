@@ -1,0 +1,12 @@
+﻿select sum(valor), Count(*)
+from financeiro
+where tipo = 'D'
+and databaixa is NOT  null
+
+and ORDEM NOT IN (SELECT
+                    OC.ORDEM
+                    FROM OCORRENCIAFINANCEIRO OC
+                    WHERE OC.ORDEM = FINanceiro.ORDEM
+                    AND OC.CLIFOR = FINanceiro.CLIFOR
+                    AND OC.FILIAL = FINanceiro.FILIAL
+                    AND OC.DATAEMISSAO = FINanceiro.DATAEMISSAO)

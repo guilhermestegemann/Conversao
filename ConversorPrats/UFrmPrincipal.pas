@@ -54,6 +54,8 @@ type
     BtnContasPagarProcedure: TButton;
     Label3: TLabel;
     EditIdEmpresa: TEdit;
+    BtnRota: TButton;
+    BtnRotaClifor: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);
@@ -81,6 +83,8 @@ type
     procedure GerarContasAPagar(UsaProcedure : Boolean);
     procedure BtnContasPagarProcedureClick(Sender: TObject);
     procedure BtnContasAPagarClick(Sender: TObject);
+    procedure BtnRotaClick(Sender: TObject);
+    procedure BtnRotaCliforClick(Sender: TObject);
   private
     procedure ConectarDB;
     procedure DesconectarDB;
@@ -887,6 +891,10 @@ begin
   Application.ProcessMessages;
   BtnContasReceberClick(Self);
   Application.ProcessMessages;
+  BtnRotaClick(Self);
+  Application.ProcessMessages;
+  BtnRotaCliforClick(Self);
+  Application.ProcessMessages;
 end;
 
 procedure TFrmPrincipal.BtnGrupoClick(Sender: TObject);
@@ -1101,6 +1109,98 @@ begin
   if CheckBoxSalvarAutomaticamente.Checked then
     SalvarArquivoAutomatico(EditCaminhoScripts.Text + '13-produtoclifor.txt');
 end;
+
+procedure TFrmPrincipal.BtnRotaClick(Sender: TObject);
+var
+  SQLInsert : String;
+  Codigo, Funcionario, Filial : Integer;
+  NomeRota, ClassificacaoRota, Periodicidade : String;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select ');
+  FDQuery1.SQL.Add('rotas_setores.id as codigo, ');
+  FDQuery1.SQL.Add('rotas_setores.desc_setor as nome, ');
+  FDQuery1.SQL.Add('rotas_setores.id_vendedor as funcionario, ');
+  FDQuery1.SQL.Add('rotas_setores.ordem as classificacaorota, ');
+  FDQuery1.SQL.Add('rotas_setores.periodicidade, ');
+  FDQuery1.SQL.Add('rotas.id_empresa as filial ');
+  FDQuery1.SQL.Add('from rotas_setores ');
+  FDQuery1.SQL.Add('inner join rotas on rotas.id = rotas_setores.id_rota ');
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('and rotas.id_empresa = %s ',[EditIdEmpresa.Text]));
+
+  SQLInsert := 'INSERT INTO ROTA (CODIGO, NOME, TIPOROTA, FUNCIONARIO, REORDENAR, CLASSIFICACAOROTA, FILIAL) VALUES (%d, %s, %s, %d, %s, %s, %d);';
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  if CheckBoxInserirDeleteAntes.Checked then
+  begin
+    ListBox1.Items.Add('DELETE FROM ROTACLIFOR; COMMIT;');
+    ListBox1.Items.Add('DELETE FROM ROTA; COMMIT;');
+  end;
+  while not FDQuery1.Eof do
+  begin
+    Codigo := FDQuery1.FieldByName('codigo').AsInteger;
+    NomeRota := Copy(FDQuery1.FieldByName('nome').AsString,0,60);
+    Funcionario := FDQuery1.FieldByName('funcionario').AsInteger;
+    ClassificacaoRota := FDQuery1.FieldByName('classificacaorota').AsString;
+    Periodicidade := FDQuery1.FieldByName('periodicidade').AsString;
+    Filial := FDQuery1.FieldByName('filial').AsInteger;
+
+    if Periodicidade = '2' then ClassificacaoRota := Periodicidade + ClassificacaoRota; //quinzenal
+
+    ListBox1.Items.Add(Format(SQLInsert,[Codigo, QuotedStr(NomeRota), QuotedStr('V'), Funcionario, cNao, ClassificacaoRota, Filial]));
+
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+  SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '20-rota.txt');
+end;
+
+procedure TFrmPrincipal.BtnRotaCliforClick(Sender: TObject);
+var
+  SQLInsert : String;
+  Rota, Clifor, Ordem : Integer;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select ');
+  FDQuery1.SQL.Add('terceiros_setores.id_terceiro as clifor, ');
+  FDQuery1.SQL.Add('terceiros_setores.id_setor as rota, ');
+  FDQuery1.SQL.Add('terceiros_setores.ordem_setor as ordem ');
+  FDQuery1.SQL.Add('from terceiros_setores ');
+  FDQuery1.SQL.Add('inner join rotas_setores on rotas_setores.id = terceiros_setores.id_setor ');
+  FDQuery1.SQL.Add('inner join rotas on rotas.id = rotas_setores.id_rota ');
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('and rotas.id_empresa = %s ',[EditIdEmpresa.Text]));
+
+  SQLInsert := 'INSERT INTO ROTACLIFOR (ROTA, CLIFOR, ORDEM) VALUES (%d, %d, %d);';
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  if CheckBoxInserirDeleteAntes.Checked then
+  begin
+    ListBox1.Items.Add('DELETE FROM ROTACLIFOR; COMMIT;');
+  end;
+  while not FDQuery1.Eof do
+  begin
+    Rota := FDQuery1.FieldByName('rota').AsInteger;
+    Clifor := FDQuery1.FieldByName('clifor').AsInteger;
+    Ordem := FDQuery1.FieldByName('ordem').AsInteger;
+
+    ListBox1.Items.Add(Format(SQLInsert,[Rota, Clifor, Ordem]));
+
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+  SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '21-rotaclifor.txt');
+end;
+
 
 procedure TFrmPrincipal.BtnSalvarClick(Sender: TObject);
 begin

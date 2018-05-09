@@ -328,7 +328,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnContasPagarProcedure: TButton
     Left = 8
-    Top = 570
+    Top = 564
     Width = 166
     Height = 21
     Caption = 'Contas a Pagar Procedure'
@@ -342,6 +342,24 @@ object FrmPrincipal: TFrmPrincipal
     Height = 21
     NumbersOnly = True
     TabOrder = 30
+  end
+  object BtnRota: TButton
+    Left = 8
+    Top = 591
+    Width = 166
+    Height = 21
+    Caption = 'Rota'
+    TabOrder = 31
+    OnClick = BtnRotaClick
+  end
+  object BtnRotaClifor: TButton
+    Left = 8
+    Top = 618
+    Width = 166
+    Height = 21
+    Caption = 'Rota Clifor'
+    TabOrder = 32
+    OnClick = BtnRotaCliforClick
   end
   object FDQuery1: TFDQuery
     Connection = FDConnection1
