@@ -221,7 +221,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnEstoque: TButton
     Left = 8
-    Top = 421
+    Top = 424
     Width = 166
     Height = 21
     Caption = 'Estoque'
