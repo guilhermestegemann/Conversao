@@ -56,6 +56,9 @@ type
     EditIdEmpresa: TEdit;
     BtnRota: TButton;
     BtnRotaClifor: TButton;
+    Label4: TLabel;
+    EditNaturezaOperacao: TEdit;
+    BtnVendas: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);
@@ -85,6 +88,7 @@ type
     procedure BtnContasAPagarClick(Sender: TObject);
     procedure BtnRotaClick(Sender: TObject);
     procedure BtnRotaCliforClick(Sender: TObject);
+    procedure BtnVendasClick(Sender: TObject);
   private
     procedure ConectarDB;
     procedure DesconectarDB;
@@ -1349,6 +1353,86 @@ begin
     SalvarArquivoAutomatico(EditCaminhoScripts.Text + '07-unidademedida.txt');
 end;
 
+procedure TFrmPrincipal.BtnVendasClick(Sender: TObject);
+var
+  SQLInsert : String;
+  Filial, Clifor, Produto, FormaPagamento, CondicaoPagamento, Vendedor, Documento : Integer;
+  Unitario, ValorDesconto, ValorIpi, Custo, ValorPis, ValorCofins, ValorIcms, ValorVenda, Qtde, Data, Tipo : String;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select ');
+  FDQuery1.SQL.Add('vendas.id_empresa as filial, ');
+  FDQuery1.SQL.Add('vendas.id_terceiro as clifor, ');
+  FDQuery1.SQL.Add('vendas_itens.id_produto as produto, ');
+  FDQuery1.SQL.Add('vendas_itens.valor_unit_praticado as unitario, ');
+  FDQuery1.SQL.Add('vendas_itens.valor_desconto as valordesconto, ');
+  FDQuery1.SQL.Add('vendas_itens.valor_ipi as valoripi, ');
+  FDQuery1.SQL.Add('vendas_itens.valor_custo as custo, ');
+  FDQuery1.SQL.Add('vendas_itens.valor_pis as valorpis, ');
+  FDQuery1.SQL.Add('vendas_itens.valor_cofins as valorcofins, ');
+  FDQuery1.SQL.Add('vendas_itens.valor_icms as valoricms, ');
+  FDQuery1.SQL.Add('vendas_itens.valor_unitario as valorvenda, ');
+  FDQuery1.SQL.Add('vendas_itens.quantidade as qtde, ');
+  FDQuery1.SQL.Add('vendas.tipo_pagto as formapagamento, ');
+  FDQuery1.SQL.Add('vendas.id_forma_parc as condicaopagamento, ');
+  FDQuery1.SQL.Add('vendas.id_vendedor as vendedor, ');
+  FDQuery1.SQL.Add('cast(vendas.data_emissao as date) as data, ');
+  FDQuery1.SQL.Add('vendas.numero_nf as documento, ');
+  FDQuery1.SQL.Add('case when (tem_nf = true) then ''NF'' else ''PE'' end as tipo ');
+  FDQuery1.SQL.Add('from vendas_itens ');
+  FDQuery1.SQL.Add('inner join vendas on vendas.id = vendas_itens.id_venda ');
+  FDQuery1.SQL.Add('where vendas.data_cancelamento_nf is  null ');
+
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('and vendas.id_empresa = %s',[EditIdEmpresa.Text]));
+  if EditNaturezaOperacao.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('and vendas.id_nat_operacao in (%s)',[EditNaturezaOperacao.Text]));
+
+  SQLInsert := 'INSERT INTO CONSUMO (FILIAL, CLIFOR, PRODUTO, UNITARIO, VALORDESCONTO, VALORIPI, CUSTO, VALORPIS, VALORCOFINS, VALORICMS, VALORVENDA, QTDE, FORMAPAGAMENTO, '+
+               'CONDICAOPAGAMENTO, VENDEDOR, DATA, DOCUMENTO, TIPO) VALUES (%d, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %d, %s, %d, %s);';
+
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  if CheckBoxInserirDeleteAntes.Checked then
+  begin
+    ListBox1.Items.Add('DELETE FROM CONSUMO; COMMIT;');
+  end;
+  while not FDQuery1.Eof do
+  begin
+    Filial := FDQuery1.FieldByName('filial').AsInteger;
+    Clifor := FDQuery1.FieldByName('clifor').AsInteger;
+    Produto := FDQuery1.FieldByName('produto').AsInteger;
+    Unitario := StringReplace(FDQuery1.FieldByName('unitario').AsString, ',', '.', [rfReplaceAll]);
+    ValorDesconto := StringReplace(FDQuery1.FieldByName('valordesconto').AsString, ',', '.', [rfReplaceAll]);
+    ValorIpi := StringReplace(FDQuery1.FieldByName('valoripi').AsString, ',', '.', [rfReplaceAll]);
+    Custo := StringReplace(FDQuery1.FieldByName('custo').AsString, ',', '.', [rfReplaceAll]);
+    ValorPis := StringReplace(FDQuery1.FieldByName('valorpis').AsString, ',', '.', [rfReplaceAll]);
+    ValorCofins := StringReplace(FDQuery1.FieldByName('valorcofins').AsString, ',', '.', [rfReplaceAll]);
+    ValorIcms := StringReplace(FDQuery1.FieldByName('valoricms').AsString, ',', '.', [rfReplaceAll]);
+    ValorVenda := StringReplace(FDQuery1.FieldByName('valorvenda').AsString, ',', '.', [rfReplaceAll]);
+    Qtde := StringReplace(FDQuery1.FieldByName('qtde').AsString, ',', '.', [rfReplaceAll]);
+    FormaPagamento := FDQuery1.FieldByName('formapagamento').AsInteger;
+    CondicaoPagamento := FDQuery1.FieldByName('condicaopagamento').AsInteger;
+    Vendedor := FDQuery1.FieldByName('vendedor').AsInteger;
+    Data := AjustaData(FDQuery1.FieldByName('data').AsString);
+    Documento := FDQuery1.FieldByName('documento').AsInteger;
+    Tipo := FDQuery1.FieldByName('tipo').AsString;
+
+
+    ListBox1.Items.Add(Format(SQLInsert,[Filial, Clifor, Produto, Unitario, ValorDesconto, ValorIpi, Custo, ValorPis, ValorCofins, ValorIcms, ValorVenda, Qtde, FormaPagamento,
+                       CondicaoPagamento, Vendedor, Data, Documento, QuotedStr(Tipo)]));
+
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+    Application.ProcessMessages;
+  end;
+  SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '22-consumo.txt');
+end;
+
 procedure TFrmPrincipal.CarregarIni;
 var
   INI : TIniFile;
@@ -1357,6 +1441,7 @@ begin
   EditDataBase.Text := INI.ReadString('Geral', 'database', EmptyStr);
   EditCaminhoScripts.Text := INI.ReadString('Geral', 'caminhoscripts', EmptyStr);
   EditIdEmpresa.Text := INI.ReadString('Geral', 'idempresa', EmptyStr);
+  EditNaturezaOperacao.Text := INI.ReadString('Geral', 'naturezaoperacao', EmptyStr);
   CheckBoxInserirDeleteAntes.Checked := INI.ReadBool('Geral', 'inserirdelete', True);
   CheckBoxSalvarAutomaticamente.Checked := INI.ReadBool('Geral', 'salvarautomaticamente', True);
 end;
@@ -1520,6 +1605,7 @@ begin
   INI.WriteString('Geral', 'database', EditDatabase.Text);
   INI.WriteString('Geral', 'caminhoscripts', EditCaminhoScripts.Text);
   INI.WriteString('Geral', 'idempresa', EditIdEmpresa.Text);
+  INI.WriteString('Geral', 'naturezaoperacao', EditNaturezaOperacao.Text);
   INI.WriteBool('Geral', 'inserirdelete', CheckBoxInserirDeleteAntes.Checked);
   INI.WriteBool('Geral', 'salvarautomaticamente', CheckBoxSalvarAutomaticamente.Checked);
 end;
