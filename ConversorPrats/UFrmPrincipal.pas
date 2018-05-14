@@ -59,6 +59,8 @@ type
     Label4: TLabel;
     EditNaturezaOperacao: TEdit;
     BtnVendas: TButton;
+    EditRotas: TEdit;
+    Label5: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);
@@ -128,6 +130,7 @@ begin
   FDQuery1.Open();
   FDQuery1.Last;
   FDQuery1.First;
+  //ShowMEssage(IntToStr(FDQuery1.RecordCount));
 end;
 
 function TFrmPrincipal.AdjustRight(st: string; tam: integer; ch: char): string;
@@ -288,7 +291,7 @@ var
   IsFornecedor, IsCliente, IsFuncionario, IsTransportador, Ativo : Boolean;
 begin
   FDQuery1.SQL.Clear;
-  FDQuery1.SQL.Add('select ');
+  FDQuery1.SQL.Add('select distinct');
   FDQuery1.SQL.Add('terceiros.tipo_fornecedor as isfornecedor, ');
   FDQuery1.SQL.Add('terceiros_dados_emp.id_empresa as filial, ');
   FDQuery1.SQL.Add('terceiros.tipo_cliente as iscliente, ');
@@ -331,6 +334,14 @@ begin
   FDQuery1.SQL.Add('inner join terceiros_dados_emp on terceiros_dados_emp.id_terceiro = terceiros.id ');
   if EditIdEmpresa.Text <> EmptyStr then
     FDQuery1.SQL.Add(Format('and terceiros_dados_emp.id_empresa = %s',[EditIdEmpresa.Text]));
+  if EditRotas.Text <> EmptyStr then
+  begin
+    FDQuery1.SQL.Add('left join terceiros_setores on terceiros_setores.id_terceiro = terceiros.id ');
+    FDQuery1.SQL.Add('left join rotas_setores on rotas_setores.id = terceiros_setores.id_setor ');
+    FDQuery1.SQL.Add(Format('where ((terceiros.tipo_fornecedor is true) or (terceiros.tipo_funcionario is true) or (rotas_setores.id_rota in (%s))) ',[EditRotas.Text]));
+  end;
+
+
 //  FDQuery1.SQL.Add('where ((terceiros.tipo_cliente = true) or (terceiros.tipo_fornecedor = true) or terceiros.id in (select distinct(produtos_fornecedores.id_terceiro) from produtos_fornecedores)) ');
   SQLInsertClifor := 'INSERT INTO CLIFOR (CODIGO, FANTASIA, NOME, CNPJ, IE, DATA, DATANASC, NOMEPAI, NOMEMAE, TIPOESTABELECIMENTO, ENDERECO, NUMERO, CIDADE, BAIRRO, COMPLEMENTO, CEP, '+
                      'SIMPLES, INDICADORIE, LIMITECREDITO, CONDICAOPAGAMENTO, ATIVO, DATAMOVIMENTO, DATAINATIVADO, OBS, COMISSAO, SPC, COMISSAOFIXA, VENDARESTRITA, CONSUMIDOR, '+
@@ -343,6 +354,7 @@ begin
   AbreQuery;
   AjustaGauge;
   ListBox1.Clear;
+
   if CheckBoxInserirDeleteAntes.Checked then
   begin
     ListBox1.Items.Add('DELETE FROM CLIFORCONTATO; COMMIT;');
@@ -542,9 +554,16 @@ begin
   FDQuery1.SQL.Add('select ');
   FDQuery1.SQL.Add('terceiros_dados_emp.id_terceiro as clifor, ');
   FDQuery1.SQL.Add('terceiros_dados_emp.id_tabela_precos as tabelapreco ');
-  FDQuery1.SQL.Add('from terceiros_dados_emp where id_tabela_precos > 0');
+  FDQuery1.SQL.Add('from terceiros_dados_emp');
+  if EditRotas.Text <> EmptyStr then
+  begin
+    FDQuery1.SQL.Add('inner join terceiros_setores on terceiros_setores.id_terceiro = terceiros_dados_emp.id_terceiro ');
+    FDQuery1.SQL.Add(Format('inner join rotas_setores on rotas_setores.id = terceiros_setores.id_setor and rotas_setores.id_rota in (%s) ',[EditRotas.Text]));
+  end;
+  FDQuery1.SQL.Add('where terceiros_dados_emp.id_tabela_precos > 0');
   if EditIdEmpresa.Text <> EmptyStr then
     FDQuery1.SQL.Add(Format('and terceiros_dados_emp.id_empresa = %s',[EditIdEmpresa.Text]));
+
   SQLInsert := 'INSERT INTO CLIFORTABELAPRECO (CLIFOR, TABELAPRECO, PADRAO) VALUES (%d, %d, %s);';
 
   VerificaConexao;
@@ -656,9 +675,15 @@ begin
   FDQuery1.SQL.Add('contas_receber.valor_devedor as valordevedor, ');
   FDQuery1.SQL.Add('contas_receber.data_agend_pagto as agendamento, ');
   FDQuery1.SQL.Add('contas_receber.valor_total_multa as multa ');
-  FDQuery1.SQL.Add('from contas_receber ');
+  FDQuery1.SQL.Add('from contas_receber where 1=1');
   if EditIdEmpresa.Text <> EmptyStr then
-    FDQuery1.SQL.Add(Format('where contas_receber.id_empresa = %s',[EditIdEmpresa.Text]));
+    FDQuery1.SQL.Add(Format('and contas_receber.id_empresa = %s',[EditIdEmpresa.Text]));
+  if EditRotas.Text <> EmptyStr then
+  begin
+    FDQuery1.SQL.Add('and contas_receber.id_terceiro in (select id from terceiros where id in ');
+    FDQuery1.SQL.Add('(select id_terceiro from terceiros_setores where id_setor in ');
+    FDQuery1.SQL.Add(Format('(select id from rotas_setores where id_rota in (%s))) or (terceiros.tipo_fornecedor is true) or (terceiros.tipo_funcionario is true)) ',[EditRotas.Text]));
+  end;
     SQLInsert := 'INSERT INTO FINANCEIRO (TIPO, FILIAL, CLIFOR, DOCUMENTO, ORDEM, DATAEMISSAO, DATAVCTO, DATABAIXA, VALOR, OBS, JURO, DESCONTO, VALORBAIXA, DATAAGENDAMENTO, MULTA,  '+
                  'IMPRIMIR, IMPRESSO) VALUES (%s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);';
   VerificaConexao;
@@ -1123,7 +1148,7 @@ begin
   FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select ');
   FDQuery1.SQL.Add('rotas_setores.id as codigo, ');
-  FDQuery1.SQL.Add('rotas_setores.desc_setor as nome, ');
+  FDQuery1.SQL.Add('rotas.desc_rota || '' - '' ||rotas_setores.desc_setor as nome, ');
   FDQuery1.SQL.Add('rotas_setores.id_vendedor as funcionario, ');
   FDQuery1.SQL.Add('rotas_setores.ordem as classificacaorota, ');
   FDQuery1.SQL.Add('rotas_setores.periodicidade, ');
@@ -1132,6 +1157,8 @@ begin
   FDQuery1.SQL.Add('inner join rotas on rotas.id = rotas_setores.id_rota ');
   if EditIdEmpresa.Text <> EmptyStr then
     FDQuery1.SQL.Add(Format('and rotas.id_empresa = %s ',[EditIdEmpresa.Text]));
+  if EditRotas.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('where rotas.id in (%s) ',[EditRotas.Text]));
 
   SQLInsert := 'INSERT INTO ROTA (CODIGO, NOME, TIPOROTA, FUNCIONARIO, REORDENAR, CLASSIFICACAOROTA, FILIAL) VALUES (%d, %s, %s, %d, %s, %s, %d);';
   VerificaConexao;
@@ -1179,6 +1206,9 @@ begin
   FDQuery1.SQL.Add('inner join rotas on rotas.id = rotas_setores.id_rota ');
   if EditIdEmpresa.Text <> EmptyStr then
     FDQuery1.SQL.Add(Format('and rotas.id_empresa = %s ',[EditIdEmpresa.Text]));
+  if EditRotas.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('where rotas.id in (%s) ',[EditRotas.Text]));
+
 
   SQLInsert := 'INSERT INTO ROTACLIFOR (ROTA, CLIFOR, ORDEM) VALUES (%d, %d, %d);';
   VerificaConexao;
@@ -1387,7 +1417,12 @@ begin
     FDQuery1.SQL.Add(Format('and vendas.id_empresa = %s',[EditIdEmpresa.Text]));
   if EditNaturezaOperacao.Text <> EmptyStr then
     FDQuery1.SQL.Add(Format('and vendas.id_nat_operacao in (%s)',[EditNaturezaOperacao.Text]));
-
+  if EditRotas.Text <> EmptyStr then
+  begin
+    FDQuery1.SQL.Add('and vendas.id_terceiro in (select id from terceiros where id in ');
+    FDQuery1.SQL.Add('(select id_terceiro from terceiros_setores where id_setor in ');
+    FDQuery1.SQL.Add(Format('(select id from rotas_setores where id_rota in (%s))) or (terceiros.tipo_fornecedor is true) or (terceiros.tipo_funcionario is true)) ',[EditRotas.Text]));
+  end;
   SQLInsert := 'INSERT INTO CONSUMO (FILIAL, CLIFOR, PRODUTO, UNITARIO, VALORDESCONTO, VALORIPI, CUSTO, VALORPIS, VALORCOFINS, VALORICMS, VALORVENDA, QTDE, FORMAPAGAMENTO, '+
                'CONDICAOPAGAMENTO, VENDEDOR, DATA, DOCUMENTO, TIPO) VALUES (%d, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %d, %s, %d, %s);';
 
@@ -1442,6 +1477,7 @@ begin
   EditCaminhoScripts.Text := INI.ReadString('Geral', 'caminhoscripts', EmptyStr);
   EditIdEmpresa.Text := INI.ReadString('Geral', 'idempresa', EmptyStr);
   EditNaturezaOperacao.Text := INI.ReadString('Geral', 'naturezaoperacao', EmptyStr);
+  EditRotas.Text := INI.ReadString('Geral', 'rotas', EmptyStr);
   CheckBoxInserirDeleteAntes.Checked := INI.ReadBool('Geral', 'inserirdelete', True);
   CheckBoxSalvarAutomaticamente.Checked := INI.ReadBool('Geral', 'salvarautomaticamente', True);
 end;
@@ -1499,9 +1535,16 @@ begin
   FDQuery1.SQL.Add('contas_pagar.valor_devedor as valordevedor, ');
   FDQuery1.SQL.Add('contas_pagar.data_agend_pagto as agendamento, ');
   FDQuery1.SQL.Add('contas_pagar.valor_total_multa as multa ');
-  FDQuery1.SQL.Add('from contas_pagar ');
+  FDQuery1.SQL.Add('from contas_pagar where 1=1 ');
   if EditIdEmpresa.Text <> EmptyStr then
-    FDQuery1.SQL.Add(Format('where contas_pagar.id_empresa = %s',[EditIdEmpresa.Text]));
+    FDQuery1.SQL.Add(Format('and contas_pagar.id_empresa = %s ',[EditIdEmpresa.Text]));
+
+  if EditRotas.Text <> EmptyStr then
+  begin
+    FDQuery1.SQL.Add('and contas_pagar.id_terceiro in (select id from terceiros where id in ');
+    FDQuery1.SQL.Add('(select id_terceiro from terceiros_setores where id_setor in ');
+    FDQuery1.SQL.Add(Format('(select id from rotas_setores where id_rota in (%s))) or (terceiros.tipo_fornecedor is true) or (terceiros.tipo_funcionario is true)) ',[EditRotas.Text]));
+  end;
   FDQuery1.SQL.Add('order by contas_pagar.id ');
   SQLInsert := 'INSERT INTO FINANCEIRO (TIPO, FILIAL, CLIFOR, DOCUMENTO, ORDEM, DATAEMISSAO, DATAVCTO, DATABAIXA, VALOR, OBS, JURO, DESCONTO, VALORBAIXA, DATAAGENDAMENTO, MULTA,  '+
                'IMPRIMIR, IMPRESSO) VALUES (%s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);';
@@ -1606,6 +1649,7 @@ begin
   INI.WriteString('Geral', 'caminhoscripts', EditCaminhoScripts.Text);
   INI.WriteString('Geral', 'idempresa', EditIdEmpresa.Text);
   INI.WriteString('Geral', 'naturezaoperacao', EditNaturezaOperacao.Text);
+  INI.WriteString('Geral', 'rotas', EditRotas.Text);
   INI.WriteBool('Geral', 'inserirdelete', CheckBoxInserirDeleteAntes.Checked);
   INI.WriteBool('Geral', 'salvarautomaticamente', CheckBoxSalvarAutomaticamente.Checked);
 end;
