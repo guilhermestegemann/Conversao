@@ -1173,7 +1173,7 @@ begin
   while not FDQuery1.Eof do
   begin
     Codigo := FDQuery1.FieldByName('codigo').AsInteger;
-    NomeRota := Copy(FDQuery1.FieldByName('nome').AsString,0,60);
+    NomeRota := Copy(FDQuery1.FieldByName('nome').AsString,0,30);
     Funcionario := FDQuery1.FieldByName('funcionario').AsInteger;
     ClassificacaoRota := FDQuery1.FieldByName('classificacaorota').AsString;
     Periodicidade := FDQuery1.FieldByName('periodicidade').AsString;
