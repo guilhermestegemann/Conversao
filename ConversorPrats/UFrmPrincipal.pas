@@ -551,7 +551,7 @@ var
   TabelaPreco, Clifor : Integer;
 begin
   FDQuery1.SQL.Clear;
-  FDQuery1.SQL.Add('select ');
+  FDQuery1.SQL.Add('select distinct ');
   FDQuery1.SQL.Add('terceiros_dados_emp.id_terceiro as clifor, ');
   FDQuery1.SQL.Add('terceiros_dados_emp.id_tabela_precos as tabelapreco ');
   FDQuery1.SQL.Add('from terceiros_dados_emp');
@@ -685,14 +685,15 @@ begin
     FDQuery1.SQL.Add(Format('(select id from rotas_setores where id_rota in (%s))) or (terceiros.tipo_fornecedor is true) or (terceiros.tipo_funcionario is true)) ',[EditRotas.Text]));
   end;
     SQLInsert := 'INSERT INTO FINANCEIRO (TIPO, FILIAL, CLIFOR, DOCUMENTO, ORDEM, DATAEMISSAO, DATAVCTO, DATABAIXA, VALOR, OBS, JURO, DESCONTO, VALORBAIXA, DATAAGENDAMENTO, MULTA,  '+
-                 'IMPRIMIR, IMPRESSO) VALUES (%s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);';
+                 'IMPRIMIR, IMPRESSO, SITUACAO) VALUES (%s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 99);';
   VerificaConexao;
   AbreQuery;
   AjustaGauge;
   ListBox1.Clear;
+  ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES (99, ''CONVERSAO'', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
   if CheckBoxInserirDeleteAntes.Checked then
   begin
-    ListBox1.Items.Add('DELETE FROM FINANCEIRO FIN WHERE TIPO = ''C'' AND FIN.ORDEM NOT IN (SELECT OC.ORDEM FROM OCORRENCIAFINANCEIRO OC WHERE OC.ORDEM = FIN.ORDEM AND OC.CLIFOR = FIN.CLIFOR '+
+    ListBox1.Items.Add('DELETE FROM FINANCEIRO FIN WHERE SITUACAO = 99 AND TIPO = ''C'' AND FIN.ORDEM NOT IN (SELECT OC.ORDEM FROM OCORRENCIAFINANCEIRO OC WHERE OC.ORDEM = FIN.ORDEM AND OC.CLIFOR = FIN.CLIFOR '+
                        'AND OC.FILIAL = FIN.FILIAL AND OC.DATAEMISSAO = FIN.DATAEMISSAO); COMMIT;');
   end;
   while not FDQuery1.Eof do
@@ -880,6 +881,7 @@ end;
 
 procedure TFrmPrincipal.BtnGerarTodosClick(Sender: TObject);
 begin
+  //ShowMessage('Verificar Configs');
   CheckBoxSalvarAutomaticamente.Checked := True;
   Application.ProcessMessages;
   BtnCondicaoPagamentoClick(Self);
@@ -923,6 +925,8 @@ begin
   BtnRotaClick(Self);
   Application.ProcessMessages;
   BtnRotaCliforClick(Self);
+  Application.ProcessMessages;
+  BtnVendasClick(Self);
   Application.ProcessMessages;
 end;
 
@@ -1424,7 +1428,9 @@ begin
     FDQuery1.SQL.Add(Format('(select id from rotas_setores where id_rota in (%s))) or (terceiros.tipo_fornecedor is true) or (terceiros.tipo_funcionario is true)) ',[EditRotas.Text]));
   end;
   SQLInsert := 'INSERT INTO CONSUMO (FILIAL, CLIFOR, PRODUTO, UNITARIO, VALORDESCONTO, VALORIPI, CUSTO, VALORPIS, VALORCOFINS, VALORICMS, VALORVENDA, QTDE, FORMAPAGAMENTO, '+
-               'CONDICAOPAGAMENTO, VENDEDOR, DATA, DOCUMENTO, TIPO) VALUES (%d, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %d, %s, %d, %s);';
+               'CONDICAOPAGAMENTO, VENDEDOR, DATA, DOCUMENTO, TIPO, COMISSAO, TRANSPORTADOR, QTDEDEVOLVIDO, FLEX, GERARFLEX, TABELAPRECO, COMISSAOENTREGA, DESPESA, COMISSAOLIBERADA, '+
+               'COMISSAOPAGA, ENCARGO) VALUES (%d, %d, (SELECT CODIGO FROM PRODUTO WHERE PRAZOVALIDADE = %d), %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %d, %s, %d, %s, '+
+               '%d, (SELECT MIN(CODIGO) FROM TRANSPORTADOR), %d, %d, %s, (SELECT MIN(CODIGO) FROM TABELAPRECO), %d, %d, %s, %s, %d);';
 
   VerificaConexao;
   AbreQuery;
@@ -1457,7 +1463,7 @@ begin
 
 
     ListBox1.Items.Add(Format(SQLInsert,[Filial, Clifor, Produto, Unitario, ValorDesconto, ValorIpi, Custo, ValorPis, ValorCofins, ValorIcms, ValorVenda, Qtde, FormaPagamento,
-                       CondicaoPagamento, Vendedor, Data, Documento, QuotedStr(Tipo)]));
+                       CondicaoPagamento, Vendedor, Data, Documento, QuotedStr(Tipo), 0, 0, 0, cNao, 0, 0, cNao, cNao, 0]));
 
     FDQuery1.Next;
     Gauge1.AddProgress(1);
@@ -1547,16 +1553,17 @@ begin
   end;
   FDQuery1.SQL.Add('order by contas_pagar.id ');
   SQLInsert := 'INSERT INTO FINANCEIRO (TIPO, FILIAL, CLIFOR, DOCUMENTO, ORDEM, DATAEMISSAO, DATAVCTO, DATABAIXA, VALOR, OBS, JURO, DESCONTO, VALORBAIXA, DATAAGENDAMENTO, MULTA,  '+
-               'IMPRIMIR, IMPRESSO) VALUES (%s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);';
+               'IMPRIMIR, IMPRESSO, SITUACAO) VALUES (%s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 99);';
   if UsaProcedure then
     SQLInsert := 'EXECUTE PROCEDURE CUSTOM_SET_FINANCEIRO(%s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);';
   VerificaConexao;
   AbreQuery;
   AjustaGauge;
   ListBox1.Clear;
+  ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES (99, ''CONVERSAO'', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
   if CheckBoxInserirDeleteAntes.Checked then
   begin
-    ListBox1.Items.Add('DELETE FROM FINANCEIRO FIN WHERE TIPO = ''D'' AND FIN.ORDEM NOT IN (SELECT OC.ORDEM FROM OCORRENCIAFINANCEIRO OC WHERE OC.ORDEM = FIN.ORDEM AND OC.CLIFOR = FIN.CLIFOR '+
+    ListBox1.Items.Add('DELETE FROM FINANCEIRO FIN WHERE SITUACAO = 99 AND TIPO = ''D'' AND FIN.ORDEM NOT IN (SELECT OC.ORDEM FROM OCORRENCIAFINANCEIRO OC WHERE OC.ORDEM = FIN.ORDEM AND OC.CLIFOR = FIN.CLIFOR '+
                        'AND OC.FILIAL = FIN.FILIAL AND OC.DATAEMISSAO = FIN.DATAEMISSAO); COMMIT;');
   end;
   while not FDQuery1.Eof do

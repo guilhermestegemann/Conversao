@@ -47,7 +47,8 @@ BEGIN
         DATAAGENDAMENTO,
         MULTA,
         IMPRIMIR,
-        IMPRESSO)
+        IMPRESSO,
+		SITUACAO)
     VALUES (
         :TIPO,
         :FILIAL,
@@ -65,5 +66,6 @@ BEGIN
         :DATAAGENDAMENTO,
         :MULTA,
         :IMPRIMIR,
-        :IMPRESSO);
+        :IMPRESSO,
+		99);
 END
