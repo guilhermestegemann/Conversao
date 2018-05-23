@@ -656,6 +656,7 @@ var
   SQLInsert : String;
   Clifor, Filial : Integer;
   Documento, Ordem, DataEmissao, DataVcto, DataBaixa, ValorTitulo, Obs, Juros, Desconto, ValorDevedor, DataAgendamento, Multa, ValorBaixa, Parcela: String;
+  Cancelado : Boolean;
 begin
   FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select ');
@@ -674,8 +675,15 @@ begin
   FDQuery1.SQL.Add('contas_receber.valor_total_desconto as desconto, ');
   FDQuery1.SQL.Add('contas_receber.valor_devedor as valordevedor, ');
   FDQuery1.SQL.Add('contas_receber.data_agend_pagto as agendamento, ');
-  FDQuery1.SQL.Add('contas_receber.valor_total_multa as multa ');
-  FDQuery1.SQL.Add('from contas_receber where 1=1');
+  FDQuery1.SQL.Add('contas_receber.valor_total_multa as multa, ');
+  //FDQuery1.SQL.Add('case when vendas.data_cancelamento_nf is null then false else true end as cancelado ');
+  FDQuery1.SQL.Add('case when ((vendas.data_cancelamento_nf is not null) or (vendas.data_contabil is  null)) then true else false end as cancelado ');
+  FDQuery1.SQL.Add('from contas_receber ');
+  FDQuery1.SQL.Add('left join vendas on vendas.id_terceiro = contas_receber.id_terceiro ');
+  FDQuery1.SQL.Add('and vendas.id_empresa = contas_receber.id_empresa ');
+  FDQuery1.SQL.Add('and vendas.numero_nf = cast(contas_receber.documento as integer) ');
+  FDQuery1.SQL.Add('and cast(vendas.data_emissao as date) = contas_receber.data_emissao ');
+  FDQuery1.SQL.Add('where 1=1 ');
   if EditIdEmpresa.Text <> EmptyStr then
     FDQuery1.SQL.Add(Format('and contas_receber.id_empresa = %s',[EditIdEmpresa.Text]));
   if EditRotas.Text <> EmptyStr then
@@ -685,7 +693,7 @@ begin
     FDQuery1.SQL.Add(Format('(select id from rotas_setores where id_rota in (%s))) or (terceiros.tipo_fornecedor is true) or (terceiros.tipo_funcionario is true)) ',[EditRotas.Text]));
   end;
     SQLInsert := 'INSERT INTO FINANCEIRO (TIPO, FILIAL, CLIFOR, DOCUMENTO, ORDEM, DATAEMISSAO, DATAVCTO, DATABAIXA, VALOR, OBS, JURO, DESCONTO, VALORBAIXA, DATAAGENDAMENTO, MULTA,  '+
-                 'IMPRIMIR, IMPRESSO, SITUACAO) VALUES (%s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 99);';
+                 'IMPRIMIR, IMPRESSO, CANCELADO, SITUACAO) VALUES (%s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 99);';
   VerificaConexao;
   AbreQuery;
   AjustaGauge;
@@ -714,7 +722,7 @@ begin
     ValorDevedor := StringReplace(FDQuery1.FieldByName('valordevedor').AsString,',','.',[rfReplaceAll]);
     DataAgendamento := AjustaData(FDQuery1.FieldByName('agendamento').AsString);
     Multa := StringReplace(FDQuery1.FieldByName('multa').AsString,',','.',[rfReplaceAll]);
-
+    Cancelado := FDQuery1.FieldByName('cancelado').AsBoolean;
 
     if ((FDQuery1.FieldByName('datavcto').AsDateTime < FDQuery1.FieldByName('dataemissao').AsDateTime) and (DataVcto <> 'NULL')) then
       DataVcto := DataEmissao;
@@ -738,7 +746,7 @@ begin
     if Documento = EmptyStr then Documento := 'NULL';
 
     ListBox1.Items.Add(Format(SQLInsert,[QuotedStr('C'), Filial, Clifor, Documento, QuotedStr(Ordem), DataEmissao, DataVcto, DataBaixa, ValorTitulo, QuotedStr(Obs), Juros, Desconto,
-                       ValorBaixa, DataAgendamento, Multa, cNao, cNao]));
+                       ValorBaixa, DataAgendamento, Multa, cNao, cNao, BooleanToStr(Cancelado)]));
 
     FDQuery1.Next;
     Gauge1.AddProgress(1);
