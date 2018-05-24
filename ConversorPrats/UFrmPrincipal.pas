@@ -61,6 +61,7 @@ type
     BtnVendas: TButton;
     EditRotas: TEdit;
     Label5: TLabel;
+    CheckBobxContasReceberSomenteDocumentosComNumero: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);
@@ -288,15 +289,18 @@ var
   Fantasia, Nome, CNPJ, IE, DataCadastro, DataNascimento, NomePai, NomeMae, Contato, Endereco, Numero, NomeBairro, Complemento, Cep, Telefone, Celular,
   Email, EmailNFe, EmailBoleto, Simples, DataMovimento, DataInativado, Obs, LimiteCredito, TipoEstabelecimento, CondicaoPagamento,
   EnviarNFe, EnviarBoleto : String;
-  IsFornecedor, IsCliente, IsFuncionario, IsTransportador, Ativo : Boolean;
+  IsFornecedor, IsCliente, IsFuncionario, IsTransportador, IsVendedor, IsEmpresa, IsMotorista, Ativo : Boolean;
 begin
   FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select distinct');
   FDQuery1.SQL.Add('terceiros.tipo_fornecedor as isfornecedor, ');
+  FDQuery1.SQL.Add('terceiros.tipo_motorista as ismotorista, ');
+  FDQuery1.SQL.Add('terceiros.tipo_empresa as isempresa, ');
   FDQuery1.SQL.Add('terceiros_dados_emp.id_empresa as filial, ');
   FDQuery1.SQL.Add('terceiros.tipo_cliente as iscliente, ');
   FDQuery1.SQL.Add('terceiros.tipo_funcionario as isfuncionario, ');
   FDQuery1.SQL.Add('terceiros.tipo_transportadora as istransportador, ');
+  FDQuery1.SQL.Add('terceiros.tipo_vendedor as isvendedor, ');
   FDQuery1.SQL.Add('terceiros.id as codigo, ');
   FDQuery1.SQL.Add('terceiros.nome as fantasia, ');
   FDQuery1.SQL.Add('terceiros.razao_social as nome, ');
@@ -367,8 +371,14 @@ begin
   ListBox1.Items.Add(Format('UPDATE OR INSERT INTO TIPO (CODIGO, NOME) VALUES (%d, %s) MATCHING (CODIGO); COMMIT;',[3, QuotedStr('CLIENTE/FORNECEDOR')]));
   ListBox1.Items.Add(Format('UPDATE OR INSERT INTO TIPO (CODIGO, NOME) VALUES (%d, %s) MATCHING (CODIGO); COMMIT;',[4, QuotedStr('FUNCIONARIO')]));
   ListBox1.Items.Add(Format('UPDATE OR INSERT INTO TIPO (CODIGO, NOME) VALUES (%d, %s) MATCHING (CODIGO); COMMIT;',[5, QuotedStr('TRANSPORTADOR')]));
+  ListBox1.Items.Add(Format('UPDATE OR INSERT INTO TIPO (CODIGO, NOME) VALUES (%d, %s) MATCHING (CODIGO); COMMIT;',[6, QuotedStr('VENDEDOR')]));
+  ListBox1.Items.Add(Format('UPDATE OR INSERT INTO TIPO (CODIGO, NOME) VALUES (%d, %s) MATCHING (CODIGO); COMMIT;',[7, QuotedStr('EMPRESA')]));
+  ListBox1.Items.Add(Format('UPDATE OR INSERT INTO TIPO (CODIGO, NOME) VALUES (%d, %s) MATCHING (CODIGO); COMMIT;',[8, QuotedStr('MOTORISTA')]));
   while not FDQuery1.Eof do
   begin
+    IsVendedor := FDQuery1.FieldByName('isVendedor').AsBoolean;
+    IsMotorista := FDQuery1.FieldByName('ismotorista').AsBoolean;
+    IsEmpresa := FDQuery1.FieldByName('isEmpresa').AsBoolean;
     IsFornecedor := FDQuery1.FieldByName('isfornecedor').AsBoolean;
     IsCliente := FDQuery1.FieldByName('iscliente').AsBoolean;
     IsFuncionario := FDQuery1.FieldByName('isfuncionario').AsBoolean;
@@ -437,7 +447,17 @@ begin
     else if (IsFuncionario) then
       Tipo := 4
     else if (IsTransportador) then
-      Tipo := 5;
+      Tipo := 5
+    else if (IsVendedor) then
+      Tipo := 6
+    else if (IsEmpresa) then
+      Tipo := 7
+    else if (IsMotorista) then
+      Tipo := 8;
+
+
+    if Tipo = 0 then
+      raise Exception.Create('TipoClifor Inválido no cliente código: '+ IntToStr(Codigo));
 
     if TipoEstabelecimento = EmptyStr then TipoEstabelecimento := 'NULL';
     if CondicaoPagamento = EmptyStr then CondicaoPagamento := 'NULL';
@@ -686,12 +706,15 @@ begin
   FDQuery1.SQL.Add('where 1=1 ');
   if EditIdEmpresa.Text <> EmptyStr then
     FDQuery1.SQL.Add(Format('and contas_receber.id_empresa = %s',[EditIdEmpresa.Text]));
+  if CheckBobxContasReceberSomenteDocumentosComNumero.Checked then
+    FDQuery1.SQL.Add('and contas_receber.documento ~ ''^[-0-9]+$'' = true ');
   if EditRotas.Text <> EmptyStr then
   begin
     FDQuery1.SQL.Add('and contas_receber.id_terceiro in (select id from terceiros where id in ');
     FDQuery1.SQL.Add('(select id_terceiro from terceiros_setores where id_setor in ');
     FDQuery1.SQL.Add(Format('(select id from rotas_setores where id_rota in (%s))) or (terceiros.tipo_fornecedor is true) or (terceiros.tipo_funcionario is true)) ',[EditRotas.Text]));
   end;
+
     SQLInsert := 'INSERT INTO FINANCEIRO (TIPO, FILIAL, CLIFOR, DOCUMENTO, ORDEM, DATAEMISSAO, DATAVCTO, DATABAIXA, VALOR, OBS, JURO, DESCONTO, VALORBAIXA, DATAAGENDAMENTO, MULTA,  '+
                  'IMPRIMIR, IMPRESSO, CANCELADO, SITUACAO) VALUES (%s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 99);';
   VerificaConexao;
@@ -934,8 +957,8 @@ begin
   Application.ProcessMessages;
   BtnRotaCliforClick(Self);
   Application.ProcessMessages;
-  BtnVendasClick(Self);
-  Application.ProcessMessages;
+  //BtnVendasClick(Self);
+  //Application.ProcessMessages;
 end;
 
 procedure TFrmPrincipal.BtnGrupoClick(Sender: TObject);
@@ -1191,8 +1214,8 @@ begin
     Periodicidade := FDQuery1.FieldByName('periodicidade').AsString;
     Filial := FDQuery1.FieldByName('filial').AsInteger;
 
-    if Periodicidade = '2' then ClassificacaoRota := Periodicidade + ClassificacaoRota; //quinzenal
-
+    //if Periodicidade = '2' then ClassificacaoRota := Periodicidade + ClassificacaoRota; //quinzenal
+    ClassificacaoRota := 'NULL';
     ListBox1.Items.Add(Format(SQLInsert,[Codigo, QuotedStr(NomeRota), QuotedStr('V'), Funcionario, cNao, ClassificacaoRota, Filial]));
 
     FDQuery1.Next;
@@ -1494,6 +1517,8 @@ begin
   EditRotas.Text := INI.ReadString('Geral', 'rotas', EmptyStr);
   CheckBoxInserirDeleteAntes.Checked := INI.ReadBool('Geral', 'inserirdelete', True);
   CheckBoxSalvarAutomaticamente.Checked := INI.ReadBool('Geral', 'salvarautomaticamente', True);
+  CheckBobxContasReceberSomenteDocumentosComNumero.Checked := INI.ReadBool('Geral', 'contasrecebersomentedocumentocomnumero', True);
+
 end;
 
 procedure TFrmPrincipal.ConectarDB;
@@ -1667,6 +1692,7 @@ begin
   INI.WriteString('Geral', 'rotas', EditRotas.Text);
   INI.WriteBool('Geral', 'inserirdelete', CheckBoxInserirDeleteAntes.Checked);
   INI.WriteBool('Geral', 'salvarautomaticamente', CheckBoxSalvarAutomaticamente.Checked);
+  INI.WriteBool('Geral', 'contasrecebersomentedocumentocomnumero', CheckBobxContasReceberSomenteDocumentosComNumero.Checked);
 end;
 
 procedure TFrmPrincipal.VerificaConexao;

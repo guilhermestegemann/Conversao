@@ -12,13 +12,14 @@ object FrmPrincipal: TFrmPrincipal
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  ShowHint = True
   OnClose = FormClose
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
     Left = 8
-    Top = 44
+    Top = 68
     Width = 59
     Height = 13
     Caption = 'Nome Banco'
@@ -45,7 +46,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object Label3: TLabel
     Left = 8
-    Top = 67
+    Top = 91
     Width = 54
     Height = 13
     Caption = 'Id Empresa'
@@ -58,7 +59,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object Label4: TLabel
     Left = 8
-    Top = 91
+    Top = 115
     Width = 42
     Height = 13
     Caption = 'Nat. Op.'
@@ -71,7 +72,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object Label5: TLabel
     Left = 8
-    Top = 118
+    Top = 142
     Width = 28
     Height = 13
     Caption = 'Rotas'
@@ -84,14 +85,14 @@ object FrmPrincipal: TFrmPrincipal
   end
   object EditDatabase: TEdit
     Left = 80
-    Top = 39
+    Top = 63
     Width = 94
     Height = 21
     TabOrder = 0
   end
   object BtnConectar: TButton
     Left = 8
-    Top = 147
+    Top = 171
     Width = 80
     Height = 21
     Caption = 'Conectar'
@@ -100,7 +101,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnDesconectar: TButton
     Left = 94
-    Top = 147
+    Top = 171
     Width = 80
     Height = 21
     Caption = 'Desconectar'
@@ -122,7 +123,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnCondicaoPagamento: TButton
     Left = 8
-    Top = 171
+    Top = 195
     Width = 166
     Height = 21
     Caption = 'Condi'#231#227'o Pagamento'
@@ -148,7 +149,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnTipoEstabelecimento: TButton
     Left = 8
-    Top = 194
+    Top = 218
     Width = 166
     Height = 21
     Caption = 'Tipo Estabelecimento'
@@ -157,7 +158,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnBairro: TButton
     Left = 8
-    Top = 217
+    Top = 241
     Width = 166
     Height = 21
     Caption = 'Bairro'
@@ -166,7 +167,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnCidade: TButton
     Left = 8
-    Top = 241
+    Top = 265
     Width = 166
     Height = 21
     Caption = 'Cidade'
@@ -175,7 +176,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnFuncionario: TButton
     Left = 8
-    Top = 265
+    Top = 289
     Width = 166
     Height = 21
     Caption = 'Funcion'#225'rio'
@@ -184,7 +185,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnClifor: TButton
     Left = 8
-    Top = 285
+    Top = 309
     Width = 166
     Height = 21
     Caption = 'Clifor'
@@ -193,7 +194,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnUnidadeMedida: TButton
     Left = 8
-    Top = 312
+    Top = 336
     Width = 166
     Height = 21
     Caption = 'Unidade de Medida'
@@ -202,7 +203,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnGrupo: TButton
     Left = 8
-    Top = 335
+    Top = 359
     Width = 166
     Height = 21
     Caption = 'Grupo'
@@ -211,7 +212,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnTipoProduto: TButton
     Left = 8
-    Top = 359
+    Top = 383
     Width = 166
     Height = 21
     Caption = 'Tipo Produto'
@@ -220,7 +221,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnMarca: TButton
     Left = 8
-    Top = 383
+    Top = 407
     Width = 166
     Height = 21
     Caption = 'Marca'
@@ -229,7 +230,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnClassificacao: TButton
     Left = 8
-    Top = 406
+    Top = 430
     Width = 166
     Height = 21
     Caption = 'Classifica'#231#227'o'
@@ -238,7 +239,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnProduto: TButton
     Left = 8
-    Top = 428
+    Top = 452
     Width = 166
     Height = 21
     Caption = 'Produto'
@@ -247,7 +248,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnEstoque: TButton
     Left = 8
-    Top = 477
+    Top = 501
     Width = 166
     Height = 21
     Caption = 'Estoque'
@@ -256,7 +257,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnTabelaPreco: TButton
     Left = 8
-    Top = 500
+    Top = 524
     Width = 166
     Height = 21
     Caption = 'Tabela Pre'#231'o'
@@ -265,7 +266,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnItemTabelaPreco: TButton
     Left = 8
-    Top = 524
+    Top = 548
     Width = 166
     Height = 21
     Caption = 'Tabela Pre'#231'o - Itens'
@@ -274,7 +275,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnCliforTabelaPreco: TButton
     Left = 8
-    Top = 547
+    Top = 571
     Width = 166
     Height = 21
     Caption = 'Clifor Tabela Pre'#231'o'
@@ -283,7 +284,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnProdutoClifor: TButton
     Left = 8
-    Top = 453
+    Top = 477
     Width = 166
     Height = 21
     Caption = 'Produto Clifor'
@@ -292,7 +293,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnContasAPagar: TButton
     Left = 8
-    Top = 570
+    Top = 594
     Width = 166
     Height = 21
     Caption = 'Contas a Pagar'
@@ -301,7 +302,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnContasReceber: TButton
     Left = 8
-    Top = 593
+    Top = 617
     Width = 166
     Height = 21
     Caption = 'Contas a Receber'
@@ -354,7 +355,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnContasPagarProcedure: TButton
     Left = 8
-    Top = 620
+    Top = 644
     Width = 166
     Height = 21
     Caption = 'Contas a Pagar Procedure'
@@ -363,7 +364,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object EditIdEmpresa: TEdit
     Left = 80
-    Top = 64
+    Top = 88
     Width = 94
     Height = 21
     NumbersOnly = True
@@ -371,7 +372,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnRota: TButton
     Left = 8
-    Top = 647
+    Top = 671
     Width = 166
     Height = 21
     Caption = 'Rota'
@@ -380,7 +381,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object BtnRotaClifor: TButton
     Left = 8
-    Top = 674
+    Top = 698
     Width = 166
     Height = 21
     Caption = 'Rota Clifor'
@@ -389,14 +390,14 @@ object FrmPrincipal: TFrmPrincipal
   end
   object EditNaturezaOperacao: TEdit
     Left = 80
-    Top = 88
+    Top = 112
     Width = 94
     Height = 21
     TabOrder = 33
   end
   object BtnVendas: TButton
     Left = 8
-    Top = 701
+    Top = 725
     Width = 166
     Height = 21
     Caption = 'Vendas'
@@ -405,10 +406,27 @@ object FrmPrincipal: TFrmPrincipal
   end
   object EditRotas: TEdit
     Left = 80
-    Top = 115
+    Top = 139
     Width = 94
     Height = 21
     TabOrder = 35
+  end
+  object CheckBobxContasReceberSomenteDocumentosComNumero: TCheckBox
+    Left = 8
+    Top = 40
+    Width = 166
+    Height = 17
+    Hint = 
+      'Serve para filtrar no contas a receber apenas documentos que sej' +
+      'am s'#243' n'#250'meros. Isso evita pegar docs como "VALE, RECIBO"'
+    Caption = 'C.R Somente Doc. Numero'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 36
   end
   object FDQuery1: TFDQuery
     Connection = FDConnection1
