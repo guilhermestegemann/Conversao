@@ -75,7 +75,6 @@ type
     BtnSalvarConfig: TButton;
     BtnCarregarConfig: TButton;
     LabelConfigAtiva: TLabel;
-    Button1: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);

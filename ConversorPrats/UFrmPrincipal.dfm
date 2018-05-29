@@ -442,8 +442,6 @@ object FrmPrincipal: TFrmPrincipal
     object TabSheet2: TTabSheet
       Caption = 'Configura'#231#227'o - Tipo Estabelecimento'
       ImageIndex = 1
-      ExplicitLeft = 8
-      ExplicitTop = 28
       object sbTipoEstabelecimento: TSpeedButton
         Left = 280
         Top = 24
@@ -580,15 +578,6 @@ object FrmPrincipal: TFrmPrincipal
         Caption = 'Carregar Config'
         TabOrder = 4
         OnClick = BtnCarregarConfigClick
-      end
-      object Button1: TButton
-        Left = 495
-        Top = 591
-        Width = 130
-        Height = 25
-        Caption = 'testa config'
-        TabOrder = 5
-        OnClick = Button1Click
       end
     end
   end
