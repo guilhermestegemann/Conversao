@@ -1629,7 +1629,6 @@ end;
 procedure TFrmPrincipal.DesconectarDB;
 begin
   FDConnection1.Connected := False;
-
 end;
 
 procedure TFrmPrincipal.FormClose(Sender: TObject; var Action: TCloseAction);
