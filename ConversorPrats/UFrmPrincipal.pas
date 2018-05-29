@@ -10,7 +10,7 @@ uses
   FireDAC.Phys.PGDef, FireDAC.VCLUI.Wait, FireDAC.Stan.Param, FireDAC.DatS,
   FireDAC.DApt.Intf, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
   FireDAC.Comp.Client, System.IniFiles, Vcl.StdCtrls, Vcl.Grids, Vcl.DBGrids,
-  Vcl.Samples.Gauges, Vcl.ExtDlgs;
+  Vcl.Samples.Gauges, Vcl.ExtDlgs, Vcl.ComCtrls, Vcl.Buttons;
 
 type
   TFrmPrincipal = class(TForm)
@@ -62,6 +62,20 @@ type
     EditRotas: TEdit;
     Label5: TLabel;
     CheckBobxContasReceberSomenteDocumentosComNumero: TCheckBox;
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    SGTipoEstabelecimento: TStringGrid;
+    EditTipoEstabelecimentoDe: TEdit;
+    EditTipoEstabelecimentoPara: TEdit;
+    sbTipoEstabelecimento: TSpeedButton;
+    Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    BtnSalvarConfig: TButton;
+    BtnCarregarConfig: TButton;
+    LabelConfigAtiva: TLabel;
+    Button1: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);
@@ -92,6 +106,10 @@ type
     procedure BtnRotaClick(Sender: TObject);
     procedure BtnRotaCliforClick(Sender: TObject);
     procedure BtnVendasClick(Sender: TObject);
+    procedure sbTipoEstabelecimentoClick(Sender: TObject);
+    procedure BtnSalvarConfigClick(Sender: TObject);
+    procedure BtnCarregarConfigClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     procedure ConectarDB;
     procedure DesconectarDB;
@@ -104,10 +122,16 @@ type
     procedure SalvarArquivo;
     procedure SalvarArquivoAutomatico(Caminho : String);
     procedure AbreQuery;
+    procedure AjustaStringGrid;
+    procedure SalvarConfigTipoEstabelecimento;
+    procedure CarregarConfigTipoEstabelecimento;
+    procedure ValidaConfigTipoEstabelecimento;
     function BooleanToStr (p : Boolean) : String;
-    function  AdjustRight(st: string;tam:integer;ch:char):string;
+    function AdjustRight(st: string;tam:integer;ch:char):string;
     function AjustaData(Data : String) : String;
-    function  Numericos(st: string):string;
+    function Numericos(st: string):string;
+    function StrSplit(st: String; dl: char): TStrings;
+    function ConverteTipoEstabelecimento(Tipo : String) : String;
   published
 
   public
@@ -160,6 +184,12 @@ begin
   Gauge1.MaxValue := FDQuery1.RecordCount;
 end;
 
+procedure TFrmPrincipal.AjustaStringGrid;
+begin
+  SGTipoEstabelecimento.Cells[1,0] := 'De';
+  SGTipoEstabelecimento.Cells[2,0] := 'Para';
+end;
+
 function TFrmPrincipal.BooleanToStr(p: Boolean): String;
 begin
   Result := QuotedStr('N');
@@ -187,7 +217,7 @@ begin
   AjustaGauge;
   ListBox1.Clear;
   Codigo := 2;
-  if CheckBoxInserirDeleteAntes.Checked then
+  if (CheckBoxInserirDeleteAntes.Checked) then
   begin
     ListBox1.Items.Add('DELETE FROM BAIRRO WHERE NOME <> ''CENTRO''; COMMIT;');
   end;
@@ -202,6 +232,11 @@ begin
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
     SalvarArquivoAutomatico(EditCaminhoScripts.Text + '03-bairro.txt');
+end;
+
+procedure TFrmPrincipal.BtnCarregarConfigClick(Sender: TObject);
+begin
+  CarregarConfigTipoEstabelecimento;
 end;
 
 procedure TFrmPrincipal.BtnCidadeClick(Sender: TObject);
@@ -291,6 +326,7 @@ var
   EnviarNFe, EnviarBoleto : String;
   IsFornecedor, IsCliente, IsFuncionario, IsTransportador, IsVendedor, IsEmpresa, IsMotorista, Ativo : Boolean;
 begin
+  ValidaConfigTipoEstabelecimento;
   FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select distinct');
   FDQuery1.SQL.Add('terceiros.tipo_fornecedor as isfornecedor, ');
@@ -459,7 +495,10 @@ begin
     if Tipo = 0 then
       raise Exception.Create('TipoClifor Inválido no cliente código: '+ IntToStr(Codigo));
 
-    if TipoEstabelecimento = EmptyStr then TipoEstabelecimento := 'NULL';
+    if TipoEstabelecimento = EmptyStr then
+      TipoEstabelecimento := 'NULL'
+    else
+      TipoEstabelecimento := ConverteTipoEstabelecimento(TipoEstabelecimento);
     if CondicaoPagamento = EmptyStr then CondicaoPagamento := 'NULL';
     if Cidade = 0 then Cidade := 1;
     if NomeBairro = EmptyStr then NomeBairro := 'CENTRO';
@@ -913,12 +952,13 @@ end;
 procedure TFrmPrincipal.BtnGerarTodosClick(Sender: TObject);
 begin
   //ShowMessage('Verificar Configs');
+  ValidaConfigTipoEstabelecimento;
   CheckBoxSalvarAutomaticamente.Checked := True;
   Application.ProcessMessages;
   BtnCondicaoPagamentoClick(Self);
   Application.ProcessMessages;
-  BtnTipoEstabelecimentoClick(Self);
-  Application.ProcessMessages;
+  //BtnTipoEstabelecimentoClick(Self);
+  //Application.ProcessMessages;
   BtnBairroClick(Self);
   Application.ProcessMessages;
   BtnCidadeClick(Self);
@@ -1276,6 +1316,11 @@ begin
   SalvarArquivo;
 end;
 
+procedure TFrmPrincipal.BtnSalvarConfigClick(Sender: TObject);
+begin
+  SalvarConfigTipoEstabelecimento;
+end;
+
 procedure TFrmPrincipal.BtnTabelaPrecoClick(Sender: TObject);
 var
   SQLInsert : String;
@@ -1505,6 +1550,39 @@ begin
     SalvarArquivoAutomatico(EditCaminhoScripts.Text + '22-consumo.txt');
 end;
 
+procedure TFrmPrincipal.Button1Click(Sender: TObject);
+begin
+  ShowMessage(ConverteTipoEstabelecimento(EditTipoEstabelecimentoDe.Text));
+end;
+
+procedure TFrmPrincipal.CarregarConfigTipoEstabelecimento;
+var
+  INI : TIniFile;
+  I, QtdeContador : Integer;
+  TiposEstabelecimentosDePara : TStrings;
+begin
+  INI := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'conversor.ini');
+  QtdeContador := INI.ReadInteger('Contadores',EditDatabase.Text, 0);
+  if QtdeContador = 0 then
+    raise Exception.Create('Contador Invádido TipoEstabelecimento!');
+
+  if SGTipoEstabelecimento.RowCount > 1 then
+  begin
+    if INI.ReadString(EditDatabase.Text,'1' ,EmptyStr) <> '' then begin
+     for I := 1 to QtdeContador  do
+     begin
+       TiposEstabelecimentosDePara := StrSplit(INI.ReadString(EditDatabase.Text, IntToStr(I) ,EmptyStr),';');
+       if SGTipoEstabelecimento.Cells[1, SGTipoEstabelecimento.RowCount-1] <> EmptyStr then //begin
+         SGTipoEstabelecimento.RowCount:= SGTipoEstabelecimento.RowCount + 1;
+       SGTipoEstabelecimento.Cells[0,i] := IntToStr(I);
+       SGTipoEstabelecimento.Cells[1,i] := TiposEstabelecimentosDePara.Strings[1];
+       SGTipoEstabelecimento.Cells[2,i] := TiposEstabelecimentosDePara.Strings[2];
+     end;
+    end;
+  end;
+  LabelConfigAtiva.Caption := EditDatabase.Text;
+end;
+
 procedure TFrmPrincipal.CarregarIni;
 var
   INI : TIniFile;
@@ -1531,6 +1609,23 @@ begin
   AjustaBotoesConexao;
 end;
 
+function TFrmPrincipal.ConverteTipoEstabelecimento(Tipo: String): String;
+  var
+  i: integer;
+  //aux : string;
+begin
+  Result := EmptyStr;
+
+  for I := 1 to SGTipoEstabelecimento.RowCount do begin
+    if Tipo  = SGTipoEstabelecimento.Cells[1, i] then begin
+      Result := SGTipoEstabelecimento.Cells[2,i];
+    end;
+  end;
+  if Result = EmptyStr then
+    raise Exception.CreateFmt('Tipo Estabelecimento: %s não configurado. Verifique!',[Tipo]);
+  
+end;
+
 procedure TFrmPrincipal.DesconectarDB;
 begin
   FDConnection1.Connected := False;
@@ -1547,6 +1642,8 @@ procedure TFrmPrincipal.FormCreate(Sender: TObject);
 begin
   CarregarIni;
   AjustaBotoesConexao;
+  AjustaStringGrid;
+  PageControl1.ActivePage := TabSheet1
 end;
 
 procedure TFrmPrincipal.GerarContasAPagar(UsaProcedure: Boolean);
@@ -1680,6 +1777,20 @@ begin
   ListBox1.Items.SaveToFile(Caminho);
 end;
 
+procedure TFrmPrincipal.SalvarConfigTipoEstabelecimento;
+var
+  I : Integer;
+  INI : TIniFile;
+begin
+  INI := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'conversor.ini');
+  for I := 1 to SGTipoEstabelecimento.RowCount -1 do
+  begin
+    INI.WriteString(EditDatabase.Text,IntToStr(I),';'+SGTipoEstabelecimento.Cells[1,I]+';'+SGTipoEstabelecimento.Cells[2,I]+';' );
+  end;
+  INI.WriteString('Contadores', EditDatabase.Text,IntToStr(SGTipoEstabelecimento.RowCount-1));
+  LabelConfigAtiva.Caption := EditDatabase.Text;
+end;
+
 procedure TFrmPrincipal.SalvarIni;
 var
   INI : TIniFile;
@@ -1693,6 +1804,28 @@ begin
   INI.WriteBool('Geral', 'inserirdelete', CheckBoxInserirDeleteAntes.Checked);
   INI.WriteBool('Geral', 'salvarautomaticamente', CheckBoxSalvarAutomaticamente.Checked);
   INI.WriteBool('Geral', 'contasrecebersomentedocumentocomnumero', CheckBobxContasReceberSomenteDocumentosComNumero.Checked);
+end;
+
+procedure TFrmPrincipal.sbTipoEstabelecimentoClick(Sender: TObject);
+begin
+  if ((EditTipoEstabelecimentoDe.Text = EmptyStr) or (EditTipoEstabelecimentoPara.Text = EmptyStr)) then
+    raise Exception.Create('Informar valores nos campos De e Para!');
+  if SGTipoEstabelecimento.Cells[1,SGTipoEstabelecimento.RowCount-1] <> EmptyStr then
+    SGTipoEstabelecimento.RowCount := SGTipoEstabelecimento.RowCount + 1;
+
+  SGTipoEstabelecimento.Cells[0,SGTipoEstabelecimento.RowCount-1]:= IntToStr(SGTipoEstabelecimento.RowCount-1);
+  SGTipoEstabelecimento.Cells[1,SGTipoEstabelecimento.RowCount-1]:= EditTipoEstabelecimentoDe.Text;
+  SGTipoEstabelecimento.Cells[2,SGTipoEstabelecimento.RowCount-1]:= EditTipoEstabelecimentoPara.Text;
+
+  EditTipoEstabelecimentoDe.Clear;
+  EditTipoEstabelecimentoPara.Clear;
+  EditTipoEstabelecimentoDe.SetFocus;
+end;
+
+procedure TFrmPrincipal.ValidaConfigTipoEstabelecimento;
+begin
+  if (LowerCase(EditDatabase.Text) <> LowerCase(LabelConfigAtiva.Caption)) then
+    raise Exception.Create('Config Tipo Estabelecimento Inválida!');
 end;
 
 procedure TFrmPrincipal.VerificaConexao;
@@ -1713,6 +1846,25 @@ begin
 
   SendMessage(lb.Handle, LB_SETHORIZONTALEXTENT,
   MaxWidth + 5, 0) ;
+end;
+
+
+function TFrmPrincipal.StrSplit(st: String; dl: char): TStrings;
+Var
+   ret : TStringList;
+   r: String;
+   i: integer;
+begin
+     ret := TStringList.Create;
+     r:= '';
+     If length(st) > 0 then
+        For i := 0 to length(st) do
+            if st[i] = dl then begin
+               ret.Add(r);
+               r := '';
+            end else
+               r := r + st[i];
+     result := ret;
 end;
 
 end.
