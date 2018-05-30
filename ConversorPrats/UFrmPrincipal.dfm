@@ -22,7 +22,7 @@ object FrmPrincipal: TFrmPrincipal
     Top = 0
     Width = 1543
     Height = 854
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -552,6 +552,7 @@ object FrmPrincipal: TFrmPrincipal
         Height = 21
         NumbersOnly = True
         TabOrder = 1
+        OnKeyPress = EditTipoEstabelecimentoDeKeyPress
       end
       object EditTipoEstabelecimentoPara: TEdit
         Left = 135
@@ -560,6 +561,7 @@ object FrmPrincipal: TFrmPrincipal
         Height = 21
         NumbersOnly = True
         TabOrder = 2
+        OnKeyPress = EditTipoEstabelecimentoParaKeyPress
       end
       object BtnSalvarConfig: TButton
         Left = 3

@@ -109,6 +109,9 @@ type
     procedure BtnSalvarConfigClick(Sender: TObject);
     procedure BtnCarregarConfigClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure EditTipoEstabelecimentoDeKeyPress(Sender: TObject; var Key: Char);
+    procedure EditTipoEstabelecimentoParaKeyPress(Sender: TObject;
+      var Key: Char);
   private
     procedure ConectarDB;
     procedure DesconectarDB;
@@ -745,7 +748,7 @@ begin
   if EditIdEmpresa.Text <> EmptyStr then
     FDQuery1.SQL.Add(Format('and contas_receber.id_empresa = %s',[EditIdEmpresa.Text]));
   if CheckBobxContasReceberSomenteDocumentosComNumero.Checked then
-    FDQuery1.SQL.Add('and contas_receber.documento ~ ''^[-0-9]+$'' = true ');
+    FDQuery1.SQL.Add('and contas_receber.documento ~ ''^[-0-9]+$'' = true and contas_receber.documento not like ''%-%'' ');
   if EditRotas.Text <> EmptyStr then
   begin
     FDQuery1.SQL.Add('and contas_receber.id_terceiro in (select id from terceiros where id in ');
@@ -1628,6 +1631,21 @@ end;
 procedure TFrmPrincipal.DesconectarDB;
 begin
   FDConnection1.Connected := False;
+end;
+
+procedure TFrmPrincipal.EditTipoEstabelecimentoDeKeyPress(Sender: TObject;
+  var Key: Char);
+begin
+  if ((Key = #13) and (EditTipoEstabelecimentoDe.Text <> EmptyStr)) then
+    EditTipoEstabelecimentoPara.SetFocus;
+
+end;
+
+procedure TFrmPrincipal.EditTipoEstabelecimentoParaKeyPress(Sender: TObject;
+  var Key: Char);
+begin
+    if ((Key = #13) and (EditTipoEstabelecimentoPara.Text <> EmptyStr)) then
+      sbTipoEstabelecimentoClick(Self);
 end;
 
 procedure TFrmPrincipal.FormClose(Sender: TObject; var Action: TCloseAction);
