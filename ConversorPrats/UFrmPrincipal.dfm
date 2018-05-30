@@ -1,5 +1,5 @@
 object FrmPrincipal: TFrmPrincipal
-  Left = 0
+  Left = 274
   Top = 0
   Caption = 'Conversor Prats'
   ClientHeight = 854
@@ -11,7 +11,7 @@ object FrmPrincipal: TFrmPrincipal
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  Position = poScreenCenter
+  Position = poDesigned
   ShowHint = True
   OnClose = FormClose
   OnCreate = FormCreate
