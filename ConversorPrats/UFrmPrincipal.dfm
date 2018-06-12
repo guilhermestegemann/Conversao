@@ -27,6 +27,8 @@ object FrmPrincipal: TFrmPrincipal
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Geral'
+      ExplicitLeft = 8
+      ExplicitTop = 28
       object Gauge1: TGauge
         Left = 180
         Top = 763
@@ -166,7 +168,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object BtnClifor: TButton
         Left = 8
-        Top = 309
+        Top = 312
         Width = 166
         Height = 21
         Caption = 'Clifor'
@@ -211,7 +213,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object BtnContasPagarProcedure: TButton
         Left = 8
-        Top = 644
+        Top = 638
         Width = 166
         Height = 21
         Caption = 'Contas a Pagar Procedure'
@@ -220,7 +222,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object BtnContasReceber: TButton
         Left = 8
-        Top = 617
+        Top = 616
         Width = 166
         Height = 21
         Caption = 'Contas a Receber'
@@ -310,7 +312,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object BtnRota: TButton
         Left = 8
-        Top = 671
+        Top = 659
         Width = 166
         Height = 21
         Caption = 'Rota'
@@ -319,7 +321,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object BtnRotaClifor: TButton
         Left = 8
-        Top = 698
+        Top = 680
         Width = 166
         Height = 21
         Caption = 'Rota Clifor'
@@ -373,7 +375,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object BtnVendas: TButton
         Left = 8
-        Top = 725
+        Top = 702
         Width = 166
         Height = 21
         Caption = 'Vendas'
@@ -437,6 +439,15 @@ object FrmPrincipal: TFrmPrincipal
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+      end
+      object BtnUpdateNossoNumero: TButton
+        Left = 8
+        Top = 729
+        Width = 166
+        Height = 21
+        Caption = 'Update Nosso Numero'
+        TabOrder = 37
+        OnClick = BtnUpdateNossoNumeroClick
       end
     end
     object TabSheet2: TTabSheet
@@ -580,6 +591,14 @@ object FrmPrincipal: TFrmPrincipal
         Caption = 'Carregar Config'
         TabOrder = 4
         OnClick = BtnCarregarConfigClick
+      end
+      object Edit1: TEdit
+        Left = 767
+        Top = 64
+        Width = 121
+        Height = 21
+        TabOrder = 5
+        OnKeyPress = EditTipoEstabelecimentoParaKeyPress
       end
     end
   end

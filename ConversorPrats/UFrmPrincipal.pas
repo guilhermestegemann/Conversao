@@ -75,6 +75,8 @@ type
     BtnSalvarConfig: TButton;
     BtnCarregarConfig: TButton;
     LabelConfigAtiva: TLabel;
+    Edit1: TEdit;
+    BtnUpdateNossoNumero: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);
@@ -112,6 +114,7 @@ type
     procedure EditTipoEstabelecimentoDeKeyPress(Sender: TObject; var Key: Char);
     procedure EditTipoEstabelecimentoParaKeyPress(Sender: TObject;
       var Key: Char);
+    procedure BtnUpdateNossoNumeroClick(Sender: TObject);
   private
     procedure ConectarDB;
     procedure DesconectarDB;
@@ -328,7 +331,7 @@ var
   EnviarNFe, EnviarBoleto : String;
   IsFornecedor, IsCliente, IsFuncionario, IsTransportador, IsVendedor, IsEmpresa, IsMotorista, Ativo : Boolean;
 begin
-  ValidaConfigTipoEstabelecimento;
+//  /ValidaConfigTipoEstabelecimento;
   FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select distinct');
   FDQuery1.SQL.Add('terceiros.tipo_fornecedor as isfornecedor, ');
@@ -382,7 +385,8 @@ begin
     FDQuery1.SQL.Add('left join rotas_setores on rotas_setores.id = terceiros_setores.id_setor ');
     FDQuery1.SQL.Add(Format('where ((terceiros.tipo_fornecedor is true) or (terceiros.tipo_funcionario is true) or (rotas_setores.id_rota in (%s))) ',[EditRotas.Text]));
   end;
-
+  if Edit1.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('and terceiros.id in (%s)',[Edit1.Text]));
 
 //  FDQuery1.SQL.Add('where ((terceiros.tipo_cliente = true) or (terceiros.tipo_fornecedor = true) or terceiros.id in (select distinct(produtos_fornecedores.id_terceiro) from produtos_fornecedores)) ');
   SQLInsertClifor := 'INSERT INTO CLIFOR (CODIGO, FANTASIA, NOME, CNPJ, IE, DATA, DATANASC, NOMEPAI, NOMEMAE, TIPOESTABELECIMENTO, ENDERECO, NUMERO, CIDADE, BAIRRO, COMPLEMENTO, CEP, '+
@@ -497,10 +501,10 @@ begin
     if Tipo = 0 then
       raise Exception.Create('TipoClifor Inválido no cliente código: '+ IntToStr(Codigo));
 
-    if TipoEstabelecimento = EmptyStr then
-      TipoEstabelecimento := 'NULL'
-    else
-      TipoEstabelecimento := ConverteTipoEstabelecimento(TipoEstabelecimento);
+    //if TipoEstabelecimento = EmptyStr then
+      TipoEstabelecimento := 'NULL';
+    {else
+      TipoEstabelecimento := ConverteTipoEstabelecimento(TipoEstabelecimento);}
     if CondicaoPagamento = EmptyStr then CondicaoPagamento := 'NULL';
     if Cidade = 0 then Cidade := 1;
     if NomeBairro = EmptyStr then NomeBairro := 'CENTRO';
@@ -1465,6 +1469,57 @@ begin
     SalvarArquivoAutomatico(EditCaminhoScripts.Text + '07-unidademedida.txt');
 end;
 
+procedure TFrmPrincipal.BtnUpdateNossoNumeroClick(Sender: TObject);
+var
+  SQLUpdate : String;
+  Filial, Clifor : Integer;
+  Ordem, NossoNumero, Parcela, DataEmissao : String;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select ');
+  FDQuery1.SQL.Add('contas_receber.id, ');
+  FDQuery1.SQL.Add('contas_receber.id_terceiro as clifor, ');
+  FDQuery1.SQL.Add('contas_receber.id_empresa as filial, ');
+  FDQuery1.SQL.Add('contas_receber.tipo_doc || contas_receber.documento as ordem, ');
+  FDQuery1.SQL.Add('contas_receber.referencia as parcela, ');
+  FDQuery1.SQL.Add('contas_receber.data_emissao as dataemissao, ');
+  FDQuery1.SQL.Add('boletos.numero_boleto as nossonumero ');
+  FDQuery1.SQL.Add('from contas_receber ');
+  FDQuery1.SQL.Add('inner join boletos_contas_receber on boletos_contas_receber.id_conta_receber = contas_receber.id ');
+  FDQuery1.SQL.Add('inner join boletos on boletos.id = boletos_contas_receber.id_boleto ');
+  FDQuery1.SQL.Add('where 1=1 ');
+
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('and contas_receber.id_empresa = %s',[EditIdEmpresa.Text]));
+
+  SQLUpdate := 'UPDATE FINANCEIRO SET NOSSONUMERO = %s WHERE FINANCEIRO.FILIAL = %d AND FINANCEIRO.CLIFOR = %d AND FINANCEIRO.ORDEM = %s AND FINANCEIRO.DATAEMISSAO = %s AND SITUACAO = 99 AND TIPO = ''C'';';
+
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  while not FDQuery1.Eof do
+  begin
+    Filial := FDQuery1.FieldByName('filial').AsInteger;
+    Clifor := FDQuery1.FieldByName('clifor').AsInteger;
+    DataEmissao := AjustaData(FDQuery1.FieldByName('dataemissao').AsString);
+    Ordem := Copy(FDQuery1.FieldByName('ordem').AsString,0,18);
+    Parcela := FDQuery1.FieldByName('parcela').AsString;
+    NossoNumero := FDQuery1.FieldByName('nossonumero').AsString;
+
+    Ordem := Ordem + '-' + Parcela;
+
+    ListBox1.Items.Add(Format(SQLUpdate,[NossoNumero, Filial, Clifor, QuotedStr(Ordem), DataEmissao]));
+
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+    Application.ProcessMessages;
+  end;
+  SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '23-updatenossonumero.txt');
+end;
+
 procedure TFrmPrincipal.BtnVendasClick(Sender: TObject);
 var
   SQLInsert : String;
@@ -1514,10 +1569,10 @@ begin
   AbreQuery;
   AjustaGauge;
   ListBox1.Clear;
-  if CheckBoxInserirDeleteAntes.Checked then
+  {if CheckBoxInserirDeleteAntes.Checked then
   begin
     ListBox1.Items.Add('DELETE FROM CONSUMO; COMMIT;');
-  end;
+  end; }
   while not FDQuery1.Eof do
   begin
     Filial := FDQuery1.FieldByName('filial').AsInteger;
