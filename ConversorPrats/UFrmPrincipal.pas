@@ -331,7 +331,7 @@ var
   EnviarNFe, EnviarBoleto : String;
   IsFornecedor, IsCliente, IsFuncionario, IsTransportador, IsVendedor, IsEmpresa, IsMotorista, Ativo : Boolean;
 begin
-//  /ValidaConfigTipoEstabelecimento;
+  ValidaConfigTipoEstabelecimento;
   FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select distinct');
   FDQuery1.SQL.Add('terceiros.tipo_fornecedor as isfornecedor, ');
@@ -501,10 +501,10 @@ begin
     if Tipo = 0 then
       raise Exception.Create('TipoClifor Inválido no cliente código: '+ IntToStr(Codigo));
 
-    //if TipoEstabelecimento = EmptyStr then
-      TipoEstabelecimento := 'NULL';
-    {else
-      TipoEstabelecimento := ConverteTipoEstabelecimento(TipoEstabelecimento);}
+    if TipoEstabelecimento = EmptyStr then
+      TipoEstabelecimento := 'NULL'
+    else
+      TipoEstabelecimento := ConverteTipoEstabelecimento(TipoEstabelecimento);
     if CondicaoPagamento = EmptyStr then CondicaoPagamento := 'NULL';
     if Cidade = 0 then Cidade := 1;
     if NomeBairro = EmptyStr then NomeBairro := 'CENTRO';
@@ -720,7 +720,7 @@ procedure TFrmPrincipal.BtnContasReceberClick(Sender: TObject);
 var
   SQLInsert : String;
   Clifor, Filial : Integer;
-  Documento, Ordem, DataEmissao, DataVcto, DataBaixa, ValorTitulo, Obs, Juros, Desconto, ValorDevedor, DataAgendamento, Multa, ValorBaixa, Parcela: String;
+  Documento, Ordem, DataEmissao, DataVcto, DataBaixa, ValorTitulo, Obs, Juros, Desconto, ValorDevedor, DataAgendamento, Multa, ValorBaixa, Parcela, TipoDoc: String;
   Cancelado : Boolean;
 begin
   FDQuery1.SQL.Clear;
@@ -728,6 +728,7 @@ begin
   FDQuery1.SQL.Add('contas_receber.id_terceiro as clifor, ');
   FDQuery1.SQL.Add('contas_receber.id_empresa as filial, ');
   FDQuery1.SQL.Add('contas_receber.documento as documento, ');
+  FDQuery1.SQL.Add('contas_receber.tipo_doc, ');
   FDQuery1.SQL.Add('contas_receber.tipo_doc || contas_receber.documento as ordem, ');
   FDQuery1.SQL.Add('contas_receber.referencia as parcela, ');
   FDQuery1.SQL.Add('contas_receber.data_emissao as dataemissao, ');
@@ -779,6 +780,7 @@ begin
     Documento := Copy(Numericos(FDQuery1.FieldByName('documento').AsString),0,9);
     Ordem := Copy(FDQuery1.FieldByName('ordem').AsString,0,18);
     Parcela := FDQuery1.FieldByName('parcela').AsString;
+    TipoDoc := FDQuery1.FieldByName('tipo_doc').AsString;
     DataEmissao := AjustaData(FDQuery1.FieldByName('dataemissao').AsString);
     DataVcto := AjustaData(FDQuery1.FieldByName('datavcto').AsString);
     DataBaixa := AjustaData(FDQuery1.FieldByName('databaixa').AsString);
@@ -812,6 +814,10 @@ begin
     if Desconto = '0.00' then Desconto := 'NULL';
     if Multa = '0.00' then Multa := 'NULL';
     if Documento = EmptyStr then Documento := 'NULL';
+
+    //pedidos nunca estao cancelados
+    if TipoDoc = 'PED' then Cancelado := False;
+    
 
     ListBox1.Items.Add(Format(SQLInsert,[QuotedStr('C'), Filial, Clifor, Documento, QuotedStr(Ordem), DataEmissao, DataVcto, DataBaixa, ValorTitulo, QuotedStr(Obs), Juros, Desconto,
                        ValorBaixa, DataAgendamento, Multa, cNao, cNao, BooleanToStr(Cancelado)]));
@@ -995,10 +1001,10 @@ begin
   Application.ProcessMessages;
   BtnCliforTabelaPrecoClick(Self);
   Application.ProcessMessages;
-  BtnContasAPagarClick(Self);
-  Application.ProcessMessages;
-  BtnContasReceberClick(Self);
-  Application.ProcessMessages;
+  //BtnContasAPagarClick(Self);
+  //Application.ProcessMessages;
+  //BtnContasReceberClick(Self);
+  //Application.ProcessMessages;
   BtnRotaClick(Self);
   Application.ProcessMessages;
   BtnRotaCliforClick(Self);
@@ -1137,8 +1143,8 @@ begin
 
   SQLInsert := 'INSERT INTO PRODUTO (CODIGO, NOME, BARRAS, TIPOPRODUTO, MARCA, CLASSIFICACAO, PESOLIQUIDO, PESOBRUTO, DATA, UNCOMPRA, CODIGONCM, ORDEM, GRUPO, CEST, '+
                'PESOEMBALAGEM, QTDEREFERENCIA, UNREFERENCIA, QTDEMULTIPLAEMBALAGEM, VOLUME, PROFUNDIDADE, LARGURA, ALTURA, VENDACONTROLADA, QTDETROCA, UNTROCA, QTDEMULTIPLA, '+
-               'QTDEPADRAO, TRIBUTACAO, QTDECARREGAMENTO, UNCARREGAMENTO, QTDEVENDA, UNVENDA, QTDECOMPRA, PRAZOVALIDADE) VALUES (%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %s, %d, %d, %s, %d, %d, '+
-               '%d, %d, %d, %s, %d, %s, %d, %d, %d, %d, %s, %d, %s, %d, %d);';
+               'QTDEPADRAO, TRIBUTACAO, QTDECARREGAMENTO, UNCARREGAMENTO, QTDEVENDA, UNVENDA, QTDECOMPRA, INDICADORESCALA, PRAZOVALIDADE) VALUES (%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %s, %d, %d, %s, %d, %d, '+
+               '%d, %d, %d, %s, %d, %s, %d, %d, %d, %d, %s, %d, %s, %d, %s, %d);';
   SQLInsertGrupo := 'INSERT INTO GRUPO (CODIGO, NOME, ORDEM, COMISSAO, FLEX, ORDEMTABELA, EXPORTAR, QTDEMULTIPLA, COMISSAOFIXA, COMISSAOENTREGA, LIMITESUPERIORFLEX, '+
                     'LIMITEINFERIORFLEX, FLEXFIXO, ATIVO) VALUES (%d, %s, %d, %d, %d, %d, %s, %d, %s, %d, %d, %d, %s, %s);';
   VerificaConexao;
@@ -1177,7 +1183,7 @@ begin
 
     ListBox1.Items.Add(Format(SQLInsert,[Codigo, QuotedStr(Nome), QuotedStr(Barras), TipoProduto, Marca, Classificacao, PesoLiquido, PesoBruto, Data, QuotedStr(UnCompra),
                        QuotedStr(CodigoNcm), Ordem, Grupo, QuotedStr(Cest), 0, 1, QuotedStr(UnCompra), 1, 0, 0, 0, 0, cNao, 1, QuotedStr(UnCompra), 1, 1, 1, 1, QuotedStr(UnCompra),
-                       1, QuotedStr(UnCompra), 1, Codigo]));
+                       1, QuotedStr(UnCompra), 1, cSim, Codigo]));
 
     FDQuery1.Next;
     Gauge1.AddProgress(1);

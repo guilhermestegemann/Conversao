@@ -27,8 +27,6 @@ object FrmPrincipal: TFrmPrincipal
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Geral'
-      ExplicitLeft = 8
-      ExplicitTop = 28
       object Gauge1: TGauge
         Left = 180
         Top = 763
@@ -222,7 +220,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object BtnContasReceber: TButton
         Left = 8
-        Top = 616
+        Top = 621
         Width = 166
         Height = 21
         Caption = 'Contas a Receber'
