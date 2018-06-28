@@ -416,6 +416,7 @@ begin
   ListBox1.Items.Add(Format('UPDATE OR INSERT INTO TIPO (CODIGO, NOME) VALUES (%d, %s) MATCHING (CODIGO); COMMIT;',[6, QuotedStr('VENDEDOR')]));
   ListBox1.Items.Add(Format('UPDATE OR INSERT INTO TIPO (CODIGO, NOME) VALUES (%d, %s) MATCHING (CODIGO); COMMIT;',[7, QuotedStr('EMPRESA')]));
   ListBox1.Items.Add(Format('UPDATE OR INSERT INTO TIPO (CODIGO, NOME) VALUES (%d, %s) MATCHING (CODIGO); COMMIT;',[8, QuotedStr('MOTORISTA')]));
+  ListBox1.Items.Add('ALTER TRIGGER TRIGGER_CLIFORCONTATO_VALIDAR INACTIVE; COMMIT;');
   while not FDQuery1.Eof do
   begin
     IsVendedor := FDQuery1.FieldByName('isVendedor').AsBoolean;
@@ -605,6 +606,7 @@ begin
     FDQuery1.Next;
     Gauge1.AddProgress(1);
   end;
+  ListBox1.Items.Add('ALTER TRIGGER TRIGGER_CLIFORCONTATO_VALIDAR ACTIVE;');
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
     SalvarArquivoAutomatico(EditCaminhoScripts.Text + '06-clifor.txt');

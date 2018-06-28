@@ -220,7 +220,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object BtnContasReceber: TButton
         Left = 8
-        Top = 621
+        Top = 616
         Width = 166
         Height = 21
         Caption = 'Contas a Receber'
