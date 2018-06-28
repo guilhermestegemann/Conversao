@@ -437,7 +437,7 @@ begin
     NomeMae := FDQuery1.FieldByName('nomemae').AsString;
     TipoEstabelecimento := FDQuery1.FieldByName('tipoestabelecimento').AsString;
     Contato := FDQuery1.FieldByName('contato').AsString;
-    Endereco := FDQuery1.FieldByName('endereco').AsString;
+    Endereco := Copy(FDQuery1.FieldByName('endereco').AsString, 0, 60);
     Numero := FDQuery1.FieldByName('numero').AsString;
     Cidade := FDQuery1.FieldByName('cidade').AsInteger;
     NomeBairro := FDQuery1.FieldByName('nomebairro').AsString;
