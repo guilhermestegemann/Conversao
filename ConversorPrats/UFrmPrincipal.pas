@@ -10,7 +10,7 @@ uses
   FireDAC.Phys.PGDef, FireDAC.VCLUI.Wait, FireDAC.Stan.Param, FireDAC.DatS,
   FireDAC.DApt.Intf, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
   FireDAC.Comp.Client, System.IniFiles, Vcl.StdCtrls, Vcl.Grids, Vcl.DBGrids,
-  Vcl.Samples.Gauges, Vcl.ExtDlgs, Vcl.ComCtrls, Vcl.Buttons;
+  Vcl.Samples.Gauges, Vcl.ExtDlgs, Vcl.ComCtrls, Vcl.Buttons, ComObj;
 
 type
   TFrmPrincipal = class(TForm)
@@ -66,17 +66,24 @@ type
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
     SGTipoEstabelecimento: TStringGrid;
-    EditTipoEstabelecimentoDe: TEdit;
-    EditTipoEstabelecimentoPara: TEdit;
     sbTipoEstabelecimento: TSpeedButton;
-    Label6: TLabel;
-    Label7: TLabel;
     Label8: TLabel;
     BtnSalvarConfig: TButton;
     BtnCarregarConfig: TButton;
     LabelConfigAtiva: TLabel;
-    Edit1: TEdit;
     BtnUpdateNossoNumero: TButton;
+    BtnContasAReceberExcel: TButton;
+    OpenDialog1: TOpenDialog;
+    EditCliforIn: TEdit;
+    Label9: TLabel;
+    EditTipoEstabelecimentoPara: TEdit;
+    EditTipoEstabelecimentoDe: TEdit;
+    Label6: TLabel;
+    Label7: TLabel;
+    EditFimPlanilha: TEdit;
+    EditInicioPlanilha: TEdit;
+    Label10: TLabel;
+    Label11: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);
@@ -115,7 +122,10 @@ type
     procedure EditTipoEstabelecimentoParaKeyPress(Sender: TObject;
       var Key: Char);
     procedure BtnUpdateNossoNumeroClick(Sender: TObject);
+    procedure BtnContasAReceberExcelClick(Sender: TObject);
+
   private
+    procedure CarregarExcel;
     procedure ConectarDB;
     procedure DesconectarDB;
     procedure CarregarIni;
@@ -148,6 +158,7 @@ const
   cSim  : String = '''S''';
 var
   FrmPrincipal: TFrmPrincipal;
+  Excel, Planilha : OleVariant;
 
 implementation
 
@@ -385,8 +396,8 @@ begin
     FDQuery1.SQL.Add('left join rotas_setores on rotas_setores.id = terceiros_setores.id_setor ');
     FDQuery1.SQL.Add(Format('where ((terceiros.tipo_fornecedor is true) or (terceiros.tipo_funcionario is true) or (rotas_setores.id_rota in (%s))) ',[EditRotas.Text]));
   end;
-  if Edit1.Text <> EmptyStr then
-    FDQuery1.SQL.Add(Format('and terceiros.id in (%s)',[Edit1.Text]));
+  if EditCliforIn.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('and terceiros.id in (%s)',[EditCliforIn.Text]));
 
 //  FDQuery1.SQL.Add('where ((terceiros.tipo_cliente = true) or (terceiros.tipo_fornecedor = true) or terceiros.id in (select distinct(produtos_fornecedores.id_terceiro) from produtos_fornecedores)) ');
   SQLInsertClifor := 'INSERT INTO CLIFOR (CODIGO, FANTASIA, NOME, CNPJ, IE, DATA, DATANASC, NOMEPAI, NOMEMAE, TIPOESTABELECIMENTO, ENDERECO, NUMERO, CIDADE, BAIRRO, COMPLEMENTO, CEP, '+
@@ -711,6 +722,44 @@ end;
 procedure TFrmPrincipal.BtnContasAPagarClick(Sender: TObject);
 begin
   GerarContasAPagar(False);
+end;
+
+procedure TFrmPrincipal.BtnContasAReceberExcelClick(Sender: TObject);
+var
+  I : Integer;
+  SQLInsert : String;
+  Clifor, Ordem, Documento, Emissao, Vencimento, Valor, NossoNumero, Historico : String;
+begin
+  try
+    ShowMessage('Lembrar de preencher Inicio Planilha e Fim Planilha');
+    CarregarExcel;
+    SQLInsert := 'INSERT INTO FINANCEIRO (FILIAL, TIPO, CLIFOR, ORDEM, DOCUMENTO, DATAEMISSAO, DATAVCTO, VALOR, NOSSONUMERO, HISTORICO, SITUACAO) '+
+                 'VALUES (1, %s, %s, %s, %s, %s, %s, %s, %s, %s, 99);';
+    ListBox1.Clear;
+    ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES (99, ''CONVERSAO'', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
+    Gauge1.Progress := StrToInt(EditInicioPlanilha.Text);
+    Gauge1.MaxValue := StrToInt(EditFimPlanilha.Text);
+    for I := StrToInt(EditInicioPlanilha.Text) to StrToInt(EditFimPlanilha.Text) do
+    begin
+      Clifor := Trim(Planilha.cells[i,2]);
+      Ordem := Trim(Planilha.cells[i,6]);
+      Documento := Trim(Planilha.cells[i,6]);
+      Emissao := StringReplace(Trim(Planilha.cells[i,7]),'/','.',[rfReplaceAll]);
+      Vencimento := StringReplace(Trim(Planilha.cells[i,9]),'/','.',[rfReplaceAll]);
+      Valor := StringReplace(Trim(Planilha.cells[i,13]),',','.',[rfReplaceAll]);
+      NossoNumero := Trim(Planilha.cells[i,14]);
+      Historico := Trim(Planilha.cells[i,21]);
+
+      Documento := Copy(Documento,4,(Pos('/',Documento)-4));
+      NossoNumero := Copy(NossoNumero,0,(Pos('-',NossoNumero)-1));
+      if NossoNumero = EmptyStr then NossoNumero := 'NULL';
+      ListBox1.Items.Add(Format(SQLInsert,[QuotedStr('C'), Clifor, QuotedStr(Ordem), Documento, QuotedStr(Emissao), QuotedStr(Vencimento), Valor, NossoNumero, Historico]));
+
+      Gauge1.AddProgress(1);
+    end;
+  finally
+    Excel.Quit;
+  end;
 end;
 
 procedure TFrmPrincipal.BtnContasPagarProcedureClick(Sender: TObject);
@@ -1648,6 +1697,17 @@ begin
   LabelConfigAtiva.Caption := EditDatabase.Text;
 end;
 
+procedure TFrmPrincipal.CarregarExcel;
+begin
+  if OpenDialog1.Execute then
+  begin
+    Excel := CreateOleObject('Excel.Application');
+    Excel.WorkBooks.open(OpenDialog1.FileName);
+    Planilha := Excel.WorkSheets[1];
+  end;
+
+end;
+
 procedure TFrmPrincipal.CarregarIni;
 var
   INI : TIniFile;
@@ -1655,6 +1715,8 @@ begin
   INI := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'conversor.ini');
   EditDataBase.Text := INI.ReadString('Geral', 'database', EmptyStr);
   EditCaminhoScripts.Text := INI.ReadString('Geral', 'caminhoscripts', EmptyStr);
+  EditInicioPlanilha.Text := INI.ReadString('Geral', 'inicioplanilha', EmptyStr);
+  EditFimPlanilha.Text := INI.ReadString('Geral', 'fimplanilha', EmptyStr);
   EditIdEmpresa.Text := INI.ReadString('Geral', 'idempresa', EmptyStr);
   EditNaturezaOperacao.Text := INI.ReadString('Geral', 'naturezaoperacao', EmptyStr);
   EditRotas.Text := INI.ReadString('Geral', 'rotas', EmptyStr);
@@ -1877,6 +1939,8 @@ begin
   INI := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'conversor.ini');
   INI.WriteString('Geral', 'database', EditDatabase.Text);
   INI.WriteString('Geral', 'caminhoscripts', EditCaminhoScripts.Text);
+  INI.WriteString('Geral', 'inicioplanilha', EditInicioPlanilha.Text);
+  INI.WriteString('Geral', 'fimplanilha', EditFimPlanilha.Text);
   INI.WriteString('Geral', 'idempresa', EditIdEmpresa.Text);
   INI.WriteString('Geral', 'naturezaoperacao', EditNaturezaOperacao.Text);
   INI.WriteString('Geral', 'rotas', EditRotas.Text);
@@ -1947,3 +2011,4 @@ begin
 end;
 
 end.
+
