@@ -1229,7 +1229,7 @@ begin
     if Marca = EmptyStr then Marca := 'NULL';
     if Classificacao = EmptyStr then Classificacao := 'NULL';
     if Grupo = 0 then Grupo := 9999;
-    if ((Length(Barras) = 3) or (Length(Barras) = 4)) then Barras := IntToStr(Codigo);
+    if ((Length(Barras) = 1) or (Length(Barras) = 2) or (Length(Barras) = 3) or (Length(Barras) = 4)) then Barras := IntToStr(Codigo);
     
 
     ListBox1.Items.Add(Format(SQLInsert,[Codigo, QuotedStr(Nome), QuotedStr(Barras), TipoProduto, Marca, Classificacao, PesoLiquido, PesoBruto, Data, QuotedStr(UnCompra),

@@ -292,7 +292,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object BtnProduto: TButton
         Left = 8
-        Top = 431
+        Top = 426
         Width = 166
         Height = 21
         Caption = 'Produto'
@@ -460,8 +460,6 @@ object FrmPrincipal: TFrmPrincipal
     object TabSheet2: TTabSheet
       Caption = 'Configura'#231#227'o'
       ImageIndex = 1
-      ExplicitLeft = 8
-      ExplicitTop = 28
       object sbTipoEstabelecimento: TSpeedButton
         Left = 280
         Top = 24
