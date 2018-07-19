@@ -256,7 +256,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object BtnGerarTodos: TButton
         Left = 8
-        Top = 740
+        Top = 763
         Width = 166
         Height = 21
         Caption = 'Gerar Todos'
@@ -328,7 +328,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object BtnSalvar: TButton
         Left = 8
-        Top = 763
+        Top = 786
         Width = 166
         Height = 21
         Caption = 'Salvar'
@@ -440,7 +440,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object BtnUpdateNossoNumero: TButton
         Left = 8
-        Top = 696
+        Top = 691
         Width = 166
         Height = 21
         Caption = 'Update Nosso Numero'
@@ -455,6 +455,15 @@ object FrmPrincipal: TFrmPrincipal
         Caption = 'Contas a Receber (Excel)'
         TabOrder = 38
         OnClick = BtnContasAReceberExcelClick
+      end
+      object BtnUpdateRapel: TButton
+        Left = 8
+        Top = 745
+        Width = 166
+        Height = 21
+        Caption = 'Update Rapel'
+        TabOrder = 39
+        OnClick = BtnUpdateRapelClick
       end
     end
     object TabSheet2: TTabSheet

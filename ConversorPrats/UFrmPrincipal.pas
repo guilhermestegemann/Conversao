@@ -84,6 +84,7 @@ type
     EditInicioPlanilha: TEdit;
     Label10: TLabel;
     Label11: TLabel;
+    BtnUpdateRapel: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);
@@ -123,6 +124,7 @@ type
       var Key: Char);
     procedure BtnUpdateNossoNumeroClick(Sender: TObject);
     procedure BtnContasAReceberExcelClick(Sender: TObject);
+    procedure BtnUpdateRapelClick(Sender: TObject);
 
   private
     procedure CarregarExcel;
@@ -1575,6 +1577,46 @@ begin
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
     SalvarArquivoAutomatico(EditCaminhoScripts.Text + '23-updatenossonumero.txt');
+end;
+
+procedure TFrmPrincipal.BtnUpdateRapelClick(Sender: TObject);
+var
+  SQLUpdate : String;
+  Clifor : Integer;
+  Rapel : String;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select terceiros.id as clifor, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.id_perfil_boleto, ');
+  FDQuery1.SQL.Add('perfil_boletos.perc_desconto as rapel ');
+  FDQuery1.SQL.Add('from terceiros ');
+  FDQuery1.SQL.Add('inner join terceiros_dados_emp on terceiros_dados_emp.id_terceiro = terceiros.id ');
+  FDQuery1.SQL.Add('inner join perfil_boletos on perfil_boletos.id = terceiros_dados_emp.id_perfil_boleto ');
+  FDQuery1.SQL.Add('where terceiros_dados_emp.id_perfil_boleto > 0 ');
+  FDQuery1.SQL.Add('and perfil_boletos.perc_desconto > 0 ');
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('and perfil_boletos.id_empresa = %s',[EditIdEmpresa.Text]));
+  FDQuery1.SQL.Add('order by terceiros.id ');
+  SQLUpdate := 'UPDATE CLIFOR SET RAPEL = %s WHERE CLIFOR.CODIGO = %d;';
+
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  while not FDQuery1.Eof do
+  begin
+    Rapel := StringReplace(FDQuery1.FieldByName('rapel').AsString,',','.',[rfReplaceAll]);
+    Clifor := FDQuery1.FieldByName('clifor').AsInteger;
+
+    ListBox1.Items.Add(Format(SQLUpdate,[Rapel, Clifor]));
+
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+    Application.ProcessMessages;
+  end;
+  SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '30-updaterapel.txt');
 end;
 
 procedure TFrmPrincipal.BtnVendasClick(Sender: TObject);
