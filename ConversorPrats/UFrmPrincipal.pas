@@ -584,6 +584,9 @@ begin
           EmailBoleto := EmptyStr;
           EnviarBoleto := QuotedStr('N');
         end;
+        if ((Email = EmptyStr) and (EmailNFe = EmptyStr) and (EmailBoleto = EmptyStr)) then
+          ListBox1.Items.Add(Format(SQLInsertCliforContato, [Codigo, QuotedStr(Telefone), QuotedStr(Contato), cNull, cNao, cNao, cNao, cNao]));
+
       end;
       //Celular
       if Celular <> EmptyStr then
