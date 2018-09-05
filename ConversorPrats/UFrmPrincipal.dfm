@@ -93,6 +93,32 @@ object FrmPrincipal: TFrmPrincipal
         Font.Style = []
         ParentFont = False
       end
+      object LabelComodato: TLabel
+        Left = 839
+        Top = 810
+        Width = 104
+        Height = 13
+        Caption = 'Nat. Op. Comodato'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object LabelTrocas: TLabel
+        Left = 1183
+        Top = 810
+        Width = 84
+        Height = 13
+        Caption = 'Nat. Op. Trocas'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
       object ListBox1: TListBox
         Left = 180
         Top = 383
@@ -292,7 +318,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object BtnProduto: TButton
         Left = 8
-        Top = 426
+        Top = 431
         Width = 166
         Height = 21
         Caption = 'Produto'
@@ -440,7 +466,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object BtnUpdateNossoNumero: TButton
         Left = 8
-        Top = 691
+        Top = 696
         Width = 166
         Height = 21
         Caption = 'Update Nosso Numero'
@@ -458,12 +484,48 @@ object FrmPrincipal: TFrmPrincipal
       end
       object BtnUpdateRapel: TButton
         Left = 8
-        Top = 745
+        Top = 740
         Width = 166
         Height = 21
         Caption = 'Update Rapel'
         TabOrder = 39
         OnClick = BtnUpdateRapelClick
+      end
+      object EditNatOpTrocas: TEdit
+        Left = 1279
+        Top = 805
+        Width = 74
+        Height = 21
+        NumbersOnly = True
+        TabOrder = 40
+        OnKeyPress = EditTipoEstabelecimentoParaKeyPress
+      end
+      object EditNatOpComodato: TEdit
+        Left = 976
+        Top = 805
+        Width = 89
+        Height = 21
+        NumbersOnly = True
+        TabOrder = 41
+        OnKeyPress = EditTipoEstabelecimentoDeKeyPress
+      end
+      object BtnTrocas: TButton
+        Left = 1359
+        Top = 805
+        Width = 82
+        Height = 21
+        Caption = 'Trocas'
+        TabOrder = 42
+        OnClick = BtnTrocasClick
+      end
+      object BtnComodato: TButton
+        Left = 1087
+        Top = 805
+        Width = 90
+        Height = 21
+        Caption = 'Comodato'
+        TabOrder = 43
+        OnClick = BtnComodatoClick
       end
     end
     object TabSheet2: TTabSheet
@@ -671,6 +733,22 @@ object FrmPrincipal: TFrmPrincipal
         NumbersOnly = True
         TabOrder = 7
         OnKeyPress = EditTipoEstabelecimentoDeKeyPress
+      end
+      object ListBoxNossoNumero: TListBox
+        Left = 512
+        Top = 376
+        Width = 182
+        Height = 425
+        ItemHeight = 13
+        TabOrder = 8
+      end
+      object ListBoxNossoNumeroDuplicado: TListBox
+        Left = 711
+        Top = 376
+        Width = 186
+        Height = 425
+        ItemHeight = 13
+        TabOrder = 9
       end
     end
   end
