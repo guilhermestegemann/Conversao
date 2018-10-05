@@ -8,7 +8,6 @@ object DMDados: TDMDados
     DriverName = 'Firebird'
     LoginPrompt = False
     Params.Strings = (
-      'Database=database.fdb'
       'DriverUnit=Data.DBXFirebird'
       
         'DriverPackageLoader=TDBXDynalinkDriverLoader,DbxCommonDriver240.' +
@@ -45,7 +44,11 @@ object DMDados: TDMDados
       'RoleName=RoleName'
       'ServerCharSet='
       'Trim Char=False'
-      'DriverName=Firebird')
+      'DriverName=Firebird'
+      
+        'Database=C:\Users\Topsystem\Desktop\guilherme\Dados Clientes\Sha' +
+        'reFoods\TOPDADOS.FDB')
+    Connected = True
     Left = 56
     Top = 16
   end
@@ -1353,6 +1356,7 @@ object DMDados: TDMDados
     Top = 16
   end
   object SQLBairro: TSQLQuery
+    Active = True
     MaxBlobSize = -1
     Params = <>
     SQL.Strings = (
@@ -2296,6 +2300,211 @@ object DMDados: TDMDados
       FieldName = 'CSTORIGEM'
       Size = 1
     end
+    object cdItemNFID: TLargeintField
+      FieldName = 'ID'
+      Required = True
+    end
+    object cdItemNFBASERESSARCIMENTOST: TFMTBCDField
+      FieldName = 'BASERESSARCIMENTOST'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFVALORTOTALTRIBUTO: TFMTBCDField
+      FieldName = 'VALORTOTALTRIBUTO'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFFCI: TIntegerField
+      FieldName = 'FCI'
+    end
+    object cdItemNFUNIDADEMEDIDA: TStringField
+      FieldName = 'UNIDADEMEDIDA'
+      Size = 6
+    end
+    object cdItemNFITEMORDEMCOMPRA: TIntegerField
+      FieldName = 'ITEMORDEMCOMPRA'
+    end
+    object cdItemNFVALORCUSTOTABELAANTERIOR: TFMTBCDField
+      FieldName = 'VALORCUSTOTABELAANTERIOR'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFREGRADESCONTO: TIntegerField
+      FieldName = 'REGRADESCONTO'
+    end
+    object cdItemNFVALORCREDITOPRESUMIDO: TFMTBCDField
+      FieldName = 'VALORCREDITOPRESUMIDO'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFBASECREDITOPRESUMIDO: TFMTBCDField
+      FieldName = 'BASECREDITOPRESUMIDO'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFPERCCREDITOPRESUMIDO: TFMTBCDField
+      FieldName = 'PERCCREDITOPRESUMIDO'
+      Precision = 18
+      Size = 4
+    end
+    object cdItemNFBASERESSARCIMENTOICMS: TFMTBCDField
+      FieldName = 'BASERESSARCIMENTOICMS'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFVALORRESSARCIMENTOICMS: TFMTBCDField
+      FieldName = 'VALORRESSARCIMENTOICMS'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFENQUADRAMENTOLEGALIPI: TStringField
+      FieldName = 'ENQUADRAMENTOLEGALIPI'
+      Size = 3
+    end
+    object cdItemNFVALORICMSDESTINO: TFMTBCDField
+      FieldName = 'VALORICMSDESTINO'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFVALORDIFAL: TFMTBCDField
+      FieldName = 'VALORDIFAL'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFVALORPARTILHAORIGEM: TFMTBCDField
+      FieldName = 'VALORPARTILHAORIGEM'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFVALORPARTILHADESTINO: TFMTBCDField
+      FieldName = 'VALORPARTILHADESTINO'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFPERCFCEP: TFMTBCDField
+      FieldName = 'PERCFCEP'
+      Precision = 18
+      Size = 4
+    end
+    object cdItemNFVALORFCEP: TFMTBCDField
+      FieldName = 'VALORFCEP'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFPERCICMSINTERNA: TFMTBCDField
+      FieldName = 'PERCICMSINTERNA'
+      Precision = 18
+      Size = 4
+    end
+    object cdItemNFPERCDESTINO: TFMTBCDField
+      FieldName = 'PERCDESTINO'
+      Precision = 18
+      Size = 4
+    end
+    object cdItemNFCODIGONCM: TStringField
+      FieldName = 'CODIGONCM'
+      Size = 8
+    end
+    object cdItemNFCEST: TStringField
+      FieldName = 'CEST'
+      Size = 9
+    end
+    object cdItemNFBASEICMSINTERESTADUAL: TFMTBCDField
+      FieldName = 'BASEICMSINTERESTADUAL'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFPERCICMSINTERESTADUAL: TFMTBCDField
+      FieldName = 'PERCICMSINTERESTADUAL'
+      Precision = 18
+      Size = 4
+    end
+    object cdItemNFBASEFCEP: TFMTBCDField
+      FieldName = 'BASEFCEP'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFMOTIVOICMSDESONERADO: TIntegerField
+      FieldName = 'MOTIVOICMSDESONERADO'
+    end
+    object cdItemNFVALORICMSDESONERADO: TFMTBCDField
+      FieldName = 'VALORICMSDESONERADO'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFBASEICMSDESONERADO: TFMTBCDField
+      FieldName = 'BASEICMSDESONERADO'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFIDNF: TLargeintField
+      FieldName = 'IDNF'
+    end
+    object cdItemNFVALORFCPST: TFMTBCDField
+      FieldName = 'VALORFCPST'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFVALORIPIDEVOLVIDO: TFMTBCDField
+      FieldName = 'VALORIPIDEVOLVIDO'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFPERCST: TFMTBCDField
+      FieldName = 'PERCST'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFPERCSIMPLES: TFMTBCDField
+      FieldName = 'PERCSIMPLES'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFBASEFCPST: TFMTBCDField
+      FieldName = 'BASEFCPST'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFPERCFCPST: TFMTBCDField
+      FieldName = 'PERCFCPST'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFBASEFCPSTRET: TFMTBCDField
+      FieldName = 'BASEFCPSTRET'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFPERCFCPSTRET: TFMTBCDField
+      FieldName = 'PERCFCPSTRET'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFVALORFCPSTRET: TFMTBCDField
+      FieldName = 'VALORFCPSTRET'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFBASEFCPUFDEST: TFMTBCDField
+      FieldName = 'BASEFCPUFDEST'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFPERCFCPUFDEST: TFMTBCDField
+      FieldName = 'PERCFCPUFDEST'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFVALORFCPUFDEST: TFMTBCDField
+      FieldName = 'VALORFCPUFDEST'
+      Precision = 18
+      Size = 2
+    end
+    object cdItemNFVALORCOTACAPITAL: TFMTBCDField
+      FieldName = 'VALORCOTACAPITAL'
+      Precision = 18
+      Size = 2
+    end
   end
   object dspItemNF: TDataSetProvider
     DataSet = SQLItemNF
@@ -2311,6 +2520,52 @@ object DMDados: TDMDados
     SQLConnection = SQLConnection
     Left = 39
     Top = 279
+    object SQLOrdemNFNUMERO: TIntegerField
+      FieldName = 'NUMERO'
+      Required = True
+    end
+    object SQLOrdemNFSERIE: TStringField
+      FieldName = 'SERIE'
+      Required = True
+      Size = 5
+    end
+    object SQLOrdemNFFILIAL: TIntegerField
+      FieldName = 'FILIAL'
+      Required = True
+    end
+    object SQLOrdemNFORIGEM: TStringField
+      FieldName = 'ORIGEM'
+      Required = True
+      Size = 1
+    end
+    object SQLOrdemNFCLIFOR: TIntegerField
+      FieldName = 'CLIFOR'
+      Required = True
+    end
+    object SQLOrdemNFORDEM: TStringField
+      FieldName = 'ORDEM'
+      Required = True
+      Size = 15
+    end
+    object SQLOrdemNFVCTO: TDateField
+      FieldName = 'VCTO'
+      Required = True
+    end
+    object SQLOrdemNFVALOR: TFMTBCDField
+      FieldName = 'VALOR'
+      Precision = 18
+      Size = 2
+    end
+    object SQLOrdemNFALTERADA: TStringField
+      FieldName = 'ALTERADA'
+      Size = 1
+    end
+    object SQLOrdemNFHISTORICO: TIntegerField
+      FieldName = 'HISTORICO'
+    end
+    object SQLOrdemNFPARCELA: TIntegerField
+      FieldName = 'PARCELA'
+    end
   end
   object cdOrdemNF: TClientDataSet
     Aggregates = <>
@@ -2362,6 +2617,9 @@ object DMDados: TDMDados
     end
     object cdOrdemNFHISTORICO: TIntegerField
       FieldName = 'HISTORICO'
+    end
+    object cdOrdemNFPARCELA: TIntegerField
+      FieldName = 'PARCELA'
     end
   end
   object dspOrdemNF: TDataSetProvider
@@ -3227,23 +3485,6 @@ object DMDados: TDMDados
       FieldName = 'FILIAL'
       Required = True
     end
-    object SQLQueryCTeNFNUMERO: TIntegerField
-      FieldName = 'NFNUMERO'
-    end
-    object SQLQueryCTeNFSERIE: TStringField
-      FieldName = 'NFSERIE'
-      Size = 5
-    end
-    object SQLQueryCTeNFFILIAL: TIntegerField
-      FieldName = 'NFFILIAL'
-    end
-    object SQLQueryCTeNFORIGEM: TStringField
-      FieldName = 'NFORIGEM'
-      Size = 1
-    end
-    object SQLQueryCTeNFCLIFOR: TIntegerField
-      FieldName = 'NFCLIFOR'
-    end
     object SQLQueryCTeCLIFOR: TIntegerField
       FieldName = 'CLIFOR'
       Required = True
@@ -3280,55 +3521,55 @@ object DMDados: TDMDados
     object SQLQueryCTeVALORTOTAL: TFMTBCDField
       FieldName = 'VALORTOTAL'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object SQLQueryCTeVALORDESCONTO: TFMTBCDField
       FieldName = 'VALORDESCONTO'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object SQLQueryCTeVALORREDBASEICMS: TFMTBCDField
       FieldName = 'VALORREDBASEICMS'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object SQLQueryCTeBASEICMS: TFMTBCDField
       FieldName = 'BASEICMS'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object SQLQueryCTePERCICMS: TFMTBCDField
       FieldName = 'PERCICMS'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object SQLQueryCTeVALORICMS: TFMTBCDField
       FieldName = 'VALORICMS'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object SQLQueryCTeVALORISENTO: TFMTBCDField
       FieldName = 'VALORISENTO'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object SQLQueryCTeVALOROUTRAS: TFMTBCDField
       FieldName = 'VALOROUTRAS'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object SQLQueryCTeVALORSERVICO: TFMTBCDField
       FieldName = 'VALORSERVICO'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object SQLQueryCTeCANCELADO: TStringField
@@ -3338,11 +3579,6 @@ object DMDados: TDMDados
     end
     object SQLQueryCTeMODALIDADE: TStringField
       FieldName = 'MODALIDADE'
-      Required = True
-      Size = 1
-    end
-    object SQLQueryCTeNATUREZA: TStringField
-      FieldName = 'NATUREZA'
       Required = True
       Size = 1
     end
@@ -3368,17 +3604,17 @@ object DMDados: TDMDados
     end
     object SQLQueryCTeBASEPIS: TFMTBCDField
       FieldName = 'BASEPIS'
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object SQLQueryCTePERCPIS: TFMTBCDField
       FieldName = 'PERCPIS'
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object SQLQueryCTeVALORPIS: TFMTBCDField
       FieldName = 'VALORPIS'
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object SQLQueryCTeCSTCOFINS: TStringField
@@ -3391,17 +3627,17 @@ object DMDados: TDMDados
     end
     object SQLQueryCTeBASECOFINS: TFMTBCDField
       FieldName = 'BASECOFINS'
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object SQLQueryCTePERCCOFINS: TFMTBCDField
       FieldName = 'PERCCOFINS'
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object SQLQueryCTeVALORCOFINS: TFMTBCDField
       FieldName = 'VALORCOFINS'
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object SQLQueryCTeCSTICMS: TStringField
@@ -3468,13 +3704,13 @@ object DMDados: TDMDados
     object SQLQueryCTeBASEST: TFMTBCDField
       FieldName = 'BASEST'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object SQLQueryCTeVALORST: TFMTBCDField
       FieldName = 'VALORST'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object SQLQueryCTeDATAPREVISTAENTREGA: TDateField
@@ -3502,12 +3738,12 @@ object DMDados: TDMDados
     end
     object SQLQueryCTePESOBRUTO: TFMTBCDField
       FieldName = 'PESOBRUTO'
-      Precision = 15
+      Precision = 18
       Size = 3
     end
     object SQLQueryCTePESOLIQUIDO: TFMTBCDField
       FieldName = 'PESOLIQUIDO'
-      Precision = 15
+      Precision = 18
       Size = 3
     end
     object SQLQueryCTeVOLUMES: TIntegerField
@@ -3515,7 +3751,7 @@ object DMDados: TDMDados
     end
     object SQLQueryCTeVALORTOTALITENS: TFMTBCDField
       FieldName = 'VALORTOTALITENS'
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object SQLQueryCTeSOMAR: TStringField
@@ -3530,7 +3766,7 @@ object DMDados: TDMDados
     object SQLQueryCTeVALORTOTALTRIBUTO: TFMTBCDField
       FieldName = 'VALORTOTALTRIBUTO'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object SQLQueryCTeNBS: TIntegerField
@@ -3547,7 +3783,7 @@ object DMDados: TDMDados
     end
     object SQLQueryCTeVALORPEDAGIO: TFMTBCDField
       FieldName = 'VALORPEDAGIO'
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object SQLQueryCTeCANCXML: TMemoField
@@ -3572,6 +3808,63 @@ object DMDados: TDMDados
     object SQLQueryCTeINDICADORLOTACAO: TIntegerField
       FieldName = 'INDICADORLOTACAO'
     end
+    object SQLQueryCTeEDITADO: TStringField
+      FieldName = 'EDITADO'
+      Required = True
+      Size = 1
+    end
+    object SQLQueryCTeVALORBASEICMSSTRETIDO: TFMTBCDField
+      FieldName = 'VALORBASEICMSSTRETIDO'
+      Precision = 18
+      Size = 2
+    end
+    object SQLQueryCTeVALORICMSSTRETIDO: TFMTBCDField
+      FieldName = 'VALORICMSSTRETIDO'
+      Precision = 18
+      Size = 2
+    end
+    object SQLQueryCTePERCICMSSTRETIDO: TFMTBCDField
+      FieldName = 'PERCICMSSTRETIDO'
+      Precision = 18
+      Size = 2
+    end
+    object SQLQueryCTeVALORCREDITOPRESUMIDO: TFMTBCDField
+      FieldName = 'VALORCREDITOPRESUMIDO'
+      Precision = 18
+      Size = 2
+    end
+    object SQLQueryCTePERCREDUCAOBASEICMS: TFMTBCDField
+      FieldName = 'PERCREDUCAOBASEICMS'
+      Precision = 18
+      Size = 2
+    end
+    object SQLQueryCTePERCREDUCAOBASEOUTRAUF: TFMTBCDField
+      FieldName = 'PERCREDUCAOBASEOUTRAUF'
+      Precision = 18
+      Size = 2
+    end
+    object SQLQueryCTeVALORBASEOUTRAUF: TFMTBCDField
+      FieldName = 'VALORBASEOUTRAUF'
+      Precision = 18
+      Size = 2
+    end
+    object SQLQueryCTePERCICMSOUTRAUF: TFMTBCDField
+      FieldName = 'PERCICMSOUTRAUF'
+      Precision = 18
+      Size = 2
+    end
+    object SQLQueryCTeVALORICMSOUTRAUF: TFMTBCDField
+      FieldName = 'VALORICMSOUTRAUF'
+      Precision = 18
+      Size = 2
+    end
+    object SQLQueryCTeINDICADORGLOBALIZADO: TIntegerField
+      FieldName = 'INDICADORGLOBALIZADO'
+    end
+    object SQLQueryCTeINFGLOBALIZADO: TStringField
+      FieldName = 'INFGLOBALIZADO'
+      Size = 256
+    end
   end
   object cdCTe: TClientDataSet
     Aggregates = <>
@@ -3584,28 +3877,12 @@ object DMDados: TDMDados
     Top = 408
     object cdCTeID: TIntegerField
       FieldName = 'ID'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
       Required = True
     end
     object cdCTeFILIAL: TIntegerField
       FieldName = 'FILIAL'
       Required = True
-    end
-    object cdCTeNFNUMERO: TIntegerField
-      FieldName = 'NFNUMERO'
-    end
-    object cdCTeNFSERIE: TStringField
-      FieldName = 'NFSERIE'
-      Size = 5
-    end
-    object cdCTeNFFILIAL: TIntegerField
-      FieldName = 'NFFILIAL'
-    end
-    object cdCTeNFORIGEM: TStringField
-      FieldName = 'NFORIGEM'
-      Size = 1
-    end
-    object cdCTeNFCLIFOR: TIntegerField
-      FieldName = 'NFCLIFOR'
     end
     object cdCTeCLIFOR: TIntegerField
       FieldName = 'CLIFOR'
@@ -3643,55 +3920,55 @@ object DMDados: TDMDados
     object cdCTeVALORTOTAL: TFMTBCDField
       FieldName = 'VALORTOTAL'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object cdCTeVALORDESCONTO: TFMTBCDField
       FieldName = 'VALORDESCONTO'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object cdCTeVALORREDBASEICMS: TFMTBCDField
       FieldName = 'VALORREDBASEICMS'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object cdCTeBASEICMS: TFMTBCDField
       FieldName = 'BASEICMS'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object cdCTePERCICMS: TFMTBCDField
       FieldName = 'PERCICMS'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object cdCTeVALORICMS: TFMTBCDField
       FieldName = 'VALORICMS'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object cdCTeVALORISENTO: TFMTBCDField
       FieldName = 'VALORISENTO'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object cdCTeVALOROUTRAS: TFMTBCDField
       FieldName = 'VALOROUTRAS'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object cdCTeVALORSERVICO: TFMTBCDField
       FieldName = 'VALORSERVICO'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object cdCTeCANCELADO: TStringField
@@ -3701,11 +3978,6 @@ object DMDados: TDMDados
     end
     object cdCTeMODALIDADE: TStringField
       FieldName = 'MODALIDADE'
-      Required = True
-      Size = 1
-    end
-    object cdCTeNATUREZA: TStringField
-      FieldName = 'NATUREZA'
       Required = True
       Size = 1
     end
@@ -3731,17 +4003,17 @@ object DMDados: TDMDados
     end
     object cdCTeBASEPIS: TFMTBCDField
       FieldName = 'BASEPIS'
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object cdCTePERCPIS: TFMTBCDField
       FieldName = 'PERCPIS'
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object cdCTeVALORPIS: TFMTBCDField
       FieldName = 'VALORPIS'
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object cdCTeCSTCOFINS: TStringField
@@ -3754,17 +4026,17 @@ object DMDados: TDMDados
     end
     object cdCTeBASECOFINS: TFMTBCDField
       FieldName = 'BASECOFINS'
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object cdCTePERCCOFINS: TFMTBCDField
       FieldName = 'PERCCOFINS'
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object cdCTeVALORCOFINS: TFMTBCDField
       FieldName = 'VALORCOFINS'
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object cdCTeCSTICMS: TStringField
@@ -3831,13 +4103,13 @@ object DMDados: TDMDados
     object cdCTeBASEST: TFMTBCDField
       FieldName = 'BASEST'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object cdCTeVALORST: TFMTBCDField
       FieldName = 'VALORST'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object cdCTeDATAPREVISTAENTREGA: TDateField
@@ -3865,12 +4137,12 @@ object DMDados: TDMDados
     end
     object cdCTePESOBRUTO: TFMTBCDField
       FieldName = 'PESOBRUTO'
-      Precision = 15
+      Precision = 18
       Size = 3
     end
     object cdCTePESOLIQUIDO: TFMTBCDField
       FieldName = 'PESOLIQUIDO'
-      Precision = 15
+      Precision = 18
       Size = 3
     end
     object cdCTeVOLUMES: TIntegerField
@@ -3878,7 +4150,7 @@ object DMDados: TDMDados
     end
     object cdCTeVALORTOTALITENS: TFMTBCDField
       FieldName = 'VALORTOTALITENS'
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object cdCTeSOMAR: TStringField
@@ -3893,7 +4165,7 @@ object DMDados: TDMDados
     object cdCTeVALORTOTALTRIBUTO: TFMTBCDField
       FieldName = 'VALORTOTALTRIBUTO'
       Required = True
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object cdCTeNBS: TIntegerField
@@ -3910,7 +4182,7 @@ object DMDados: TDMDados
     end
     object cdCTeVALORPEDAGIO: TFMTBCDField
       FieldName = 'VALORPEDAGIO'
-      Precision = 15
+      Precision = 18
       Size = 2
     end
     object cdCTeCANCXML: TMemoField
@@ -3934,6 +4206,63 @@ object DMDados: TDMDados
     end
     object cdCTeINDICADORLOTACAO: TIntegerField
       FieldName = 'INDICADORLOTACAO'
+    end
+    object cdCTeEDITADO: TStringField
+      FieldName = 'EDITADO'
+      Required = True
+      Size = 1
+    end
+    object cdCTeVALORBASEICMSSTRETIDO: TFMTBCDField
+      FieldName = 'VALORBASEICMSSTRETIDO'
+      Precision = 18
+      Size = 2
+    end
+    object cdCTeVALORICMSSTRETIDO: TFMTBCDField
+      FieldName = 'VALORICMSSTRETIDO'
+      Precision = 18
+      Size = 2
+    end
+    object cdCTePERCICMSSTRETIDO: TFMTBCDField
+      FieldName = 'PERCICMSSTRETIDO'
+      Precision = 18
+      Size = 2
+    end
+    object cdCTeVALORCREDITOPRESUMIDO: TFMTBCDField
+      FieldName = 'VALORCREDITOPRESUMIDO'
+      Precision = 18
+      Size = 2
+    end
+    object cdCTePERCREDUCAOBASEICMS: TFMTBCDField
+      FieldName = 'PERCREDUCAOBASEICMS'
+      Precision = 18
+      Size = 2
+    end
+    object cdCTePERCREDUCAOBASEOUTRAUF: TFMTBCDField
+      FieldName = 'PERCREDUCAOBASEOUTRAUF'
+      Precision = 18
+      Size = 2
+    end
+    object cdCTeVALORBASEOUTRAUF: TFMTBCDField
+      FieldName = 'VALORBASEOUTRAUF'
+      Precision = 18
+      Size = 2
+    end
+    object cdCTePERCICMSOUTRAUF: TFMTBCDField
+      FieldName = 'PERCICMSOUTRAUF'
+      Precision = 18
+      Size = 2
+    end
+    object cdCTeVALORICMSOUTRAUF: TFMTBCDField
+      FieldName = 'VALORICMSOUTRAUF'
+      Precision = 18
+      Size = 2
+    end
+    object cdCTeINDICADORGLOBALIZADO: TIntegerField
+      FieldName = 'INDICADORGLOBALIZADO'
+    end
+    object cdCTeINFGLOBALIZADO: TStringField
+      FieldName = 'INFGLOBALIZADO'
+      Size = 256
     end
   end
   object dspCTe: TDataSetProvider
