@@ -93,6 +93,7 @@ type
     BtnTrocas: TButton;
     ListBoxNossoNumero: TListBox;
     ListBoxNossoNumeroDuplicado: TListBox;
+    BtnContasPagarExcel: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);
@@ -136,6 +137,7 @@ type
     procedure BtnUpdateRapelClick(Sender: TObject);
     procedure BtnComodatoClick(Sender: TObject);
     procedure BtnTrocasClick(Sender: TObject);
+    procedure BtnContasPagarExcelClick(Sender: TObject);
 
   private
     procedure CarregarExcel;
@@ -461,7 +463,7 @@ begin
     NomePai := FDQuery1.FieldByName('nomepai').AsString;
     NomeMae := FDQuery1.FieldByName('nomemae').AsString;
     TipoEstabelecimento := FDQuery1.FieldByName('tipoestabelecimento').AsString;
-    Contato := FDQuery1.FieldByName('contato').AsString;
+    Contato := Copy(FDQuery1.FieldByName('contato').AsString, 0, 40);
     Endereco := Copy(FDQuery1.FieldByName('endereco').AsString, 0, 60);
     Numero := FDQuery1.FieldByName('numero').AsString;
     Cidade := FDQuery1.FieldByName('cidade').AsInteger;
@@ -1141,6 +1143,10 @@ begin
 
       //Documento := Copy(Documento,4,(Pos('/',Documento)-4));
       Documento := Numericos(Documento);
+      if Documento = EmptyStr then
+        Documento := 'NULL';
+      if Historico = EmptyStr then
+        Historico := 'NULL';
       if Pos('-',NossoNumero) > 0 then
         NossoNumero := Copy(NossoNumero,0,(Pos('-',NossoNumero)-1))
       else
@@ -1160,6 +1166,51 @@ begin
       end;
 
       ListBox1.Items.Add(Format(SQLInsert,[QuotedStr('C'), Clifor, QuotedStr(Ordem), Documento, QuotedStr(Emissao), QuotedStr(Vencimento), Valor, NossoNumero, Historico]));
+
+      Gauge1.AddProgress(1);
+    end;
+  finally
+    Excel.Quit;
+  end;
+end;
+
+procedure TFrmPrincipal.BtnContasPagarExcelClick(Sender: TObject);
+var
+  I, indexteste : Integer;
+  SQLInsert : String;
+  Clifor, Ordem, Documento, Emissao, Vencimento, Valor, NossoNumero, Historico : String;
+begin
+  try
+    ShowMessage('Lembrar de preencher Inicio Planilha e Fim Planilha');
+    ShowMessage('Analisar NossoNumero');
+    CarregarExcel;
+    SQLInsert := 'INSERT INTO FINANCEIRO (FILIAL, TIPO, CLIFOR, ORDEM, DOCUMENTO, DATAEMISSAO, DATAVCTO, VALOR, NOSSONUMERO, HISTORICO, SITUACAO) '+
+                 'VALUES (1, %s, %s, %s, %s, %s, %s, %s, %s, %s, 99);';
+    ListBox1.Clear;
+    ListBoxNossoNumero.Clear;
+    ListBoxNossoNumeroDuplicado.Clear;
+    ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES (99, ''CONVERSAO'', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
+    Gauge1.Progress := StrToInt(EditInicioPlanilha.Text);
+    Gauge1.MaxValue := StrToInt(EditFimPlanilha.Text);
+    for I := StrToInt(EditInicioPlanilha.Text) to StrToInt(EditFimPlanilha.Text) do
+    begin
+      Clifor := Trim(Planilha.cells[i,2]);
+      Ordem := Trim(Planilha.cells[i,7]);
+      Documento := Trim(Planilha.cells[i,7]);
+      Emissao := StringReplace(Trim(Planilha.cells[i,9]),'/','.',[rfReplaceAll]);
+      Vencimento := StringReplace(Trim(Planilha.cells[i,10]),'/','.',[rfReplaceAll]);
+      Valor := StringReplace(Trim(Planilha.cells[i,13]),',','.',[rfReplaceAll]);
+      NossoNumero := 'NULL';
+      Historico := Trim(Planilha.cells[i,21]);
+
+      //Documento := Copy(Documento,4,(Pos('/',Documento)-4));
+      Documento := Numericos(Documento);
+      if Documento = EmptyStr then
+        Documento := 'NULL';
+      if Historico = EmptyStr then
+        Historico := 'NULL';
+
+      ListBox1.Items.Add(Format(SQLInsert,[QuotedStr('D'), Clifor, QuotedStr(Ordem), Documento, QuotedStr(Emissao), QuotedStr(Vencimento), Valor, NossoNumero, Historico]));
 
       Gauge1.AddProgress(1);
     end;

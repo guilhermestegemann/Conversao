@@ -750,6 +750,15 @@ object FrmPrincipal: TFrmPrincipal
         ItemHeight = 13
         TabOrder = 9
       end
+      object BtnContasPagarExcel: TButton
+        Left = 960
+        Top = 336
+        Width = 166
+        Height = 21
+        Caption = 'Contas a Pagar (Excel)'
+        TabOrder = 10
+        OnClick = BtnContasPagarExcelClick
+      end
     end
   end
   object FDQuery1: TFDQuery
