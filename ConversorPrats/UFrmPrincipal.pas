@@ -1424,7 +1424,8 @@ begin
   else
   begin
     FDQuery1.SQL.Add('where ((terceiros.tipo_vendedor = true) or (terceiros.tipo_funcionario = true) ');
-    FDQuery1.SQL.Add('or (terceiros.id in (select id_vendedor from terceiros_dados_emp))) ');
+    FDQuery1.SQL.Add('or (terceiros.id in (select id_vendedor from terceiros_dados_emp)) ');
+    FDQuery1.SQL.Add('or (terceiros.id in (select id_vendedor from vendas))) ');
   end;
 
 
