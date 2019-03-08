@@ -45,10 +45,7 @@ object DMDados: TDMDados
       'ServerCharSet='
       'Trim Char=False'
       'DriverName=Firebird'
-      
-        'Database=C:\Users\Topsystem\Desktop\guilherme\Dados Clientes\Sha' +
-        'reFoods\TOPDADOS.FDB')
-    Connected = True
+      'Database=')
     Left = 56
     Top = 16
   end
@@ -1356,7 +1353,6 @@ object DMDados: TDMDados
     Top = 16
   end
   object SQLBairro: TSQLQuery
-    Active = True
     MaxBlobSize = -1
     Params = <>
     SQL.Strings = (
@@ -2497,11 +2493,6 @@ object DMDados: TDMDados
     end
     object cdItemNFVALORFCPUFDEST: TFMTBCDField
       FieldName = 'VALORFCPUFDEST'
-      Precision = 18
-      Size = 2
-    end
-    object cdItemNFVALORCOTACAPITAL: TFMTBCDField
-      FieldName = 'VALORCOTACAPITAL'
       Precision = 18
       Size = 2
     end

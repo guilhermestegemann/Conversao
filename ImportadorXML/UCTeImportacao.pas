@@ -17,7 +17,7 @@ implementation
 
 uses
   UFerramentas, ACBrCTe, SysUtils, pcnConversao,
-  pcteCTe, DBClient, Classes, pcteConversaoCTe, uDMDados;
+  pcteCTe, DBClient, Classes, pcteConversaoCTe, uDMDados, Xml.XMLIntf, XMLDoc;
 
 { TCTeImportacao }
 
@@ -27,8 +27,8 @@ class function TCTeImportacao.GetCodigoClifor(ACNPJ, ATipo: String): Integer;
 var
   ASQL: String;
 begin
-  ASQL := 'SELECT CODIGO FROM CLIFOR WHERE CLIFOR.CNPJ = %s';
-  ASQL := Format(ASQL, [QuotedStr(MascaraCnpj(ACNPJ))]);
+  ASQL := 'SELECT FIRST(1) CODIGO FROM CLIFOR WHERE CLIFOR.CNPJ = %s';
+  ASQL := Format(ASQL, [QuotedStr(MascaraCnpjCpf(ACNPJ))]);
   Open_SQL(DMDados.cdGeral, ASQL);
   if DMDados.cdGeral.RecordCount <> 1 then
     raise Exception.Create('Erro ao encontrar: ' + ATipo)
@@ -99,7 +99,7 @@ var
     ACFOPTexto := Copy(ACFOPTexto, 1, 1) + '.' + Copy(ACFOPTexto, 2 , 3);
     Open_SQL(DMDados.cdGeral, Format('SELECT CODIGO FROM CFOP WHERE CFOP.CFOP = %s', [QuotedStr(ACFOPTexto)]));
     if DMDados.cdGeral.RecordCount <> 1 then
-      raise Exception.Create('Problema ao encontrar CFOP.')
+      raise Exception.CreateFmt('Problema ao encontrar CFOP: %s.',[ACFOPTexto])
     else
       Result := DMDados.cdGeral.FieldByName('CODIGO').AsString;
   end;
@@ -189,6 +189,8 @@ begin
         end;
 
         DMDados.cdCTeCHAVE.AsString := ACBrCTe.Conhecimentos.Items[0].CTe.procCTe.chCTe;
+        if DMDados.cdCTeCHAVE.AsString = EmptyStr then
+          DMDados.cdCTeCHAVE.AsString := Copy(ACBrCTe.Conhecimentos.Items[0].CTe.infCTe.Id,4,44);
         DMDados.cdCTeTIPOCTE.AsString := tpCTToStr(ACBrCTe.Conhecimentos.Items[0].CTe.ide.tpCTe);
         DMDados.cdCTeXML.AsString := ObterXML(AArquivo);
         if ACBrCTe.Conhecimentos.Items[0].CTe.rem.CNPJCPF <> '' then
@@ -255,8 +257,8 @@ begin
         end;
 
         DMDados.cdCTeINDICADORLOTACAO.AsString := TpLotacaoToStr(ACBrCTe.Conhecimentos.Items[I].CTe.infCTeNorm.rodo.Lota);
-        DMDados.cdCTeATUALIZADO.AsString := 'S';
-        DMDados.cdCTeAUTORIZADO.AsString := 'S';
+        DMDados.cdCTeATUALIZADO.AsString := 'N';
+        DMDados.cdCTeAUTORIZADO.AsString := 'N';
 
         if not GravarMaster(DMDados.cdCTe, true, 'Erro de gravação no CT-e.') then Abort;
         Result := True;
@@ -289,6 +291,13 @@ begin
           DMDados.cdOrdemCTeVALOR.AsFloat   := ACBrCTe.Conhecimentos.Items[I].CTe.infCTeNorm.cobr.dup.Items[j].vDup;
           if not GravarMaster(DMDados.cdOrdemCTe, true, 'Erro de gravação na Ordem CT-e.') then Abort;
         end;
+
+        Open_SQL(DMDados.cdCTe, Format('SELECT * FROM CT WHERE (CT.NUMERO = %D AND CT.FILIAL = %D)', [ACBrCTe.Conhecimentos.Items[I].CTe.ide.nCT, AFilial]));
+        DMDados.cdCTe.Edit;
+        DMDados.cdCTeAUTORIZADO.AsString := 'S';
+        DMDados.cdCTe.Post;
+        DMDados.cdCTe.ApplyUpdates(-1);
+
 
       end;
     end;

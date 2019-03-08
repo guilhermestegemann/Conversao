@@ -40,6 +40,7 @@ type
     function MascaraCpf(cpf: string):String;
     function  TratarCaracteresEspeciais(st: string):string;
     function AjustaData(data : String):String;
+    function AjustaDireita(st : String; tam : Integer; char : String): String;
     procedure salvarClick(Sender: TObject);
     procedure btnFuncionarioClick(Sender: TObject);
     procedure btnBairroClick(Sender: TObject);
@@ -63,38 +64,44 @@ type
 
 const
   //Cliente
-  cCodigoCliente : Integer = 1;
-  cDataCadastro : Integer = 2;
-  cAtivo : Integer = 3;
-  cRazaoSocial : Integer = 4;
-  cNomeFantasia : Integer = 5;
-  cCnpj : Integer = 6;
-  cIe : Integer = 7;
-  cCpf : Integer = 8;
-  cRg : Integer = 9;
-  cDataNascimento : Integer = 10;
-  cEndereco : Integer = 11;
-  cNumero : Integer = 12;
-  cBairro : Integer = 13;
-  cCidade : Integer = 14;
-  cCep : Integer = 15;
-  cUf : Integer = 16;
-  cComplemento : Integer = 17;
-  cEmail : Integer = 18;
-  cTelefone : Integer = 20;
-  cNomeMae : Integer = 41;
-  CNomePai : Integer = 40;
-  cEstadoCivil : Integer = 42;
-  cLimiteCredito : Integer = 77;
-  cObservacao : Integer = 80;
-  cTipoClifor : Integer = 83;
-  cCodigoVendedor : Integer = 90;
-  cNomeVendedor : Integer = 91;
-  cCodigoCondicaoPagamento : Integer = 134;
-  cCodigoFiscalCidade : Integer = 137;
-  cNomeRota : Integer = 123;
-  CInicioCliente : Integer = 2;
-  cFimCliente : Integer = 2680;
+  cCodigoClifor : Integer = 1;
+  cRazao : Integer = 2;
+  cFantasia : Integer = 3;
+  cEndereco : Integer = 4;
+  cNumeroEndereco : Integer = 5;
+  cCidade : Integer = 8;
+  cCep : Integer = 9;
+  cBairro : Integer = 11;
+  cTelefone : Integer = 12;
+  cCNPJ : Integer = 13;
+  cIE : Integer = 14;
+  cTipoEstabelecimento : Integer = 15;
+  cDataCadastro : Integer = 16;
+  cCondicaoPagamentoPadrao : Integer = 17;
+  cFormaPagamentoPadrao : Integer = 18;
+  cCondBloquear1 : Integer = 19;
+  cCondBloquear2 : Integer = 20;
+  cCondBloquear3 : Integer = 21;
+  cCondBloquear4 : Integer = 22;
+  cCondBloquear5 : Integer = 23;
+  cCondBloquear6 : Integer = 24;
+  cCondBloquear7 : Integer = 25;
+  cCondBloquear8 : Integer = 26;
+  cCondBloquear9 : Integer = 27;
+  cCondBloquear10 : Integer = 28;
+  cCondBloquear11 : Integer = 29;
+  cCondBloquear12 : Integer = 30;
+  cCondBloquear13 : Integer = 31;
+  cCondBloquear14 : Integer = 32;
+  cCondBloquear15 : Integer = 33;
+  cCondBloquear16 : Integer = 34;
+  cCondBloquear17 : Integer = 35;
+  cCondBloquear18 : Integer = 36;
+  cCondBloquear19 : Integer = 37;
+  cVendedor : Integer = 38;
+
+  CInicioCliente : Integer = 3;
+  cFimCliente : Integer = 2327;
 
   //produto
   cCodigoProduto : Integer       = 2;
@@ -166,6 +173,12 @@ begin
   end;
 end;
 
+function TForm1.AjustaDireita(st: String; tam: Integer; char: String): String;
+begin
+     while Length(st) < tam do st:= st+char;
+     result := st;
+end;
+
 procedure TForm1.AjustaGauge(Inicio, Fim : Integer);
 begin
   Gauge1.Progress := Inicio;
@@ -221,8 +234,8 @@ begin
     CarregarExcelCliente;
     for I := CInicioCliente  to cFimCliente do
     begin
-      CodigoVendedor := Trim(Planilha.cells[i,cCodigoVendedor]);
-      Vendedor := Trim(Planilha.cells[i,cNomeVendedor]);
+      //CodigoVendedor := Trim(Planilha.cells[i,cVendedor]);
+      //SVendedor := Trim(Planilha.cells[i,cNomeVendedor]);
 
       SQLPronto := Format(SQL,[CodigoVendedor, QuotedStr(Vendedor)]);
       achei := False;
@@ -341,7 +354,7 @@ begin
     CarregarExcelCliente;
     for I := CInicioCliente  to cFimCliente do
     begin
-      NomeBairro := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cBairro]));
+      //NomeBairro := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cBairro]));
 
       SQLPronto := Format(SQL,[QuotedStr(NomeBairro)]);
       achei := False;
@@ -402,84 +415,75 @@ end;
 
 procedure TForm1.btnClienteClick(Sender: TObject);
 var
-  CodigoCliente, DataCadastro, Ativo, RazaoSocial, NomeFantasia, Cnpj, IE,
-  Cpf, Rg, DataNascimento, Endereco, Numero, Bairro, Cidade, Cep, Complemento,
-  Email, Telefone, NomeMae, NomePai, LimiteCredito, Observacao, TipoClifor, CodigoVendedor : String;
-  SQLClifor, SQLCliforContato, SQLFuncionarioClifor : String;
+  CodigoClifor, Razao, Fantasia, Endereco, NumeroEndereco, Cidade, Cep, Bairro, Telefone, CNPJ, IE, TipoEstabelecimento, DataCadastro,
+  CondicaoPagamentoPadrao, FormaPagamentoPadrao, Vendedor : String;
+  CondBloquear1, CondBloquear2, CondBloquear3, CondBloquear4, CondBloquear5, CondBloquear6, CondBloquear7, CondBloquear8, CondBloquear9, CondBloquear10,
+  CondBloquear11, CondBloquear12, CondBloquear13, CondBloquear14, CondBloquear15, CondBloquear16, CondBloquear17, CondBloquear18, CondBloquear19 : String;
+  SQLClifor : String;
   I : Integer;
 
 begin
-  SQLClifor := 'INSERT INTO CLIFOR (CODIGO, DATA, ATIVO, NOME, FANTASIA, CNPJ, IE, DATANASC, ENDERECO, NUMERO, BAIRRO, CIDADE, CEP, COMPLEMENTO, NOMEPAI, NOMEMAE, LIMITECREDITO, OBS, TIPO) ' +
-         'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, (SELECT CODIGO FROM BAIRRO WHERE NOME = %s), (SELECT CODIGO FROM CIDADE WHERE NOME = %s), %s, %s, %s, %s, %s, %s, %s);';
-  SQLCliforContato := 'INSERT INTO CLIFORCONTATO (CLIFOR, NUMERO, EMAIL, ENVIARDANFE, ENVIARNFE, ENVIARBOLETO, ENVIARPEDIDO) ' +
-                      'VALUES (%s, %s, %s, %s, %s, %s, %s);';
-  SQLFuncionarioClifor := 'INSERT INTO FUNCIONARIOCLIFOR (FUNCIONARIO, CLIFOR) VALUES (%s, %s);';
+  SQLClifor := 'EXECUTE PROCEDURE PROCEDURE_CUSTOM_INS_CLIFOR(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s); COMMIT WORK;';
   AjustaGauge(cInicioCliente, cFimCliente);
   try
     ListBox1.Clear;
     CarregarExcelCliente;
     for I := cInicioCliente to cFimCliente do
-      begin
-        CodigoCliente := Trim(Planilha.cells[i,cCodigoCliente]);
-        DataCadastro := AjustaData(Trim(Planilha.cells[i,cDataCadastro]));
-        Ativo := Trim(Planilha.cells[i,cAtivo]);
-        RazaoSocial := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cRazaoSocial]));
-        NomeFantasia := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cNomeFantasia]));
-        Cnpj := Numericos(Trim(Planilha.cells[i,cCnpj]));
-        Ie := Numericos(Trim(Planilha.cells[i,cIe]));
-        Cpf := Numericos(Trim(Planilha.cells[i,cCpf]));
-        Rg := Numericos(Trim(Planilha.cells[i,cRG]));
-        DataNascimento := AjustaData(Trim(Planilha.cells[i,cDataNascimento]));
-        Endereco := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cEndereco]));
-        Numero := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cNumero]));
-        Bairro := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cBairro]));
-        Cidade := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cCidade]));
-        Cep := Numericos(Trim(Planilha.cells[i,cCep]));
-        Complemento := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cComplemento]));
-        Email := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cEmail]));
-        Telefone := Numericos(Trim(Planilha.cells[i,cTelefone]));
-        NomeMae := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cNomeMae]));
-        NomePai := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cNomePai]));
-        LimiteCredito := Trim(Planilha.cells[i,cLimiteCredito]);
-        Observacao := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cObservacao]));
-        TipoClifor := Trim(Planilha.cells[i,cTipoClifor]);
-        CodigoVendedor := Trim(Planilha.cells[i,cCodigoVendedor]);
+    begin
+      CodigoClifor := Numericos(Trim(Planilha.cells[i,cCodigoClifor]));
+      Razao := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cRazao]));
+      Fantasia := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cFantasia]));
+      Endereco := Trim(Planilha.cells[i,cEndereco]);
+      NumeroEndereco := Trim(Planilha.cells[i,cNumeroEndereco]);
+      Cidade := Numericos(Trim(Planilha.cells[i,cCidade]));
+      Cep := Numericos(Trim(Planilha.cells[i,cCep]));
+      Bairro := Numericos(Trim(Planilha.cells[i,cBairro]));
+      Telefone := Numericos(Trim(Planilha.cells[i,cTelefone]));
+      Vendedor := Numericos(Trim(Planilha.cells[i,cVendedor]));
+      CNPJ := MascaraCnpjCpf(Trim(Planilha.cells[i,cCNPJ]));
+      IE := Trim(Planilha.cells[i,cIE]);
+      TipoEstabelecimento := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cTipoEstabelecimento]));
+      DataCadastro := Trim(Planilha.cells[i,cDataCadastro]);
+      CondicaoPagamentoPadrao := Trim(Planilha.cells[i,cCondicaoPagamentoPadrao]);
+      FormaPagamentoPadrao := Trim(Planilha.cells[i,cFormaPagamentoPadrao]);
+      CondBloquear1 := Numericos(Trim(Planilha.cells[i,cCondBloquear1]));
+      CondBloquear2 := Numericos(Trim(Planilha.cells[i,cCondBloquear2]));
+      CondBloquear3 := Numericos(Trim(Planilha.cells[i,cCondBloquear3]));
+      CondBloquear4 := Numericos(Trim(Planilha.cells[i,cCondBloquear4]));
+      CondBloquear5 := Numericos(Trim(Planilha.cells[i,cCondBloquear5]));
+      CondBloquear6 := Numericos(Trim(Planilha.cells[i,cCondBloquear6]));
+      CondBloquear7 := Numericos(Trim(Planilha.cells[i,cCondBloquear7]));
+      CondBloquear8 := Numericos(Trim(Planilha.cells[i,cCondBloquear8]));
+      CondBloquear9 := Numericos(Trim(Planilha.cells[i,cCondBloquear9]));
+      CondBloquear10 := Numericos(Trim(Planilha.cells[i,cCondBloquear10]));
+      CondBloquear11 := Numericos(Trim(Planilha.cells[i,cCondBloquear11]));
+      CondBloquear12 := Numericos(Trim(Planilha.cells[i,cCondBloquear12]));
+      CondBloquear13 := Numericos(Trim(Planilha.cells[i,cCondBloquear13]));
+      CondBloquear14 := Numericos(Trim(Planilha.cells[i,cCondBloquear14]));
+      CondBloquear15 := Numericos(Trim(Planilha.cells[i,cCondBloquear15]));
+      CondBloquear16 := Numericos(Trim(Planilha.cells[i,cCondBloquear16]));
+      CondBloquear17 := Numericos(Trim(Planilha.cells[i,cCondBloquear17]));
+      CondBloquear18 := Numericos(Trim(Planilha.cells[i,cCondBloquear18]));
+      CondBloquear19 := Numericos(Trim(Planilha.cells[i,cCondBloquear19]));
+      //ajustes
+      Razao := Copy(Razao, 1, 60);
+      TipoEstabelecimento := TipoEstabelecimento.ToUpper;
+      if TipoEstabelecimento = 'RESTAURANTE-PIZZARIA' then TipoEstabelecimento := 'RESTAURANTE';
+      if TipoEstabelecimento = 'SUPERMERCADOS 1 A 4' then TipoEstabelecimento := 'SM 2 A 4 CHECK-OUTS (MERCADO)';
+      if TipoEstabelecimento = 'PADARIA-CONFEITARIA' then TipoEstabelecimento := 'PADARIA';
+      if TipoEstabelecimento = 'LOJA DE CONVENIENCIA' then TipoEstabelecimento := 'LOJA DE CONVENIENCIAS';
+      if TipoEstabelecimento = 'FARMACIA' then TipoEstabelecimento := 'OUTROS';
 
-        //ajustes
-        RazaoSocial := Copy(RazaoSocial, 1, 60);
-        //Observacao := Copy(Observacao, 1, 500);
-        if ((Ativo = '') or (Ativo = 'ATIVA')) then Ativo := 'S' else Ativo := 'N';
-        if Cnpj = EmptyStr then Cnpj := Cpf;
-        if IE = EmptyStr then IE := Rg;
-        if Cidade = EmptyStr then Cidade := 'VERIFICAR';
-        if Bairro = EmptyStr then Bairro := 'VERIFICAR';
-        if LimiteCredito = EmptyStr then LimiteCredito := '0';
-        if LimiteCredito = '26000000' then LimiteCredito := '0';
-        Email := QuotedStr(Email);
-        if ((Email = 'null') or (email = 'NULL') or (Email = EmptyStr)) then  Email := 'NULL';
 
-        if TipoClifor = 'A' then TipoClifor := '5';
-        if TipoClifor = 'C' then TipoClifor := '1';
-        if TipoClifor = 'D' then TipoClifor := '4';
-        if TipoClifor = 'E' then TipoClifor := '4';
-        if TipoClifor = 'F' then TipoClifor := '2';
-        if TipoClifor = 'T' then TipoClifor := '3';
-        if TipoClifor = 'V' then TipoClifor := '4';
-
-        ListBox1.Items.Add(Format(SQLClifor,[CodigoCliente, DataCadastro, QuotedStr(Ativo), QuotedStr(RazaoSocial), QuotedStr(NomeFantasia), QuotedStr(Cnpj), QuotedStr(IE), DataNascimento,
-                         QuotedStr(Endereco), QuotedStr(Numero), QuotedStr(Bairro), QuotedStr(Cidade), QuotedStr(Cep), QuotedStr(Complemento), QuotedStr(NomePai),
-                         QuotedStr(NomeMae), LimiteCredito, QuotedStr(Observacao), TipoClifor]));
-
-        if (Telefone <> EmptyStr)  then
-          ListBox1.Items.Add(Format(SQLCliforContato,[CodigoCliente, QuotedStr(Telefone), Email, QuotedStr('N'), QuotedStr('N'), QuotedStr('N'), QuotedStr('N')]));
-        if (CodigoVendedor <> EmptyStr) then
-          ListBox1.Items.Add(Format(SQLFuncionarioClifor, [CodigoVendedor, CodigoCliente]));
-        Application.ProcessMessages;
-        Gauge1.AddProgress(1);
-      end;
-      ListBox1.Items.Add(Format('UPDATE CLIFORCONTATO SET ENVIARNFE = %s, ENVIARDANFE = %s WHERE EMAIL LIKE %s;',[QuotedStr('S'), QuotedStr('S'), QuotedStr('%@%')]));
-      ListBox1.Items.Add(Format('UPDATE CLIFORCONTATO SET EMAIL = NULL WHERE EMAIL LIKE %s;',[QuotedStr('')]));
-      ListBox1.Items.Add(Format('UPDATE CLIFORCONTATO SET EMAIL = LOWER(EMAIL) WHERE EMAIL LIKE %s;',[QuotedStr('%@%')]));
+      NumeroEndereco := Copy(NumeroEndereco, 0, 10);
+      Endereco := Copy(Endereco, 0, 60);
+      ListBox1.Items.Add(Format(SQLClifor,[CodigoClifor, QuotedStr(Razao), QuotedStr(Fantasia), QuotedStr(Endereco), QuotedStr(NumeroEndereco), Cidade, QuotedStr(Cep), Bairro,
+                          QuotedStr(Telefone), Vendedor, QuotedStr(CNPJ), QuotedStr(IE), QuotedStr(TipoEstabelecimento), QuotedStr(DataCadastro), CondicaoPagamentoPadrao, FormaPagamentoPadrao,
+                          CondBloquear1, CondBloquear2, CondBloquear3, CondBloquear4, CondBloquear5, CondBloquear6, CondBloquear7, CondBloquear8, CondBloquear9, CondBloquear10,
+                          CondBloquear11, CondBloquear12, CondBloquear13, CondBloquear14, CondBloquear15, CondBloquear16, CondBloquear17, CondBloquear18, CondBloquear19]));
+      Application.ProcessMessages;
+      Gauge1.AddProgress(1);
+     end;
   finally
     Excel.Quit;
   end;
@@ -660,8 +664,8 @@ begin
     CarregarExcelCliente;
     for I := CInicioCliente  to cFimCliente do
     begin
-      NomeRota := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cNomeRota]));
-      Vendedor := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cCodigoVendedor]));
+     // NomeRota := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cNomeRota]));
+     // Vendedor := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cCodigoVendedor]));
       if ((Vendedor = EmptyStr) and (NomeRota <> EmptyStr)) then
         raise Exception.Create('Erro Rota Linha'+IntToStr(I));
 
@@ -794,8 +798,8 @@ begin
     for I := CInicioCliente  to cFimCliente do
     begin
       NomeCidade := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cCidade]));
-      UF := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cUF]));
-      CodigoFiscal := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cCodigoFiscalCidade]));
+     // UF := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cUF]));
+     // CodigoFiscal := TratarCaracteresEspeciais(Trim(Planilha.cells[i,cCodigoFiscalCidade]));
 
       SQLPronto := Format(SQL,[QuotedStr(NomeCidade), QuotedStr(CodigoFiscal), QuotedStr(UF)]);
       achei := False;
@@ -821,7 +825,8 @@ procedure TForm1.CarregarExcelCliente;
 begin
   Excel := CreateOleObject('Excel.Application');
   //Excel.WorkBooks.open('C:\Users\Topsystem\Desktop\guilherme\Dados Clientes\Bacat\CLIENTE E FORNECEDOR - 01032018.xlsx');
-  Excel.WorkBooks.open('C:\Users\Topsystem\Desktop\guilherme\Dados Clientes\Bacat\Novo\clientes 26 04 2018.xlsx');
+  //Excel.WorkBooks.open('C:\Users\Topsystem\Desktop\ConversaoDinho\Clientes, tabulado.xlsx');
+  Excel.WorkBooks.open('C:\Users\Topsystem\Desktop\guilherme\Dados Clientes\Lumar\lumar.xlsx');
   Planilha := Excel.WorkSheets[1];
 end;
 
@@ -851,21 +856,25 @@ function TForm1.MascaraCnpj(cnpj: string): String;
 begin
 //  Result := TPessoa.GetCNPJ(cnpj);
      cnpj:= Numericos(cnpj);
+     Cnpj := AjustaDireita(Cnpj, 14, '0');
      Result := cnpj[1]+cnpj[2]+'.'+cnpj[3]+cnpj[4]+cnpj[5]+'.'+cnpj[6]+cnpj[7]+cnpj[8]+'/'+cnpj[9]+cnpj[10]+cnpj[11]+cnpj[12]+'-'+cnpj[13]+cnpj[14];
 end;
 
 function TForm1.MascaraCnpjCpf(Value: string): String;
 begin
-  if VerificaCnpj(Numericos(Value)) then
+  if Length(Numericos(Value)) = 14 then
     Result := MascaraCnpj(Numericos(Value))
+  else if Length(Numericos(Value)) = 11 then
+    Result := MascaraCPF(Numericos(Value))
   else
-    Result := MascaraCPF(Numericos(Value));
+    raise Exception.Create('CNPJ Invalido ' + Value);
 end;
 
 function TForm1.MascaraCpf(cpf: string): String;
 begin
 //  Result := TPessoa.GetCPF(cpf);
      cpf := Numericos(cpf);
+     Cpf := AjustaDireita(Cpf, 11, '0');
      Result := cpf[1]+cpf[2]+cpf[3]+'.'+cpf[4]+cpf[5]+cpf[6]+'.'+cpf[7]+cpf[8]+cpf[9]+'-'+cpf[10]+cpf[11];
 end;
 
@@ -917,7 +926,7 @@ begin
             if st[j] = '/' then r := r + '-' else
             if st[j] = '<' then r := r + '&lt;' else
             if st[j] = '>' then r := r + '&gt;' else
-            if st[j] = '&' then r := r + '&amp;' else
+            if st[j] = '&' then r := r + 'E' else
             if st[j] = '"' then r := r + '&quot;' else
             if st[j] = '''' then r := r + '' else
             if st[j] = 'Ý' then r := r + 'Y' else
@@ -930,6 +939,7 @@ begin
             if st[j] = '¿' then r := r + ' ' else
             if st[j] = 'µ' then r := r + 'u' else
             if st[j] = '´' then r := r + '&#39;' else
+            if st[j] = '*' then r := r + '' else
             //Tratar Acentuação
             if st[j] in A then r := r + 'A' else
             if st[j] in E then r := r + 'E' else

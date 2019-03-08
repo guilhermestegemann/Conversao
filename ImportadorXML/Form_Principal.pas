@@ -61,6 +61,9 @@ type
     Label1: TLabel;
     EditTXTCadastrados: TEdit;
     LabeledEditFilialCTe: TLabeledEdit;
+    RGTipo: TRadioGroup;
+    LabeledEditRemetenteInut: TLabeledEdit;
+    LabeledEditNBSPadraoInut: TLabeledEdit;
     procedure Button4Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure sbCanClick(Sender: TObject);
@@ -75,6 +78,7 @@ type
     procedure ButtonListarCTeClick(Sender: TObject);
     procedure ButtonImportatCTeClick(Sender: TObject);
     procedure ButtonCancCTeClick(Sender: TObject);
+    procedure RGTipoClick(Sender: TObject);
   private
     { Private declarations }
     function GetSqlValidadeItemNFEntrada(AcdItemNFEntrada : TClientDataSet; ALote : String; AValidade : TDate) : String;
@@ -86,6 +90,7 @@ type
     function GetNomeArquivo(CaminhoArquivoCompleto: String): String;
     function GetLocalTXTCadastrados: String;
     procedure ListarXML(FileListBox: TFileListBox);
+    function ExtraiData(Data : String) : String;
   end;
 
 var
@@ -97,7 +102,7 @@ var
 implementation
 
 uses uDMDados, ACBrNFe, pcnConversao, UClassNFe, UFerramentas, uClassEmitente,
-  uClassDestinatario, UCTeImportacao;
+  uClassDestinatario, UCTeImportacao, System.Types, System.StrUtils;
 
 {$R *.dfm}
 
@@ -128,6 +133,7 @@ end;
 procedure TFormPrincipal.Button1Click(Sender: TObject);
 begin
   ListarXML(FileListBoxNFe);
+  //FileListBoxNFe.FileName := 'C:\Users\Topsystem\Desktop\guilherme\Dados Clientes\ShareFoods\Notas share.xml';
 end;
 
 procedure TFormPrincipal.ButtonListarCTeClick(Sender: TObject);
@@ -202,7 +208,9 @@ begin
       begin
         if LACBrNFe.EventoNFe.Evento.Items[I].RetInfEvento.tpEvento = teCancelamento then
         begin
-          Open_SQL(DMDados.CDGeral, Format('SELECT * FROM NFE WHERE NFE.ORIGEM = ''P'' AND NFE.CHAVEACESSO = %s', [QuotedStr(LACBrNFe.EventoNFe.Evento.Items[I].RetInfEvento.chNFe)]));
+          Numero := Copy(LACBrNFe.EventoNFe.Evento.Items[I].RetInfEvento.chNFe,29,6);
+          Open_SQL(DMDados.CDGeral, Format('SELECT * FROM NFE WHERE NFE.ORIGEM = ''P'' AND NFE.CHAVEACESSO = %s AND NUMERO = %s', [QuotedStr(LACBrNFe.EventoNFe.Evento.Items[I].RetInfEvento.chNFe), Numero]));
+
           if (not DMDados.CDGeral.IsEmpty) then
           begin
             if  (DMDados.cdGeral.FieldByName('CANCCSTAT').IsNull) and
@@ -242,8 +250,8 @@ begin
   for j:=0 to FileListBoxNFe.Count - 1  do
   begin
     XMLDocument.LoadFromFile(Path + '\' +FileListBoxNFe.Items.Strings[j]);
-    NodeInu := XMLDocument.DocumentElement.ChildNodes['infInut'];
-    //NodeInu := XMLDocument.DocumentElement.ChildNodes.FindNode('retInutNFe').ChildNodes.FindNode('infInut');
+    //NodeInu := XMLDocument.DocumentElement.ChildNodes['infInut'];
+    NodeInu := XMLDocument.DocumentElement.ChildNodes.FindNode('retInutNFe').ChildNodes.FindNode('infInut');
     if (NodeInu = nil) then Exit;
 
     Open_SQL(DMDados.CDGeral,' SELECT * FROM NFE WHERE NFE.NUMERO ='+NodeInu.ChildNodes['nNFIni'].Text  +
@@ -303,7 +311,7 @@ begin
   for j:=0 to FileListBoxCTe.Count - 1  do
   begin
     if TCTeImportacao.Importar(Path + '\' +FileListBoxCTe.Items.Strings[j], Var_Filial) then
-    //  DeleteFile(Path + '\' +FileListBoxCTe.Items.Strings[j]);
+      DeleteFile(Path + '\' +FileListBoxCTe.Items.Strings[j]);
     gauge1.AddProgress(1);
   end;
   Aviso('Concluído!');
@@ -331,8 +339,55 @@ begin
 end;
 
 procedure TFormPrincipal.ButtonInutCTeClick(Sender: TObject);
+var
+   j : Integer;
+   NodeInu : IXMLNode;
 begin
-  Aviso('Não Implementado.')
+  inherited;
+  gauge1.MaxValue := FileListBoxCte.Count - 1;
+  for j:=0 to FileListBoxCte.Count - 1  do
+  begin
+    XMLDocument.LoadFromFile(Path + '\' +FileListBoxCte.Items.Strings[j]);
+    //NodeInu := XMLDocument.DocumentElement.ChildNodes['infInut'];
+    NodeInu := XMLDocument.DocumentElement.ChildNodes.FindNode('retInutCTe').ChildNodes.FindNode('infInut');
+    if (NodeInu = nil) then Exit;
+
+    Open_SQL(DMDados.CDGeral,' SELECT * FROM CT WHERE CT.NUMERO ='+NodeInu.ChildNodes['nCTIni'].Text  +
+                             ' AND CT.SERIE = ' + QuotedStr(NodeInu.ChildNodes['serie'].Text) +
+                             ' AND CT.FILIAL = ' + LabeledEditFilialCTe.Text);
+    if DMDados.cdGeral.IsEmpty then
+    begin
+      Open_SQL(DMDados.cdCTe, 'SELECT * FROM CT WHERE CT.NUMERO IS NULL');
+      DMDados.cdCTe.Append;
+      DMDados.cdCTeEMISSAO.AsDateTime := StrToDate(ExtraiData(Copy(NodeInu.ChildNodes['dhRecbto'].Text,0,10)));
+      DMDados.cdCTeMODELO.AsInteger := StrToInt(NodeInu.ChildNodes['mod'].Text);
+      DMDados.cdCTeSERIE.AsString := NodeInu.ChildNodes['serie'].Text;
+      DMDados.cdCTeNUMERO.AsInteger := StrToInt(NodeInu.ChildNodes['nCTIni'].Text);
+      DMDados.cdCTeFILIAL.AsInteger := StrToInt(LabeledEditFilialCTe.Text);
+      DMDados.cdCTeREMETENTE.AsInteger := StrToInt(LabeledEditRemetenteInut.Text);
+      DMDados.cdCTeDESTINATARIO.AsInteger := StrToInt(LabeledEditRemetenteInut.Text);
+      DMDados.cdCTeNBS.AsInteger := StrToInt(LabeledEditNBSPadraoInut.Text);
+      DMDados.cdCTeDATAPREVISTAENTREGA.AsDateTime := DMDados.cdCTeEMISSAO.AsDateTime;
+      DMDados.cdCTeAUTORIZADO.AsString := 'N';
+      DMDados.cdCTeINUTILIZADO.AsString := 'S';
+      DMDados.cdCTeINUTNPROT.AsString := NodeInu.ChildNodes['nProt'].Text;
+      DMDados.cdCTeINUTXML.AsString := ObterXML(Path + '\' +FileListBoxCte.Items.Strings[j]);
+      if not GravarMaster(DMDados.cdCTe, true, 'Erro de gravação no CT-e.') then Abort;
+
+    end
+    else
+    begin
+      DMDados.CDGeral.Edit;
+      DMDados.CDGeral.FieldByName('AUTORIZADO').AsString := 'N';
+      DMDados.CDGeral.FieldByName('INUTILIZADO').AsString := 'S';
+      DMDados.CDGeral.FieldByName('INUTNPROT').AsString := NodeInu.ChildNodes['nProt'].Text;
+      DMDados.CDGeral.FieldByName('INUTXML').AsString := ObterXML(Path + '\' +FileListBoxCte.Items.Strings[j]);
+      GravarMaster(DMDados.CDGeral, True, 'Erro de Gravação!(CT-e)');
+    end;
+    DeleteFile(Path + '\' +FileListBoxCte.Items.Strings[j]);
+    gauge1.AddProgress(1);
+  end;
+  Aviso ('Concluído.');
 end;
 
 procedure TFormPrincipal.ButtonVerificarNFeClick(Sender: TObject);
@@ -374,6 +429,14 @@ begin
     end;
   end;
   Aviso('Concluído');
+end;
+
+function TFormPrincipal.ExtraiData(Data: String): String;
+var
+  stringArray : TStringDynArray;
+begin
+  stringArray := SplitString(Data, '-');
+  Result := stringArray[2] + '/' + stringArray[1] + '/' + stringArray[0];
 end;
 
 procedure TFormPrincipal.sbProcClick(Sender: TObject);
@@ -451,7 +514,7 @@ end;
 
 procedure TFormPrincipal.FormShow(Sender: TObject);
 begin
-  //Button4Click(self);
+  Button4Click(self);
 end;
 
 function TFormPrincipal.GetLocalTXTCadastrados: String;
@@ -937,7 +1000,7 @@ begin
     CondicaoPagamento := DMDados.CDPesquisa.Fields[0].AsString;
 
   Funcionario := GetInfAdicional(ACBrNFe.NotasFiscais.Items[I].NFe.InfAdic.obsCont,'xCodVen');
-  //Funcionario := Copy(Funcionario,1, (pos('-',Funcionario)-1));
+  Funcionario := Copy(Funcionario,1, (pos('-',Funcionario)-1));
   if Funcionario <> '' then
   begin
     SQL := ' SELECT CODIGO FROM FUNCIONARIO WHERE CODIGO = '+ Funcionario;
@@ -974,7 +1037,12 @@ begin
   DMDados.cdNFMODELO.AsString := IntToStr(ACBrNFe.NotasFiscais.Items[I].NFe.Ide.modelo);
   if GravarMaster(DMDados.cdNF, true, '400 - Erro ao incluir a NF-e.') then
   begin
+    {SQL := 'SELECT ID FROM NF WHERE NUMERO = %s AND CLIFOR =%s AND SERIE = %s AND FILIAL = %s AND ORIGEM = %s';
+    Open_SQL(DMDados.CDPesquisa, SQL);
+    if DMDados.cdPesquisa.IsEmpty then
+      raise Exception.Create('ID nf não encontrada!');
 
+    DMDados.cdNFID := DMDados.cdPesquisa.FieldByName('ID').AsVariant;}
      //Incluir Produtos
     for nItem := 0 to ACBrNFe.NotasFiscais.Items[I].NFe.Det.Count - 1 do
     begin
@@ -1133,7 +1201,7 @@ begin
     DMDados.cdNFVALORCOFINS.AsString := Substituir(CurrToStr(ACBrNFe.NotasFiscais.Items[I].NFe.Total.ICMSTot.vCOFINS),'.',',');
     DMDados.cdNFVALORENCARGO.AsString := Substituir(CurrToStr(ACBrNFe.NotasFiscais.Items[I].NFe.Total.ICMSTot.vOutro),'.',',');
     DMDados.cdNFTOTAL.AsString := Substituir(CurrToStr(ACBrNFe.NotasFiscais.Items[I].NFe.Total.ICMSTot.vNF),'.',',');
-    DMDados.cdNFCONTAFRETE.AsString  := modFreteToStr(ACBrNFe.NotasFiscais.Items[I].NFe.Transp.modFrete);
+    //DMDados.cdNFCONTAFRETE.AsString  := modFreteToStr(ACBrNFe.NotasFiscais.Items[I].NFe.Transp.modFrete);
     if ACBrNFe.NotasFiscais.Items[I].NFe.Transp.veicTransp <> nil then
     begin
       DMDados.cdNFPLACA.AsString   := copy (ACBrNFe.NotasFiscais.Items[I].NFe.Transp.veicTransp.placa,1,3) + '-' +
@@ -1388,7 +1456,7 @@ var
 procedure BuscarTipo(ATipo: String);
 var
 I, ANumeroNF, AQtdeANumeroNF: Integer;
-DirDestino : String;
+DirDestino, teste : String;
 ACopiar : Boolean;
 begin
   try
@@ -1417,14 +1485,17 @@ begin
 
           if CheckBoxSepararInu.Checked then
           begin
-            ANumeroNF := StrToInt(Copy(ExtractFileName(ListBoxSeparaArquivos.Items[i]),24,9));
+            //ANumeroNF := StrToInt(Copy(ExtractFileName(ListBoxSeparaArquivos.Items[i]),24,9));
+            teste := ExtractFileName(ListBoxSeparaArquivos.Items[i]);
+            ANumeroNF := StrToInt(Copy(ExtractFileName(ListBoxSeparaArquivos.Items[i]),27,4));
             if ((ANumeroNF >= NumeroInicial) and (ANumeroNF <= NumeroFinal)) then
               ACopiar := True;
           end;
 
           if CheckBoxSepararCan.Checked then
           begin
-            ANumeroNF := StrToInt(Copy(ExtractFileName(ListBoxSeparaArquivos.Items[i]),32,9));
+            //ANumeroNF := StrToInt(Copy(ExtractFileName(ListBoxSeparaArquivos.Items[i]),32,9));
+            ANumeroNF := StrToInt(Copy(ExtractFileName(ListBoxSeparaArquivos.Items[i]),27,4));
             if ((ANumeroNF >= NumeroInicial) and (ANumeroNF <= NumeroFinal)) then
               ACopiar := True;
           end;
@@ -1468,6 +1539,23 @@ begin
     end;
   finally
      //Aviso('Concluído.')
+  end;
+end;
+
+procedure TFormPrincipal.RGTipoClick(Sender: TObject);
+begin
+  if RGTipo.ItemIndex = 0 then
+  begin
+    EditProc.Text := '-proc.xml';
+    EditInu.Text  := '-procInutNFe.xml';
+    EditCan.Text  := '-procEventoNFe.xml';
+  end;
+
+  if RGTipo.ItemIndex = 1 then
+  begin
+    EditProc.Text := '-cte.xml';
+    EditInu.Text  := '-procInutCTe.xml';
+    EditCan.Text  := '-procEventoCTe.xml';
   end;
 end;
 

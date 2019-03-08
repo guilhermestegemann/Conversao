@@ -928,7 +928,6 @@ type
     cdItemNFBASEFCPUFDEST: TFMTBCDField;
     cdItemNFPERCFCPUFDEST: TFMTBCDField;
     cdItemNFVALORFCPUFDEST: TFMTBCDField;
-    cdItemNFVALORCOTACAPITAL: TFMTBCDField;
     SQLOrdemNFNUMERO: TIntegerField;
     SQLOrdemNFSERIE: TStringField;
     SQLOrdemNFFILIAL: TIntegerField;

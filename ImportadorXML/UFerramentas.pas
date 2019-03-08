@@ -19,6 +19,7 @@ uses
   function MascaraCnpj(cnpj: string):String;
   //Mascarar CPF
   function MascaraCpf(cpf: string):String;
+  function MascaraCnpjCpf(CnpjCpf : string) : string;
   Procedure Open_SQL(cds: TClientDataSet; SQL: String); overload;
   function GravarMaster(Tabela: TClientDataSet; UndoLastChange: Boolean; Mensagem:String; ARaiseException : boolean = false):Boolean;
   // Retorna se a tabela esta em modo de edição ou inserção
@@ -165,6 +166,14 @@ begin
   cpf := Numericos(cpf);
   result := cpf[1] + cpf[2] + cpf[3] + '.' + cpf[4] + cpf[5] + cpf[6]
     + '.' + cpf[7] + cpf[8] + cpf[9] + '-' + cpf[10] + cpf[11];
+end;
+
+function MascaraCnpjCpf(CnpjCpf : string) : string;
+begin
+  if Length(CnpjCpf) = 11 then
+    Result := MascaraCpf(CnpjCpf)
+  else
+    Result := MascaraCnpj(CnpjCpf);
 end;
 
 Procedure Open_SQL(cds: TClientDataSet; SQL: String);

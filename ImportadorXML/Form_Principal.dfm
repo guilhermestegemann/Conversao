@@ -45,7 +45,7 @@ object FormPrincipal: TFormPrincipal
         Width = 662
         Height = 21
         TabOrder = 0
-        Text = 'C:\Program Files (x86)\Top System\ERP\Dados\Sublime\TOPDADOS.FDB'
+        Text = 'E:\Dados\Nezi\Novo\TOPDADOS.FDB'
       end
       object Button4: TButton
         Left = 3
@@ -157,7 +157,7 @@ object FormPrincipal: TFormPrincipal
         TabStop = True
       end
       object RGImpressa: TRadioGroup
-        Left = 258
+        Left = 260
         Top = 5
         Width = 81
         Height = 33
@@ -357,7 +357,29 @@ object FormPrincipal: TFormPrincipal
         EditLabel.Height = 13
         EditLabel.Caption = 'Filial'
         TabOrder = 7
-        Text = '2'
+        Text = '1'
+      end
+      object LabeledEditRemetenteInut: TLabeledEdit
+        Left = 363
+        Top = 15
+        Width = 42
+        Height = 21
+        EditLabel.Width = 155
+        EditLabel.Height = 13
+        EditLabel.Caption = 'Remetente Padr'#227'o (Inutilizadas)'
+        TabOrder = 8
+        Text = '1000'
+      end
+      object LabeledEditNBSPadraoInut: TLabeledEdit
+        Left = 163
+        Top = 15
+        Width = 66
+        Height = 21
+        EditLabel.Width = 121
+        EditLabel.Height = 13
+        EditLabel.Caption = 'NBS Padr'#227'o (Inutilizadas)'
+        TabOrder = 9
+        Text = '105011320'
       end
     end
     object TabSheet3: TTabSheet
@@ -398,15 +420,15 @@ object FormPrincipal: TFormPrincipal
           Align = alClient
           TabOrder = 0
           object Label2: TLabel
-            Left = 312
-            Top = 32
+            Left = 270
+            Top = 27
             Width = 88
             Height = 13
             Caption = 'Numera'#231#227'o Inicial:'
           end
           object Label3: TLabel
-            Left = 439
-            Top = 32
+            Left = 397
+            Top = 27
             Width = 83
             Height = 13
             Caption = 'Numera'#231#227'o Final:'
@@ -455,16 +477,16 @@ object FormPrincipal: TFormPrincipal
             TabOrder = 3
           end
           object EditProc: TEdit
-            Left = 141
-            Top = 23
+            Left = 143
+            Top = 22
             Width = 121
             Height = 21
             TabOrder = 4
             Text = '-proc.xml'
           end
           object EditInu: TEdit
-            Left = 141
-            Top = 45
+            Left = 143
+            Top = 46
             Width = 121
             Height = 21
             TabOrder = 5
@@ -479,8 +501,8 @@ object FormPrincipal: TFormPrincipal
             Text = '-procEventoNFe.xml'
           end
           object EditNumeracaoInicial: TEdit
-            Left = 312
-            Top = 48
+            Left = 270
+            Top = 43
             Width = 121
             Height = 21
             Hint = 'Quando informado 0 (zero) n'#227'o compara n'#250'mero do documento'
@@ -490,8 +512,8 @@ object FormPrincipal: TFormPrincipal
             Text = '0'
           end
           object EditNumeracaoFinal: TEdit
-            Left = 439
-            Top = 48
+            Left = 397
+            Top = 43
             Width = 121
             Height = 21
             Hint = 'Quando informado 0 (zero) n'#227'o compara n'#250'mero do documento'
@@ -499,6 +521,19 @@ object FormPrincipal: TFormPrincipal
             ShowHint = True
             TabOrder = 8
             Text = '0'
+          end
+          object RGTipo: TRadioGroup
+            Left = 528
+            Top = 23
+            Width = 105
+            Height = 50
+            Caption = 'Tipo'
+            ItemIndex = 0
+            Items.Strings = (
+              'NF-e'
+              'CT-e')
+            TabOrder = 9
+            OnClick = RGTipoClick
           end
         end
       end
