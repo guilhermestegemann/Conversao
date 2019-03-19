@@ -94,6 +94,8 @@ type
     ListBoxNossoNumero: TListBox;
     ListBoxNossoNumeroDuplicado: TListBox;
     BtnContasPagarExcel: TButton;
+    Label12: TLabel;
+    EditForcarNumeroFilial: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);
@@ -453,6 +455,8 @@ begin
     IsFuncionario := FDQuery1.FieldByName('isfuncionario').AsBoolean;
     IsTransportador := FDQuery1.FieldByName('istransportador').AsBoolean;
     Filial := FDQuery1.FieldByName('filial').AsInteger;
+    if EditForcarNumeroFilial.Text <> EmptyStr then
+      Filial := StrToInt(EditForcarNumeroFilial.Text);
     Codigo := FDQuery1.FieldByName('codigo').AsInteger;
     Fantasia := Copy(FDQuery1.FieldByName('fantasia').AsString, 0, 60);
     Nome := Copy(FDQuery1.FieldByName('nome').AsString, 0, 60);
@@ -754,6 +758,8 @@ begin
     IsFuncionario := FDQuery1.FieldByName('isfuncionario').AsBoolean;
     IsTransportador := FDQuery1.FieldByName('istransportador').AsBoolean;
     Filial := FDQuery1.FieldByName('filial').AsInteger;
+    if EditForcarNumeroFilial.Text <> EmptyStr then
+      Filial := StrToInt(EditForcarNumeroFilial.Text);
     Codigo := FDQuery1.FieldByName('codigo').AsInteger;
     Fantasia := Copy(FDQuery1.FieldByName('fantasia').AsString, 0, 60);
     Nome := Copy(FDQuery1.FieldByName('nome').AsString, 0, 60);
@@ -1031,6 +1037,8 @@ begin
   while not FDQuery1.Eof do
   begin
     Filial := FDQuery1.FieldByName('filial').AsInteger;
+    if EditForcarNumeroFilial.Text <> EmptyStr then
+      Filial := StrToInt(EditForcarNumeroFilial.Text);
     Clifor := FDQuery1.FieldByName('clifor').AsInteger;
     Produto := FDQuery1.FieldByName('produto').AsInteger;
     Qtde := StringReplace(FDQuery1.FieldByName('qtde').AsString, ',', '.', [rfReplaceAll]);
@@ -1115,20 +1123,24 @@ procedure TFrmPrincipal.BtnContasAReceberExcelClick(Sender: TObject);
 var
   I, indexteste : Integer;
   SQLInsert : String;
-  Clifor, Ordem, Documento, Emissao, Vencimento, Valor, NossoNumero, Historico : String;
+  Clifor, Ordem, Documento, Emissao, Vencimento, Valor, NossoNumero, Historico, Filial : String;
 begin
   try
     ShowMessage('Lembrar de preencher Inicio Planilha e Fim Planilha');
     ShowMessage('Analisar NossoNumero');
     CarregarExcel;
     SQLInsert := 'INSERT INTO FINANCEIRO (FILIAL, TIPO, CLIFOR, ORDEM, DOCUMENTO, DATAEMISSAO, DATAVCTO, VALOR, NOSSONUMERO, HISTORICO, SITUACAO) '+
-                 'VALUES (1, %s, %s, %s, %s, %s, %s, %s, %s, %s, 99);';
+                 'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 99);';
     ListBox1.Clear;
     ListBoxNossoNumero.Clear;
     ListBoxNossoNumeroDuplicado.Clear;
     ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES (99, ''CONVERSAO'', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
     Gauge1.Progress := StrToInt(EditInicioPlanilha.Text);
     Gauge1.MaxValue := StrToInt(EditFimPlanilha.Text);
+
+    Filial := '1';
+    if EditForcarNumeroFilial.Text <> EmptyStr then
+      Filial := EditForcarNumeroFilial.Text;
     for I := StrToInt(EditInicioPlanilha.Text) to StrToInt(EditFimPlanilha.Text) do
     begin
       Clifor := Trim(Planilha.cells[i,2]);
@@ -1165,7 +1177,7 @@ begin
 
       end;
 
-      ListBox1.Items.Add(Format(SQLInsert,[QuotedStr('C'), Clifor, QuotedStr(Ordem), Documento, QuotedStr(Emissao), QuotedStr(Vencimento), Valor, NossoNumero, Historico]));
+      ListBox1.Items.Add(Format(SQLInsert,[Filial, QuotedStr('C'), Clifor, QuotedStr(Ordem), Documento, QuotedStr(Emissao), QuotedStr(Vencimento), Valor, NossoNumero, Historico]));
 
       Gauge1.AddProgress(1);
     end;
@@ -1284,6 +1296,8 @@ begin
   while not FDQuery1.Eof do
   begin
     Filial := FDQuery1.FieldByName('filial').AsInteger;
+    if EditForcarNumeroFilial.Text <> EmptyStr then
+      Filial := StrToInt(EditForcarNumeroFilial.Text);
     Clifor := FDQuery1.FieldByName('clifor').AsInteger;
     Documento := Copy(Numericos(FDQuery1.FieldByName('documento').AsString),0,9);
     Ordem := Copy(FDQuery1.FieldByName('ordem').AsString,0,18);
@@ -1374,6 +1388,8 @@ begin
   while not FDQuery1.Eof do
   begin
     Filial := FDQuery1.FieldByName('filial').AsInteger;
+    if EditForcarNumeroFilial.Text <> EmptyStr then
+      Filial := StrToInt(EditForcarNumeroFilial.Text);
     Codigo := FDQuery1.FieldByName('produto').AsInteger;
     TipoItem := FDQuery1.FieldByName('tipoitem').AsInteger;
     CustoMedio := StringReplace(FDQuery1.FieldByName('customedio').AsString, ',', '.', [rfReplaceAll]);
@@ -1782,6 +1798,8 @@ begin
     ClassificacaoRota := FDQuery1.FieldByName('classificacaorota').AsString;
     Periodicidade := FDQuery1.FieldByName('periodicidade').AsString;
     Filial := FDQuery1.FieldByName('filial').AsInteger;
+    if EditForcarNumeroFilial.Text <> EmptyStr then
+      Filial := StrToInt(EditForcarNumeroFilial.Text);
 
     //if Periodicidade = '2' then ClassificacaoRota := Periodicidade + ClassificacaoRota; //quinzenal
     ClassificacaoRota := 'NULL';
@@ -1877,6 +1895,8 @@ begin
   begin
     Codigo := FDQuery1.FieldByName('id').AsInteger;
     Filial := FDQuery1.FieldByName('id_empresa').AsInteger;
+    if EditForcarNumeroFilial.Text <> EmptyStr then
+      Filial := StrToInt(EditForcarNumeroFilial.Text);
     Nome := Copy(FDQuery1.FieldByName('desc_tabela').AsString,0,40);
     DataInicial := AjustaData(FDQuery1.FieldByName('data_criacao').AsString);
 
@@ -2005,6 +2025,8 @@ begin
   while not FDQuery1.Eof do
   begin
     Filial := FDQuery1.FieldByName('filial').AsInteger;
+    if EditForcarNumeroFilial.Text <> EmptyStr then
+      Filial := StrToInt(EditForcarNumeroFilial.Text);
     Clifor := FDQuery1.FieldByName('clifor').AsInteger;
     Produto := FDQuery1.FieldByName('produto').AsInteger;
     Unitario := StringReplace(FDQuery1.FieldByName('unitario').AsString, ',', '.', [rfReplaceAll]);
@@ -2096,6 +2118,8 @@ begin
   while not FDQuery1.Eof do
   begin
     Filial := FDQuery1.FieldByName('filial').AsInteger;
+    if EditForcarNumeroFilial.Text <> EmptyStr then
+      Filial := StrToInt(EditForcarNumeroFilial.Text);
     Clifor := FDQuery1.FieldByName('clifor').AsInteger;
     DataEmissao := AjustaData(FDQuery1.FieldByName('dataemissao').AsString);
     Ordem := Copy(FDQuery1.FieldByName('ordem').AsString,0,18);
@@ -2211,6 +2235,8 @@ begin
   while not FDQuery1.Eof do
   begin
     Filial := FDQuery1.FieldByName('filial').AsInteger;
+    if EditForcarNumeroFilial.Text <> EmptyStr then
+      Filial := StrToInt(EditForcarNumeroFilial.Text);
     Clifor := FDQuery1.FieldByName('clifor').AsInteger;
     Produto := FDQuery1.FieldByName('produto').AsInteger;
     Unitario := StringReplace(FDQuery1.FieldByName('unitario').AsString, ',', '.', [rfReplaceAll]);
@@ -2419,6 +2445,8 @@ begin
   begin
     Id := FDQuery1.FieldByName('id').AsString;
     Filial := FDQuery1.FieldByName('filial').AsInteger;
+    if EditForcarNumeroFilial.Text <> EmptyStr then
+      Filial := StrToInt(EditForcarNumeroFilial.Text);
     Clifor := FDQuery1.FieldByName('clifor').AsInteger;
     Documento := Copy(Numericos(FDQuery1.FieldByName('documento').AsString),0,9);
     Ordem := Copy(FDQuery1.FieldByName('ordem').AsString,0,18);

@@ -657,6 +657,19 @@ object FrmPrincipal: TFrmPrincipal
         Font.Style = [fsBold]
         ParentFont = False
       end
+      object Label12: TLabel
+        Left = 584
+        Top = 213
+        Width = 64
+        Height = 13
+        Caption = 'For'#231'ar Filial'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
       object SGTipoEstabelecimento: TStringGrid
         Left = 3
         Top = 64
@@ -758,6 +771,15 @@ object FrmPrincipal: TFrmPrincipal
         Caption = 'Contas a Pagar (Excel)'
         TabOrder = 10
         OnClick = BtnContasPagarExcelClick
+      end
+      object EditForcarNumeroFilial: TEdit
+        Left = 584
+        Top = 232
+        Width = 121
+        Height = 21
+        NumbersOnly = True
+        TabOrder = 11
+        OnKeyPress = EditTipoEstabelecimentoDeKeyPress
       end
     end
   end
