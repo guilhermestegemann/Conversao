@@ -482,6 +482,8 @@ begin
     Simples := FDQuery1.FieldByName('simples').AsString;
     IndicadorIE := FDQuery1.FieldByName('indicadorie').AsInteger;
     LimiteCredito := StringReplace(FDQuery1.FieldByName('limitecredito').AsString,',', '.', [rfReplaceAll]);
+    if Length(LimiteCredito) > 8 then
+      LimiteCredito := '0';
     CondicaoPagamento := FDQuery1.FieldByName('condicaopagamento').AsString;;
     Ativo := FDQuery1.FieldByName('ativo').AsBoolean;
     DataMovimento := AjustaData(FDQuery1.FieldByName('datamovimento').AsString);
@@ -1074,8 +1076,8 @@ begin
   if EditIdEmpresa.Text <> EmptyStr then
     FDQuery1.SQL.Add(Format('where id_empresa = %s',[EditIdEmpresa.Text]));
   SQLInsert := 'INSERT INTO CONDICAOPAGAMENTO (CODIGO, NOME, PRIMEIROVCTO, VEZES, INTERVALO, EXPORTAR, ATIVO, COMISSAO, LIBERARVENDAPENDENCIA, INDICADOR, '+
-               'DIVIDIRVALORST, LIBERARVENDALIMITE, CONCEDERDESCONTO, INDICADORNFE, SOLICITARPRIMEIROVENCIMENTO, INDICE, VALORMINIMO, BLOQUEARCLIFORAUTOMATICAMENTE) '+
-               'VALUES (%d, %s, %d, %d, %d, %s, %s, %d, %s, %s, %s, %s, %s, %s, %s, %d, %d, %s);';
+               'DIVIDIRVALORST, LIBERARVENDALIMITE, CONCEDERDESCONTO, INDICADORNFE, SOLICITARPRIMEIROVENCIMENTO, INDICE, VALORMINIMO, BLOQUEARCLIFORAUTOMATICAMENTE, ISOLARST) '+
+               'VALUES (%d, %s, %d, %d, %d, %s, %s, %d, %s, %s, %s, %s, %s, %s, %s, %d, %d, %s, %s);';
   VerificaConexao;
   AbreQuery;
   AjustaGauge;
@@ -1098,7 +1100,7 @@ begin
     if PrimeiroVcto = 0 then PrimeiroVcto := 1;
 
     ListBox1.Items.Add(Format(SQLInsert,[Codigo, QuotedStr(Nome), PrimeiroVcto, Vezes, Intervalo, cSim, BooleanToStr(Ativo), 0, cNao, Indicador, cSim, cNao, cNao, Indicador,
-                       cNao, 1, 0, cNao]));
+                       cNao, 1, 0, cNao, cNao]));
 
     FDQuery1.Next;
     Gauge1.AddProgress(1);
@@ -2327,6 +2329,7 @@ begin
   CheckBoxInserirDeleteAntes.Checked := INI.ReadBool('Geral', 'inserirdelete', True);
   CheckBoxSalvarAutomaticamente.Checked := INI.ReadBool('Geral', 'salvarautomaticamente', True);
   CheckBobxContasReceberSomenteDocumentosComNumero.Checked := INI.ReadBool('Geral', 'contasrecebersomentedocumentocomnumero', True);
+  EditForcarNumeroFilial.Text := INI.ReadString('Geral', 'forcarfilial', EmptyStr);
 
 end;
 
@@ -2553,6 +2556,7 @@ begin
   INI.WriteBool('Geral', 'inserirdelete', CheckBoxInserirDeleteAntes.Checked);
   INI.WriteBool('Geral', 'salvarautomaticamente', CheckBoxSalvarAutomaticamente.Checked);
   INI.WriteBool('Geral', 'contasrecebersomentedocumentocomnumero', CheckBobxContasReceberSomenteDocumentosComNumero.Checked);
+  INI.WriteString('Geral', 'forcarfilial', EditForcarNumeroFilial.Text);
 end;
 
 procedure TFrmPrincipal.sbTipoEstabelecimentoClick(Sender: TObject);
