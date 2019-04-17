@@ -514,7 +514,7 @@ end;
 
 procedure TFormPrincipal.FormShow(Sender: TObject);
 begin
-  Button4Click(self);
+//  Button4Click(self);
 end;
 
 function TFormPrincipal.GetLocalTXTCadastrados: String;
@@ -1000,7 +1000,8 @@ begin
     CondicaoPagamento := DMDados.CDPesquisa.Fields[0].AsString;
 
   Funcionario := GetInfAdicional(ACBrNFe.NotasFiscais.Items[I].NFe.InfAdic.obsCont,'xCodVen');
-  Funcionario := Copy(Funcionario,1, (pos('-',Funcionario)-1));
+  if Pos(Funcionario,'-') > 0 then
+    Funcionario := Copy(Funcionario,1, (pos('-',Funcionario)-1));
   if Funcionario <> '' then
   begin
     SQL := ' SELECT CODIGO FROM FUNCIONARIO WHERE CODIGO = '+ Funcionario;

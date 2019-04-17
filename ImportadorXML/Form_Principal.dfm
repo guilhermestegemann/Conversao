@@ -45,7 +45,7 @@ object FormPrincipal: TFormPrincipal
         Width = 662
         Height = 21
         TabOrder = 0
-        Text = 'E:\Dados\Nezi\Novo\TOPDADOS.FDB'
+        Text = 'E:\Dados\Lumar\TOPDADOS.FDB'
       end
       object Button4: TButton
         Left = 3
@@ -189,7 +189,9 @@ object FormPrincipal: TFormPrincipal
             'a, cancela NF e cancela NF Entrada'
           'OU desativar TRIGGER_MOVIMENTOESTOQUE'
           'Ver bloquear se baixado financeiro'
-          'VER TRIGGER_ATUALIZACUPOM')
+          'VER TRIGGER_ATUALIZACUPOM'
+          'TRIGGER_NF_VALIDARPLACA'
+          'CHK_NF_UFPLACA')
         TabOrder = 8
       end
       object sbProc: TButton
