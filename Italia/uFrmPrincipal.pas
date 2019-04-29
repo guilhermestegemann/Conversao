@@ -29,7 +29,7 @@ type
     BtnRota: TButton;
     BtnFornecedor: TButton;
     BtnProduto: TButton;
-    Button1: TButton;
+    BtnConsumo: TButton;
     Button2: TButton;
     Button3: TButton;
     procedure BtnConectarClick(Sender: TObject);
@@ -40,6 +40,7 @@ type
     procedure BtnRotaClick(Sender: TObject);
     procedure BtnFornecedorClick(Sender: TObject);
     procedure BtnProdutoClick(Sender: TObject);
+    procedure BtnConsumoClick(Sender: TObject);
   private
       procedure ConectarDB;
       procedure DesconectarDB;
@@ -139,6 +140,53 @@ begin
   ConectarDB;
   AjustaBotoesConexao;
 end;
+
+procedure TFrmPrincipal.BtnConsumoClick(Sender: TObject);
+var
+  Documento, Produto, Unitario, Qtde, Clifor, Data, Rota, FormaPagamento, CondicaoPagamento, SQLInsert : String;
+begin
+  SQLInsert := 'EXECUTE PROCEDURE SET_CONSUMO_CONV(%s, %s, %s, %s, %s, %s, %s, %s, %s);';
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add(' select ');
+  FDQuery1.SQL.Add(' ip.codpedido as documento, ');
+  FDQuery1.SQL.Add(' ip.codproduto as produto, ');
+  FDQuery1.SQL.Add(' ip.valorproduto as unitario, ');
+  FDQuery1.SQL.Add(' ip.quantproduto as qtde, ');
+  FDQuery1.SQL.Add(' ip.codcliente as clifor, ');
+  FDQuery1.SQL.Add(' cast(ip.data as date) as data, ');
+  FDQuery1.SQL.Add(' ip.rota as rota, ');
+  FDQuery1.SQL.Add(' p.formadepagamento as formapagamento, ');
+  FDQuery1.SQL.Add(' p.prazo as condicaopagamento ');
+  FDQuery1.SQL.Add(' from pedidoproduto1 ip ');
+  FDQuery1.SQL.Add(' inner join pedidocliente1 p on p.codpedido = ip.codpedido ');
+  FDQuery1.SQL.Add(' where p.formadepagamento <> ''REMESSA'' ');
+  FDQuery1.SQL.Add(' and ip.data > ''2018-12-31'' ');
+  FDQuery1.SQL.Add(' and ip.quantproduto > 0 ');
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  DataSource1.Enabled := False;
+  while not FDQuery1.Eof do
+  begin
+    Documento := FDQuery1.FieldByName('documento').AsString;
+    Produto := FDQuery1.FieldByName('produto').AsString;
+    Unitario := StringReplace(FDQuery1.FieldByName('unitario').AsString,',','.',[rfReplaceAll]);
+    Qtde := StringReplace(FDQuery1.FieldByName('qtde').AsString,',','.',[rfReplaceAll]);
+    Clifor := FDQuery1.FieldByName('clifor').AsString;
+    Data := AjustaData(FDQuery1.FieldByName('data').AsString);
+    Rota := FDQuery1.FieldByName('rota').AsString;
+    FormaPagamento := FDQuery1.FieldByName('formapagamento').AsString;
+    CondicaoPagamento := FDQuery1.FieldByName('condicaopagamento').AsString;
+
+    ListBox1.Items.Add(Format(SQLInsert,[Documento, QuotedStr(Produto), Unitario, Qtde, Clifor, Data, Rota, QuotedStr(FormaPagamento), CondicaoPagamento]));
+
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+    Application.ProcessMessages;
+  end;
+  DataSource1.Enabled := True;
+end;
+
 
 procedure TFrmPrincipal.BtnDesconectarClick(Sender: TObject);
 begin

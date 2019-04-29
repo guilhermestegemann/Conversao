@@ -531,6 +531,10 @@ object FrmPrincipal: TFrmPrincipal
     object TabSheet2: TTabSheet
       Caption = 'Configura'#231#227'o'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sbTipoEstabelecimento: TSpeedButton
         Left = 280
         Top = 24

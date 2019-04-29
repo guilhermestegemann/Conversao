@@ -106,13 +106,14 @@ object FrmPrincipal: TFrmPrincipal
     TabOrder = 8
     OnClick = BtnProdutoClick
   end
-  object Button1: TButton
+  object BtnConsumo: TButton
     Left = 1
-    Top = 407
+    Top = 171
     Width = 153
     Height = 25
-    Caption = 'Salvar'
+    Caption = 'Consumo'
     TabOrder = 9
+    OnClick = BtnConsumoClick
   end
   object Button2: TButton
     Left = 1
@@ -121,6 +122,7 @@ object FrmPrincipal: TFrmPrincipal
     Height = 25
     Caption = 'Salvar'
     TabOrder = 10
+    Visible = False
   end
   object Button3: TButton
     Left = 1
@@ -129,6 +131,7 @@ object FrmPrincipal: TFrmPrincipal
     Height = 25
     Caption = 'Salvar'
     TabOrder = 11
+    Visible = False
   end
   object FDConnection1: TFDConnection
     Params.Strings = (
