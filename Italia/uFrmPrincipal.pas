@@ -32,6 +32,7 @@ type
     BtnConsumo: TButton;
     Button2: TButton;
     Button3: TButton;
+    Button1: TButton;
     procedure BtnConectarClick(Sender: TObject);
     procedure BtnDesconectarClick(Sender: TObject);
     procedure BtnSalvarClick(Sender: TObject);
@@ -41,6 +42,7 @@ type
     procedure BtnFornecedorClick(Sender: TObject);
     procedure BtnProdutoClick(Sender: TObject);
     procedure BtnConsumoClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
       procedure ConectarDB;
       procedure DesconectarDB;
@@ -160,7 +162,7 @@ begin
   FDQuery1.SQL.Add(' from pedidoproduto1 ip ');
   FDQuery1.SQL.Add(' inner join pedidocliente1 p on p.codpedido = ip.codpedido ');
   FDQuery1.SQL.Add(' where p.formadepagamento <> ''REMESSA'' ');
-  FDQuery1.SQL.Add(' and ip.data > ''2018-12-31'' ');
+  FDQuery1.SQL.Add(' and ip.data between ''2019-04-01'' and ''2019-04-30'' ');
   FDQuery1.SQL.Add(' and ip.quantproduto > 0 ');
   AbreQuery;
   AjustaGauge;
@@ -241,8 +243,8 @@ end;
 
 procedure TFrmPrincipal.BtnProdutoClick(Sender: TObject);
 var
-  Codigo, Barras, QtdeCompra : Integer;
-  Referencia, Nome, UnMedida, Grupo, CodigoNCM, Fornecedor, Venda, SQLInsert : String;
+  Codigo, QtdeCompra : Integer;
+  Referencia, Nome, UnMedida, Grupo, CodigoNCM, Fornecedor, Venda, SQLInsert, Barras : String;
   Comissao, Peso, DescontoMaximo, EstoqueAtual : String;
 begin
   SQLInsert := 'EXECUTE PROCEDURE SET_PRODUTO_CONV(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %s);';
@@ -265,11 +267,11 @@ begin
     Peso := StringReplace(FDQuery1.FieldByName('peso').AsString,',','.',[rfReplaceAll]);
     DescontoMaximo := StringReplace(FDQuery1.FieldByName('perc_desc').AsString,',','.',[rfReplaceAll]);
     EstoqueAtual := StringReplace(FDQuery1.FieldByName('estoque_atual').AsString,',','.',[rfReplaceAll]);
-    Barras := FDQuery1.FieldByName('codigo_barras').AsInteger;
+    Barras := FDQuery1.FieldByName('codigo_barras').AsString;
     QtdeCompra := FDQuery1.FieldByName('caixa').AsInteger;
     Venda := FDQuery1.FieldByName('lib_venda').AsString;
 
-    if Barras = 0 then Barras := Codigo;
+    if Barras = '0' then Barras := IntToStr(Codigo);
     if Venda = 'SIM' then Venda := 'S' else Venda := 'N';
     Fornecedor := '1000' + Fornecedor;
     if Peso = EmptyStr then Peso := '0.01';
@@ -313,6 +315,30 @@ end;
 procedure TFrmPrincipal.BtnSalvarClick(Sender: TObject);
 begin
   SalvarArquivo();
+end;
+
+procedure TFrmPrincipal.Button1Click(Sender: TObject);
+var
+  Referencia, SQLInsert, Barras : String;
+begin
+  SQLInsert := 'UPDATE PRODUTO SET BARRAS = %s WHERE REFERENCIA = %s;';
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select * from produto order by CodProduto');
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  while not FDQuery1.Eof do
+  begin
+    Referencia := FDQuery1.FieldByName('CodProduto').AsString;
+
+    Barras := FDQuery1.FieldByName('codigo_barras').AsString;
+
+
+    if Barras = '0' then Barras := 'CODIGO' else Barras := QuotedStr(Barras);
+    ListBox1.Items.Add(Format(SQLInsert,[Barras, QuotedStr(Referencia)]));
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
 end;
 
 procedure TFrmPrincipal.ConectarDB;

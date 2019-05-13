@@ -133,6 +133,15 @@ object FrmPrincipal: TFrmPrincipal
     TabOrder = 11
     Visible = False
   end
+  object Button1: TButton
+    Left = 1
+    Top = 312
+    Width = 153
+    Height = 25
+    Caption = ' update FDP'
+    TabOrder = 12
+    OnClick = Button1Click
+  end
   object FDConnection1: TFDConnection
     Params.Strings = (
       'DriverID=MySQL'
@@ -161,7 +170,7 @@ object FrmPrincipal: TFrmPrincipal
     Top = 240
   end
   object SaveTextFileDialog1: TSaveTextFileDialog
-    Left = 64
-    Top = 248
+    Left = 88
+    Top = 240
   end
 end

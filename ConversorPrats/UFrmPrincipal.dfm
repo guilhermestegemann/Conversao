@@ -165,189 +165,189 @@ object FrmPrincipal: TFrmPrincipal
       end
       object BtnBairro: TButton
         Left = 8
-        Top = 232
+        Top = 226
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Bairro'
         TabOrder = 6
         OnClick = BtnBairroClick
       end
       object BtnCidade: TButton
         Left = 8
-        Top = 254
+        Top = 247
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Cidade'
         TabOrder = 7
         OnClick = BtnCidadeClick
       end
       object BtnClassificacao: TButton
         Left = 8
-        Top = 409
+        Top = 392
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Classifica'#231#227'o'
         TabOrder = 8
         OnClick = BtnClassificacaoClick
       end
       object BtnClifor: TButton
         Left = 8
-        Top = 298
+        Top = 288
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Clifor'
         TabOrder = 9
         OnClick = BtnCliforClick
       end
       object BtnCliforTabelaPreco: TButton
         Left = 8
-        Top = 541
+        Top = 516
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Clifor Tabela Pre'#231'o'
         TabOrder = 10
         OnClick = BtnCliforTabelaPrecoClick
       end
       object BtnCondicaoPagamento: TButton
         Left = 8
-        Top = 188
+        Top = 185
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Condi'#231#227'o Pagamento'
         TabOrder = 11
         OnClick = BtnCondicaoPagamentoClick
       end
       object BtnConectar: TButton
         Left = 8
-        Top = 166
+        Top = 164
         Width = 80
-        Height = 21
+        Height = 18
         Caption = 'Conectar'
         TabOrder = 12
         OnClick = BtnConectarClick
       end
       object BtnContasAPagar: TButton
         Left = 8
-        Top = 564
+        Top = 537
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Contas a Pagar'
         TabOrder = 13
         OnClick = BtnContasAPagarClick
       end
       object BtnContasPagarProcedure: TButton
         Left = 8
-        Top = 608
+        Top = 578
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Contas a Pagar Procedure'
         TabOrder = 14
         OnClick = BtnContasPagarProcedureClick
       end
       object BtnContasReceber: TButton
         Left = 8
-        Top = 586
+        Top = 558
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Contas a Receber'
         TabOrder = 15
         OnClick = BtnContasReceberClick
       end
       object BtnDesconectar: TButton
         Left = 94
-        Top = 166
+        Top = 164
         Width = 80
-        Height = 21
+        Height = 18
         Caption = 'Desconectar'
         TabOrder = 16
         OnClick = BtnDesconectarClick
       end
       object BtnEstoque: TButton
         Left = 8
-        Top = 475
+        Top = 454
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Estoque'
         TabOrder = 17
         OnClick = BtnEstoqueClick
       end
       object BtnFuncionario: TButton
         Left = 8
-        Top = 276
+        Top = 267
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Funcion'#225'rio'
         TabOrder = 18
         OnClick = BtnFuncionarioClick
       end
       object BtnGerarTodos: TButton
         Left = 8
-        Top = 763
+        Top = 765
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Gerar Todos'
         TabOrder = 19
         OnClick = BtnGerarTodosClick
       end
       object BtnGrupo: TButton
         Left = 8
-        Top = 342
+        Top = 330
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Grupo'
         TabOrder = 20
         OnClick = BtnGrupoClick
       end
       object BtnItemTabelaPreco: TButton
         Left = 8
-        Top = 519
+        Top = 495
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Tabela Pre'#231'o - Itens'
         TabOrder = 21
         OnClick = BtnItemTabelaPrecoClick
       end
       object BtnMarca: TButton
         Left = 8
-        Top = 387
+        Top = 371
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Marca'
         TabOrder = 22
         OnClick = BtnMarcaClick
       end
       object BtnProduto: TButton
         Left = 8
-        Top = 431
+        Top = 412
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Produto'
         TabOrder = 23
         OnClick = BtnProdutoClick
       end
       object BtnProdutoClifor: TButton
         Left = 8
-        Top = 453
+        Top = 433
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Produto Clifor'
         TabOrder = 24
         OnClick = BtnProdutoCliforClick
       end
       object BtnRota: TButton
         Left = 8
-        Top = 630
+        Top = 599
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Rota'
         TabOrder = 25
         OnClick = BtnRotaClick
       end
       object BtnRotaClifor: TButton
         Left = 8
-        Top = 652
+        Top = 620
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Rota Clifor'
         TabOrder = 26
         OnClick = BtnRotaCliforClick
@@ -356,52 +356,52 @@ object FrmPrincipal: TFrmPrincipal
         Left = 8
         Top = 786
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Salvar'
         TabOrder = 27
         OnClick = BtnSalvarClick
       end
       object BtnTabelaPreco: TButton
         Left = 8
-        Top = 497
+        Top = 475
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Tabela Pre'#231'o'
         TabOrder = 28
         OnClick = BtnTabelaPrecoClick
       end
       object BtnTipoEstabelecimento: TButton
         Left = 8
-        Top = 210
+        Top = 205
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Tipo Estabelecimento'
         TabOrder = 29
         OnClick = BtnTipoEstabelecimentoClick
       end
       object BtnTipoProduto: TButton
         Left = 8
-        Top = 365
+        Top = 350
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Tipo Produto'
         TabOrder = 30
         OnClick = BtnTipoProdutoClick
       end
       object BtnUnidadeMedida: TButton
         Left = 8
-        Top = 320
+        Top = 309
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Unidade de Medida'
         TabOrder = 31
         OnClick = BtnUnidadeMedidaClick
       end
       object BtnVendas: TButton
         Left = 8
-        Top = 674
+        Top = 640
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Vendas'
         TabOrder = 32
         OnClick = BtnVendasClick
@@ -466,27 +466,27 @@ object FrmPrincipal: TFrmPrincipal
       end
       object BtnUpdateNossoNumero: TButton
         Left = 8
-        Top = 696
+        Top = 661
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Update Nosso Numero'
         TabOrder = 37
         OnClick = BtnUpdateNossoNumeroClick
       end
       object BtnContasAReceberExcel: TButton
         Left = 8
-        Top = 718
+        Top = 682
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Contas a Receber (Excel)'
         TabOrder = 38
         OnClick = BtnContasAReceberExcelClick
       end
       object BtnUpdateRapel: TButton
         Left = 8
-        Top = 740
+        Top = 744
         Width = 166
-        Height = 21
+        Height = 18
         Caption = 'Update Rapel'
         TabOrder = 39
         OnClick = BtnUpdateRapelClick
@@ -527,14 +527,19 @@ object FrmPrincipal: TFrmPrincipal
         TabOrder = 43
         OnClick = BtnComodatoClick
       end
+      object ButtonSemRomaneio: TButton
+        Left = 8
+        Top = 703
+        Width = 166
+        Height = 18
+        Caption = 'Vendas (Excel)'
+        TabOrder = 44
+        OnClick = ButtonSemRomaneioClick
+      end
     end
     object TabSheet2: TTabSheet
       Caption = 'Configura'#231#227'o'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object sbTipoEstabelecimento: TSpeedButton
         Left = 280
         Top = 24

@@ -96,6 +96,7 @@ type
     BtnContasPagarExcel: TButton;
     Label12: TLabel;
     EditForcarNumeroFilial: TEdit;
+    ButtonSemRomaneio: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);
@@ -140,6 +141,7 @@ type
     procedure BtnComodatoClick(Sender: TObject);
     procedure BtnTrocasClick(Sender: TObject);
     procedure BtnContasPagarExcelClick(Sender: TObject);
+    procedure ButtonSemRomaneioClick(Sender: TObject);
 
   private
     procedure CarregarExcel;
@@ -1678,8 +1680,8 @@ begin
 
   SQLInsert := 'INSERT INTO PRODUTO (CODIGO, NOME, BARRAS, TIPOPRODUTO, MARCA, CLASSIFICACAO, PESOLIQUIDO, PESOBRUTO, DATA, UNCOMPRA, CODIGONCM, ORDEM, GRUPO, CEST, '+
                'PESOEMBALAGEM, QTDEREFERENCIA, UNREFERENCIA, QTDEMULTIPLAEMBALAGEM, VOLUME, PROFUNDIDADE, LARGURA, ALTURA, VENDACONTROLADA, QTDETROCA, UNTROCA, QTDEMULTIPLA, '+
-               'QTDEPADRAO, TRIBUTACAO, QTDECARREGAMENTO, UNCARREGAMENTO, QTDEVENDA, UNVENDA, QTDECOMPRA, INDICADORESCALA, PRAZOVALIDADE) VALUES (%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %s, %d, %d, %s, %d, %d, '+
-               '%d, %d, %d, %s, %d, %s, %d, %d, %d, %d, %s, %d, %s, %d, %s, %d);';
+               'QTDEPADRAO, TRIBUTACAO, QTDECARREGAMENTO, UNCARREGAMENTO, QTDEVENDA, UNVENDA, QTDECOMPRA, INDICADORESCALA, PRAZOVALIDADE, BLOQUEARENTRADAVALIDADE) VALUES (%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %s, %d, %d, %s, %d, %d, '+
+               '%d, %d, %d, %s, %d, %s, %d, %d, %d, %d, %s, %d, %s, %d, %s, %d, %d);';
   SQLInsertGrupo := 'INSERT INTO GRUPO (CODIGO, NOME, ORDEM, COMISSAO, FLEX, ORDEMTABELA, EXPORTAR, QTDEMULTIPLA, COMISSAOFIXA, COMISSAOENTREGA, LIMITESUPERIORFLEX, '+
                     'LIMITEINFERIORFLEX, FLEXFIXO, ATIVO) VALUES (%d, %s, %d, %d, %d, %d, %s, %d, %s, %d, %d, %d, %s, %s);';
   VerificaConexao;
@@ -1718,7 +1720,7 @@ begin
 
     ListBox1.Items.Add(Format(SQLInsert,[Codigo, QuotedStr(Nome), QuotedStr(Barras), TipoProduto, Marca, Classificacao, PesoLiquido, PesoBruto, Data, QuotedStr(UnCompra),
                        QuotedStr(CodigoNcm), Ordem, Grupo, QuotedStr(Cest), 0, 1, QuotedStr(UnCompra), 1, 0, 0, 0, 0, cNao, 1, QuotedStr(UnCompra), 1, 1, 1, 1, QuotedStr(UnCompra),
-                       1, QuotedStr(UnCompra), 1, cSim, Codigo]));
+                       1, QuotedStr(UnCompra), 1, cSim, Codigo, 0]));
 
     FDQuery1.Next;
     Gauge1.AddProgress(1);
@@ -1738,8 +1740,8 @@ begin
   FDQuery1.SQL.Add('produtos_fornecedores.id_produto as produto, ');
   FDQuery1.SQL.Add('produtos_fornecedores.id_terceiro as clifor ');
   FDQuery1.SQL.Add('from produtos_fornecedores');
-  if EditIdEmpresa.Text <> EmptyStr then
-    FDQuery1.SQL.Add(Format('where produtos_fornecedores.id_empresa = %s',[EditIdEmpresa.Text]));
+  //if EditIdEmpresa.Text <> EmptyStr then
+  //  FDQuery1.SQL.Add(Format('where produtos_fornecedores.id_empresa = %s',[EditIdEmpresa.Text]));
   SQLUpdate := 'UPDATE PRODUTO SET CLIFOR = %d WHERE CODIGO = (SELECT CODIGO FROM PRODUTO WHERE PRAZOVALIDADE = %d);';
 
   VerificaConexao;
@@ -2273,6 +2275,45 @@ end;
 procedure TFrmPrincipal.Button1Click(Sender: TObject);
 begin
   ShowMessage(ConverteTipoEstabelecimento(EditTipoEstabelecimentoDe.Text));
+end;
+
+procedure TFrmPrincipal.ButtonSemRomaneioClick(Sender: TObject);
+var
+  I :Integer;
+  SQLInsert : String;
+  Nome, Fantasia, Documento, Emissao, Produto, Qtde, Unitario, Tipo : String;
+begin
+  try
+    ShowMessage('Lembrar de preencher Inicio Planilha e Fim Planilha');
+    CarregarExcel;
+    SQLInsert := 'EXECUTE PROCEDURE CUS_INS_CONSUMO_PRATS(%s, %s, %s, %s, %s, %s, %s, %s);';
+    ListBox1.Clear;
+    Gauge1.Progress := StrToInt(EditInicioPlanilha.Text);
+    Gauge1.MaxValue := StrToInt(EditFimPlanilha.Text);
+
+    for I := StrToInt(EditInicioPlanilha.Text) to StrToInt(EditFimPlanilha.Text) do
+    begin
+      Nome := Trim(Planilha.cells[i,3]);
+      Fantasia := Trim(Planilha.cells[i,4]);
+      Documento := Trim(Planilha.cells[i,2]);
+      Emissao := Copy(StringReplace(Trim(Planilha.cells[i,1]),'/','.',[rfReplaceAll]),0,10);
+      Produto := Trim(Planilha.cells[i,5]);
+      Qtde := StringReplace(Trim(Planilha.cells[i,6]),',','.',[rfReplaceAll]);
+      Unitario := StringReplace(Trim(Planilha.cells[i,7]),',','.',[rfReplaceAll]);
+      Tipo := 'CP';
+      if Copy(Documento, 0, 2) = 'NF' then Tipo := 'CN';
+
+      Documento := Numericos(Documento);
+      if Documento = EmptyStr then
+        raise Exception.Create('Documento Vazio! I: ' + IntToStr(I) + ' - ' + Nome +' - '+ Fantasia);
+
+      ListBox1.Items.Add(Format(SQLInsert,[QuotedStr(Nome), QuotedStr(Fantasia), Documento, QuotedStr(Emissao), QuotedStr(Produto), Qtde, Unitario, QuotedStr(Tipo)]));
+
+      Gauge1.AddProgress(1);
+    end;
+  finally
+    Excel.Quit;
+  end;
 end;
 
 procedure TFrmPrincipal.CarregarConfigTipoEstabelecimento;
