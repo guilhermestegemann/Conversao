@@ -536,6 +536,15 @@ object FrmPrincipal: TFrmPrincipal
         TabOrder = 44
         OnClick = ButtonSemRomaneioClick
       end
+      object ButtonAjustaFuncionarioClifor: TButton
+        Left = 8
+        Top = 723
+        Width = 166
+        Height = 18
+        Caption = 'Ajusta FuncionarioClifor Filial'
+        TabOrder = 45
+        OnClick = ButtonAjustaFuncionarioCliforClick
+      end
     end
     object TabSheet2: TTabSheet
       Caption = 'Configura'#231#227'o'

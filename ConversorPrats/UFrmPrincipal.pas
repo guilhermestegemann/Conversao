@@ -97,6 +97,7 @@ type
     Label12: TLabel;
     EditForcarNumeroFilial: TEdit;
     ButtonSemRomaneio: TButton;
+    ButtonAjustaFuncionarioClifor: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);
@@ -142,6 +143,7 @@ type
     procedure BtnTrocasClick(Sender: TObject);
     procedure BtnContasPagarExcelClick(Sender: TObject);
     procedure ButtonSemRomaneioClick(Sender: TObject);
+    procedure ButtonAjustaFuncionarioCliforClick(Sender: TObject);
 
   private
     procedure CarregarExcel;
@@ -2278,6 +2280,45 @@ end;
 procedure TFrmPrincipal.Button1Click(Sender: TObject);
 begin
   ShowMessage(ConverteTipoEstabelecimento(EditTipoEstabelecimentoDe.Text));
+end;
+
+procedure TFrmPrincipal.ButtonAjustaFuncionarioCliforClick(Sender: TObject);
+var
+  SQLInsertClifor, SQLInsertCliforContato, SQLInsertFuncionarioClifor : String;
+  Codigo, Cidade, IndicadorIE, Vendedor, Tipo, Filial : Integer;
+  Fantasia, Nome, CNPJ, IE, DataCadastro, DataNascimento, NomePai, NomeMae, Contato, Endereco, Numero, NomeBairro, Complemento, Cep, Telefone, Celular,
+  Email, EmailNFe, EmailBoleto, Simples, DataMovimento, DataInativado, Obs, LimiteCredito, TipoEstabelecimento, CondicaoPagamento,
+  EnviarNFe, EnviarBoleto : String;
+  IsFornecedor, IsCliente, IsFuncionario, IsTransportador, IsVendedor, IsEmpresa, IsMotorista, Ativo : Boolean;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select distinct');
+  FDQuery1.SQL.Add('terceiros_dados_emp.id_terceiro as codigo, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.id_vendedor as codigovendedor ');
+  FDQuery1.SQL.Add('from terceiros_dados_emp ');
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('and terceiros_dados_emp.id_empresa = %s',[EditIdEmpresa.Text]));
+
+  SQLInsertFuncionarioClifor := 'INSERT INTO FUNCIONARIOCLIFOR (FUNCIONARIO, CLIFOR) VALUES (%d, %d);';
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+
+  while not FDQuery1.Eof do
+  begin
+    Codigo := FDQuery1.FieldByName('codigo').AsInteger;
+    Vendedor := FDQuery1.FieldByName('codigovendedor').AsInteger;
+
+    //funcionarioclifor
+    if Vendedor > 0 then
+      ListBox1.Items.Add(Format(SQLInsertFuncionarioClifor, [Vendedor, Codigo]));
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+  SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '30-ajustafuncionarioclifor.txt');
 end;
 
 procedure TFrmPrincipal.ButtonSemRomaneioClick(Sender: TObject);
