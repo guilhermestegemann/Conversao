@@ -17,6 +17,32 @@ object FrmPrincipal: TFrmPrincipal
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
+  object Label13: TLabel
+    Left = 1184
+    Top = 261
+    Width = 64
+    Height = 13
+    Caption = 'For'#231'ar Filial'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object Label15: TLabel
+    Left = 1112
+    Top = 443
+    Width = 85
+    Height = 13
+    Caption = 'Tipo Financeiro'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
   object PageControl1: TPageControl
     Left = 0
     Top = 0
@@ -688,6 +714,32 @@ object FrmPrincipal: TFrmPrincipal
         Font.Style = [fsBold]
         ParentFont = False
       end
+      object Label14: TLabel
+        Left = 960
+        Top = 419
+        Width = 85
+        Height = 13
+        Caption = 'Tipo Financeiro'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object Label16: TLabel
+        Left = 1108
+        Top = 419
+        Width = 110
+        Height = 13
+        Caption = 'Situa'#231#227'o Financeiro'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
       object SGTipoEstabelecimento: TStringGrid
         Left = 3
         Top = 64
@@ -798,6 +850,62 @@ object FrmPrincipal: TFrmPrincipal
         NumbersOnly = True
         TabOrder = 11
         OnKeyPress = EditTipoEstabelecimentoDeKeyPress
+      end
+      object ButtonAjustaCondicaoPagamento: TButton
+        Left = 960
+        Top = 387
+        Width = 166
+        Height = 18
+        Caption = 'AjustaCondicaoPagamento'
+        TabOrder = 12
+        OnClick = ButtonAjustaCondicaoPagamentoClick
+      end
+      object ButtonContaPagaRecebida: TButton
+        Left = 960
+        Top = 475
+        Width = 217
+        Height = 54
+        Caption = 'Contas Recebidas (Excel)'
+        TabOrder = 13
+        OnClick = ButtonContaPagaRecebidaClick
+      end
+      object EditTipoFinanceiro: TEdit
+        Left = 960
+        Top = 438
+        Width = 121
+        Height = 21
+        CharCase = ecUpperCase
+        TabOrder = 14
+        OnKeyPress = EditTipoEstabelecimentoDeKeyPress
+      end
+      object EditSituacaoFinanceiro: TEdit
+        Left = 1108
+        Top = 438
+        Width = 121
+        Height = 21
+        CharCase = ecUpperCase
+        NumbersOnly = True
+        TabOrder = 15
+        Text = '99'
+        OnKeyPress = EditTipoEstabelecimentoDeKeyPress
+      end
+      object ButtonContasPagarExcel: TButton
+        Left = 960
+        Top = 635
+        Width = 217
+        Height = 54
+        Caption = 'Contas Pagar (Excel)'
+        TabOrder = 16
+        OnClick = ButtonContasPagarExcelClick
+      end
+      object ButtonContasPagasExcel: TButton
+        Left = 960
+        Top = 535
+        Width = 217
+        Height = 54
+        Caption = 'Contas Pagas (Excel)'
+        TabOrder = 17
+        OnClick = ButtonContasPagasExcelClick
       end
     end
   end

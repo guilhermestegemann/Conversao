@@ -98,6 +98,16 @@ type
     EditForcarNumeroFilial: TEdit;
     ButtonSemRomaneio: TButton;
     ButtonAjustaFuncionarioClifor: TButton;
+    ButtonAjustaCondicaoPagamento: TButton;
+    ButtonContaPagaRecebida: TButton;
+    Label13: TLabel;
+    Label14: TLabel;
+    EditTipoFinanceiro: TEdit;
+    EditSituacaoFinanceiro: TEdit;
+    Label15: TLabel;
+    Label16: TLabel;
+    ButtonContasPagarExcel: TButton;
+    ButtonContasPagasExcel: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);
@@ -144,6 +154,10 @@ type
     procedure BtnContasPagarExcelClick(Sender: TObject);
     procedure ButtonSemRomaneioClick(Sender: TObject);
     procedure ButtonAjustaFuncionarioCliforClick(Sender: TObject);
+    procedure ButtonAjustaCondicaoPagamentoClick(Sender: TObject);
+    procedure ButtonContaPagaRecebidaClick(Sender: TObject);
+    procedure ButtonContasPagarExcelClick(Sender: TObject);
+    procedure ButtonContasPagasExcelClick(Sender: TObject);
 
   private
     procedure CarregarExcel;
@@ -819,7 +833,7 @@ begin
     if Pos(' ', EmailBoleto) > 0 then
       EmailBoleto := Copy(EmailBoleto, 0, Pos(' ', EmailBoleto)-1);
 
-
+    Tipo := 0;
     if ((IsFornecedor) and (IsCliente)) then
       Tipo := 3
     else if (IsCliente) then
@@ -1127,7 +1141,7 @@ end;
 
 procedure TFrmPrincipal.BtnContasAReceberExcelClick(Sender: TObject);
 var
-  I, indexteste : Integer;
+  I : Integer;
   SQLInsert : String;
   Clifor, Ordem, Documento, Emissao, Vencimento, Valor, NossoNumero, Historico, Filial : String;
 begin
@@ -1136,11 +1150,11 @@ begin
     ShowMessage('Analisar NossoNumero');
     CarregarExcel;
     SQLInsert := 'INSERT INTO FINANCEIRO (FILIAL, TIPO, CLIFOR, ORDEM, DOCUMENTO, DATAEMISSAO, DATAVCTO, VALOR, NOSSONUMERO, HISTORICO, SITUACAO) '+
-                 'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 99);';
+                 'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);';
     ListBox1.Clear;
     ListBoxNossoNumero.Clear;
     ListBoxNossoNumeroDuplicado.Clear;
-    ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES (99, ''CONVERSAO'', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
+    ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES ('+EditSituacaoFinanceiro.Text+', ''CONVERSAO'', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
     Gauge1.Progress := StrToInt(EditInicioPlanilha.Text);
     Gauge1.MaxValue := StrToInt(EditFimPlanilha.Text);
 
@@ -1173,7 +1187,7 @@ begin
 
       if NossoNumero <> EmptyStr then
       begin
-        indexteste := ListBoxNossoNumero.Items.IndexOf(NossoNumero);
+
         if ListBoxNossoNumero.Items.IndexOf(NossoNumero) = -1 then
           ListBoxNossoNumero.Items.Add(NossoNumero)
         else
@@ -1182,8 +1196,9 @@ begin
         else
 
       end;
-
-      ListBox1.Items.Add(Format(SQLInsert,[Filial, QuotedStr('C'), Clifor, QuotedStr(Ordem), Documento, QuotedStr(Emissao), QuotedStr(Vencimento), Valor, NossoNumero, Historico]));
+      Ordem := Copy(Ordem,0,17);
+      ListBox1.Items.Add(Format(SQLInsert,[Filial, QuotedStr(EditTipoFinanceiro.Text), Clifor, QuotedStr(Ordem), Documento, QuotedStr(Emissao), QuotedStr(Vencimento),
+      Valor, NossoNumero, Historico, EditSituacaoFinanceiro.Text]));
 
       Gauge1.AddProgress(1);
     end;
@@ -1194,7 +1209,7 @@ end;
 
 procedure TFrmPrincipal.BtnContasPagarExcelClick(Sender: TObject);
 var
-  I, indexteste : Integer;
+  I : Integer;
   SQLInsert : String;
   Clifor, Ordem, Documento, Emissao, Vencimento, Valor, NossoNumero, Historico : String;
 begin
@@ -1655,7 +1670,7 @@ end;
 procedure TFrmPrincipal.BtnProdutoClick(Sender: TObject);
 var
   SQLInsert, SQLInsertGrupo : String;
-  Codigo,  Grupo, Ordem, CodigoAntigo : Integer;
+  Codigo,  Grupo, Ordem : Integer;
   Nome, Barras, PesoLiquido, PesoBruto, Data, UnCompra, CodigoNcm,  Cest, TipoProduto, Marca, Classificacao: String;
 begin
   FDQuery1.SQL.Clear;
@@ -2282,14 +2297,43 @@ begin
   ShowMessage(ConverteTipoEstabelecimento(EditTipoEstabelecimentoDe.Text));
 end;
 
+procedure TFrmPrincipal.ButtonAjustaCondicaoPagamentoClick(Sender: TObject);
+var
+  SQLUpdate : String;
+  Codigo, CondicaoPagamento : Integer;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select distinct');
+  FDQuery1.SQL.Add('terceiros_dados_emp.id_terceiro as codigo, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.id_form_parc_pref as condicaopagamento ');
+  FDQuery1.SQL.Add('from terceiros_dados_emp ');
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('where terceiros_dados_emp.id_empresa = %s and terceiros_dados_emp.id_form_parc_pref > 0',[EditIdEmpresa.Text]));
+
+  SQLUpdate := 'UPDATE CLIFOR SET CONDICAOPAGAMENTO = %d WHERE CODIGO = %d AND CONDICAOPAGAMENTO IS NULL;';
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+
+  while not FDQuery1.Eof do
+  begin
+    Codigo := FDQuery1.FieldByName('codigo').AsInteger;
+    CondicaoPagamento := FDQuery1.FieldByName('condicaopagamento').AsInteger;
+
+    ListBox1.Items.Add(Format(SQLUpdate, [CondicaoPagamento, Codigo]));
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+  SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '30-ajustafuncionarioclifor.txt');
+end;
+
 procedure TFrmPrincipal.ButtonAjustaFuncionarioCliforClick(Sender: TObject);
 var
-  SQLInsertClifor, SQLInsertCliforContato, SQLInsertFuncionarioClifor : String;
-  Codigo, Cidade, IndicadorIE, Vendedor, Tipo, Filial : Integer;
-  Fantasia, Nome, CNPJ, IE, DataCadastro, DataNascimento, NomePai, NomeMae, Contato, Endereco, Numero, NomeBairro, Complemento, Cep, Telefone, Celular,
-  Email, EmailNFe, EmailBoleto, Simples, DataMovimento, DataInativado, Obs, LimiteCredito, TipoEstabelecimento, CondicaoPagamento,
-  EnviarNFe, EnviarBoleto : String;
-  IsFornecedor, IsCliente, IsFuncionario, IsTransportador, IsVendedor, IsEmpresa, IsMotorista, Ativo : Boolean;
+  SQLInsertFuncionarioClifor : String;
+  Codigo, Vendedor : Integer;
 begin
   FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select distinct');
@@ -2321,6 +2365,179 @@ begin
     SalvarArquivoAutomatico(EditCaminhoScripts.Text + '30-ajustafuncionarioclifor.txt');
 end;
 
+procedure TFrmPrincipal.ButtonContaPagaRecebidaClick(Sender: TObject);
+var
+  I : Integer;
+  SQLInsert : String;
+  ID, Clifor, Ordem, Documento, Emissao, Vencimento, Valor, Filial, DataPgto, DataBaixa, Multa, Juros, Desconto, ValorPago, Historico : String;
+begin
+  try
+    ShowMessage('Confirmar Edit Tipo Financeiro');
+    ShowMessage('Lembrar de preencher Inicio Planilha e Fim Planilha');
+    CarregarExcel;
+    PageControl1.ActivePageIndex := 0;
+    Application.ProcessMessages;
+    //SQLInsert := 'INSERT INTO FINANCEIRO (FILIAL, TIPO, CLIFOR, ORDEM, DOCUMENTO, DATAEMISSAO, DATAVCTO, VALOR, DATAPGTO, DATABAIXA, MULTA, JURO, DESCONTO, VALORBAIXA, SITUACAO) '+
+    //             'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 99);';
+    SQLInsert := 'EXECUTE PROCEDURE CUS_SETFINANCEIROPRATS(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);';
+    ListBox1.Clear;
+    ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES ('+EditSituacaoFinanceiro.Text+', ''CONVERSAO'', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
+    Gauge1.Progress := StrToInt(EditInicioPlanilha.Text);
+    Gauge1.MaxValue := StrToInt(EditFimPlanilha.Text);
+
+    Filial := '1';
+    if EditForcarNumeroFilial.Text <> EmptyStr then
+      Filial := EditForcarNumeroFilial.Text;
+    for I := StrToInt(EditInicioPlanilha.Text) to StrToInt(EditFimPlanilha.Text) do
+    begin
+      ID := Trim(Planilha.cells[i,1]);
+      Clifor := Trim(Planilha.cells[i,2]);
+      Ordem := Trim(Planilha.cells[i,4]);
+      Documento := Trim(Planilha.cells[i,4]);
+      Emissao := StringReplace(Trim(Planilha.cells[i,6]),'/','.',[rfReplaceAll]);
+      Vencimento := StringReplace(Trim(Planilha.cells[i,7]),'/','.',[rfReplaceAll]);
+      Valor := StringReplace(Trim(Planilha.cells[i,27]),',','.',[rfReplaceAll]);
+      DataPgto := StringReplace(Trim(Planilha.cells[i,8]),'/','.',[rfReplaceAll]);
+      DataBaixa := StringReplace(Trim(Planilha.cells[i,10]),'/','.',[rfReplaceAll]);
+      Multa := StringReplace(Trim(Planilha.cells[i,17]),',','.',[rfReplaceAll]);
+      Juros := StringReplace(Trim(Planilha.cells[i,19]),',','.',[rfReplaceAll]);
+      Desconto := StringReplace(Trim(Planilha.cells[i,21]),',','.',[rfReplaceAll]);
+      ValorPago := StringReplace(Trim(Planilha.cells[i,24]),',','.',[rfReplaceAll]);
+      Historico := 'NULL';
+      if ID = EmptyStr then
+        raise Exception.Create('ID não informado');
+      //Documento := Copy(Documento,4,(Pos('/',Documento)-4));
+      Documento := Numericos(Documento);
+      if Documento = EmptyStr then
+        Documento := 'NULL';
+
+      Ordem := Copy(Ordem,0,19);
+      ListBox1.Items.Add(Format(SQLInsert,[ID, Filial, QuotedStr(EditTipoFinanceiro.Text), Clifor, QuotedStr(Ordem), Documento, QuotedStr(Emissao), QuotedStr(Vencimento),
+                         Valor, QuotedStr(DataPgto), QuotedStr(DataBaixa), Multa, Juros, Desconto, ValorPago, Historico, EditSituacaoFinanceiro.Text]));
+
+      Gauge1.AddProgress(1);
+    end;
+  finally
+    Excel.Quit;
+  end;
+end;
+
+procedure TFrmPrincipal.ButtonContasPagarExcelClick(Sender: TObject);
+var
+  I : Integer;
+  SQLInsert : String;
+  Clifor, Ordem, Documento, Emissao, Vencimento, Valor, Historico, Filial : String;
+begin
+  try
+    ShowMessage('Lembrar de preencher Inicio Planilha e Fim Planilha');
+    ShowMessage('Analisar NossoNumero');
+    ShowMessage('Edit Tipo Financeiro');
+    CarregarExcel;
+    PageControl1.ActivePageIndex := 0;
+    SQLInsert := 'INSERT INTO FINANCEIRO (FILIAL, TIPO, CLIFOR, ORDEM, DOCUMENTO, DATAEMISSAO, DATAVCTO, VALOR, HISTORICO, SITUACAO) '+
+                 'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);';
+    ListBox1.Clear;
+    ListBoxNossoNumero.Clear;
+    ListBoxNossoNumeroDuplicado.Clear;
+    ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES ('+EditSituacaoFinanceiro.Text+', ''CONVERSAO'', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
+    Gauge1.Progress := StrToInt(EditInicioPlanilha.Text);
+    Gauge1.MaxValue := StrToInt(EditFimPlanilha.Text);
+
+    Filial := '1';
+    if EditForcarNumeroFilial.Text <> EmptyStr then
+      Filial := EditForcarNumeroFilial.Text;
+    for I := StrToInt(EditInicioPlanilha.Text) to StrToInt(EditFimPlanilha.Text) do
+    begin
+      Clifor := Trim(Planilha.cells[i,2]);
+      Ordem := Trim(Planilha.cells[i,7]);
+      Documento := Trim(Planilha.cells[i,7]);
+      Emissao := StringReplace(Trim(Planilha.cells[i,9]),'/','.',[rfReplaceAll]);
+      Vencimento := StringReplace(Trim(Planilha.cells[i,10]),'/','.',[rfReplaceAll]);
+      Valor := StringReplace(Trim(Planilha.cells[i,13]),',','.',[rfReplaceAll]);
+      Historico := Trim(Planilha.cells[i,20]);
+
+
+      //Documento := Copy(Documento,4,(Pos('/',Documento)-4));
+      Documento := Numericos(Documento);
+      if Documento = EmptyStr then
+        Documento := 'NULL';
+      if Historico = EmptyStr then
+        Historico := 'NULL';
+
+
+
+      Ordem := Copy(Ordem,0,17);
+      ListBox1.Items.Add(Format(SQLInsert,[Filial, QuotedStr(EditTipoFinanceiro.Text), Clifor, QuotedStr(Ordem), Documento, QuotedStr(Emissao), QuotedStr(Vencimento),
+      Valor, Historico, EditSituacaoFinanceiro.Text]));
+
+      Gauge1.AddProgress(1);
+    end;
+  finally
+    Excel.Quit;
+  end;
+end;
+
+procedure TFrmPrincipal.ButtonContasPagasExcelClick(Sender: TObject);
+var
+  I : Integer;
+  SQLInsert : String;
+  ID, Clifor, Ordem, Documento, Emissao, Vencimento, Valor, Filial, DataPgto, DataBaixa, Multa, Juros, Desconto, ValorPago, Historico : String;
+begin
+  try
+    ShowMessage('Confirmar Edit Tipo Financeiro');
+    ShowMessage('Lembrar de preencher Inicio Planilha e Fim Planilha');
+    CarregarExcel;
+    PageControl1.ActivePageIndex := 0;
+    Application.ProcessMessages;
+    //SQLInsert := 'INSERT INTO FINANCEIRO (FILIAL, TIPO, CLIFOR, ORDEM, DOCUMENTO, DATAEMISSAO, DATAVCTO, VALOR, DATAPGTO, DATABAIXA, MULTA, JURO, DESCONTO, VALORBAIXA, SITUACAO) '+
+    //             'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 99);';
+    SQLInsert := 'EXECUTE PROCEDURE CUS_SETFINANCEIROPRATS(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '+EditSituacaoFinanceiro.Text+');';
+    ListBox1.Clear;
+    ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES ('+EditSituacaoFinanceiro.Text+', ''CONVERSAO'', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
+    Gauge1.Progress := StrToInt(EditInicioPlanilha.Text);
+    Gauge1.MaxValue := StrToInt(EditFimPlanilha.Text);
+
+    Filial := '1';
+    if EditForcarNumeroFilial.Text <> EmptyStr then
+      Filial := EditForcarNumeroFilial.Text;
+    for I := StrToInt(EditInicioPlanilha.Text) to StrToInt(EditFimPlanilha.Text) do
+    begin
+      ID := Trim(Planilha.cells[i,1]);
+      Clifor := Trim(Planilha.cells[i,2]);
+      Ordem := Trim(Planilha.cells[i,6]);
+      Documento := Trim(Planilha.cells[i,6]);
+      Emissao := StringReplace(Trim(Planilha.cells[i,7]),'/','.',[rfReplaceAll]);
+      Vencimento := StringReplace(Trim(Planilha.cells[i,8]),'/','.',[rfReplaceAll]);
+      Valor := StringReplace(Trim(Planilha.cells[i,29]),',','.',[rfReplaceAll]);
+      DataPgto := StringReplace(Trim(Planilha.cells[i,10]),'/','.',[rfReplaceAll]);
+      DataBaixa := StringReplace(Trim(Planilha.cells[i,10]),'/','.',[rfReplaceAll]);
+      Multa := StringReplace(Trim(Planilha.cells[i,18]),',','.',[rfReplaceAll]);
+      Juros := StringReplace(Trim(Planilha.cells[i,20]),',','.',[rfReplaceAll]);
+      Desconto := StringReplace(Trim(Planilha.cells[i,23]),',','.',[rfReplaceAll]);
+      ValorPago := StringReplace(Trim(Planilha.cells[i,26]),',','.',[rfReplaceAll]);
+      Historico := Trim(Planilha.cells[i,15]);
+
+      if Historico = EmptyStr then
+        Historico := 'NULL';
+
+      if ID = EmptyStr then
+        raise Exception.Create('ID não informado');
+      //Documento := Copy(Documento,4,(Pos('/',Documento)-4));
+      Documento := Copy(Numericos(Documento),0,6);
+      if Documento = EmptyStr then
+        Documento := 'NULL';
+
+      Ordem := Copy(Ordem,0,19);
+      ListBox1.Items.Add(Format(SQLInsert,[ID, Filial, QuotedStr(EditTipoFinanceiro.Text), Clifor, QuotedStr(Ordem), Documento, QuotedStr(Emissao), QuotedStr(Vencimento),
+                         Valor, QuotedStr(DataPgto), QuotedStr(DataBaixa), Multa, Juros, Desconto, ValorPago, Historico]));
+
+      Gauge1.AddProgress(1);
+    end;
+  finally
+    Excel.Quit;
+  end;
+end;
+
 procedure TFrmPrincipal.ButtonSemRomaneioClick(Sender: TObject);
 var
   I :Integer;
@@ -2330,20 +2547,20 @@ begin
   try
     ShowMessage('Lembrar de preencher Inicio Planilha e Fim Planilha');
     CarregarExcel;
-    SQLInsert := 'EXECUTE PROCEDURE CUS_INS_CONSUMO_PRATS(%s, %s, %s, %s, %s, %s, %s, %s);';
+    SQLInsert := 'EXECUTE PROCEDURE CUS_INS_CONSUMO_PRATS(%s, %s, %s, %s, %s, %s, %s, %s, %s);';
     ListBox1.Clear;
     Gauge1.Progress := StrToInt(EditInicioPlanilha.Text);
     Gauge1.MaxValue := StrToInt(EditFimPlanilha.Text);
 
     for I := StrToInt(EditInicioPlanilha.Text) to StrToInt(EditFimPlanilha.Text) do
     begin
-      Nome := Trim(Planilha.cells[i,3]);
-      Fantasia := Trim(Planilha.cells[i,4]);
-      Documento := Trim(Planilha.cells[i,2]);
+      Nome := Trim(Planilha.cells[i,7]);
+      Fantasia := Trim(Planilha.cells[i,10]);
+      Documento := Trim(Planilha.cells[i,5]);
       Emissao := Copy(StringReplace(Trim(Planilha.cells[i,1]),'/','.',[rfReplaceAll]),0,10);
-      Produto := Trim(Planilha.cells[i,5]);
-      Qtde := StringReplace(Trim(Planilha.cells[i,6]),',','.',[rfReplaceAll]);
-      Unitario := StringReplace(Trim(Planilha.cells[i,7]),',','.',[rfReplaceAll]);
+      Produto := Trim(Planilha.cells[i,15]);
+      Qtde := StringReplace(Trim(Planilha.cells[i,19]),',','.',[rfReplaceAll]);
+      Unitario := StringReplace(Trim(Planilha.cells[i,21]),',','.',[rfReplaceAll]);
       Tipo := 'CP';
       if Copy(Documento, 0, 2) = 'NF' then Tipo := 'CN';
 
@@ -2351,7 +2568,7 @@ begin
       if Documento = EmptyStr then
         raise Exception.Create('Documento Vazio! I: ' + IntToStr(I) + ' - ' + Nome +' - '+ Fantasia);
 
-      ListBox1.Items.Add(Format(SQLInsert,[QuotedStr(Nome), QuotedStr(Fantasia), Documento, QuotedStr(Emissao), QuotedStr(Produto), Qtde, Unitario, QuotedStr(Tipo)]));
+      ListBox1.Items.Add(Format(SQLInsert,[QuotedStr(Nome), QuotedStr(Fantasia), Documento, QuotedStr(Emissao), QuotedStr(Produto), Qtde, Unitario, QuotedStr(Tipo), EditForcarNumeroFilial.Text]));
 
       Gauge1.AddProgress(1);
     end;
