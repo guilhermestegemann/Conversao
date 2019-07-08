@@ -48,7 +48,7 @@ object FrmPrincipal: TFrmPrincipal
     Top = 0
     Width = 1543
     Height = 854
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -906,6 +906,15 @@ object FrmPrincipal: TFrmPrincipal
         Caption = 'Contas Pagas (Excel)'
         TabOrder = 17
         OnClick = ButtonContasPagasExcelClick
+      end
+      object ButtonUpdateGeoLocalizacao: TButton
+        Left = 960
+        Top = 363
+        Width = 166
+        Height = 18
+        Caption = 'Update Geo Localiza'#231#227'o'
+        TabOrder = 18
+        OnClick = ButtonUpdateGeoLocalizacaoClick
       end
     end
   end

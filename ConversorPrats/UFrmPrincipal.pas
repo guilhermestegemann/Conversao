@@ -108,6 +108,7 @@ type
     Label16: TLabel;
     ButtonContasPagarExcel: TButton;
     ButtonContasPagasExcel: TButton;
+    ButtonUpdateGeoLocalizacao: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);
@@ -158,6 +159,7 @@ type
     procedure ButtonContaPagaRecebidaClick(Sender: TObject);
     procedure ButtonContasPagarExcelClick(Sender: TObject);
     procedure ButtonContasPagasExcelClick(Sender: TObject);
+    procedure ButtonUpdateGeoLocalizacaoClick(Sender: TObject);
 
   private
     procedure CarregarExcel;
@@ -374,7 +376,7 @@ var
   Codigo, Cidade, IndicadorIE, Vendedor, Tipo, Filial : Integer;
   Fantasia, Nome, CNPJ, IE, DataCadastro, DataNascimento, NomePai, NomeMae, Contato, Endereco, Numero, NomeBairro, Complemento, Cep, Telefone, Celular,
   Email, EmailNFe, EmailBoleto, Simples, DataMovimento, DataInativado, Obs, LimiteCredito, TipoEstabelecimento, CondicaoPagamento,
-  EnviarNFe, EnviarBoleto : String;
+  EnviarNFe, EnviarBoleto, Latitude, Longitude : String;
   IsFornecedor, IsCliente, IsFuncionario, IsTransportador, IsVendedor, IsEmpresa, IsMotorista, Ativo : Boolean;
 begin
   ValidaConfigTipoEstabelecimento;
@@ -406,6 +408,8 @@ begin
   FDQuery1.SQL.Add('terceiros.complemento as complemento, ');
   FDQuery1.SQL.Add('terceiros.cep, ');
   FDQuery1.SQL.Add('terceiros.fone as telefone, ');
+  FDQuery1.SQL.Add('terceiros.endereco_latitude as latitude, ');
+  FDQuery1.SQL.Add('terceiros.endereco_longitude as longitude, ');
   FDQuery1.SQL.Add('terceiros.celular as celular, ');
   FDQuery1.SQL.Add('terceiros.email as email, ');
   FDQuery1.SQL.Add('terceiros.email_nfe as emailnfe, ');
@@ -432,13 +436,13 @@ begin
     FDQuery1.SQL.Add(Format('where ((terceiros.tipo_fornecedor is true) or (terceiros.tipo_funcionario is true) or (rotas_setores.id_rota in (%s))) ',[EditRotas.Text]));
   end;
   if EditCliforIn.Text <> EmptyStr then
-    FDQuery1.SQL.Add(Format('and terceiros.id in (%s)',[EditCliforIn.Text]));
+    FDQuery1.SQL.Add(Format('and terceiros.id %s',[EditCliforIn.Text]));
 
 //  FDQuery1.SQL.Add('where ((terceiros.tipo_cliente = true) or (terceiros.tipo_fornecedor = true) or terceiros.id in (select distinct(produtos_fornecedores.id_terceiro) from produtos_fornecedores)) ');
   SQLInsertClifor := 'INSERT INTO CLIFOR (CODIGO, FANTASIA, NOME, CNPJ, IE, DATA, DATANASC, NOMEPAI, NOMEMAE, TIPOESTABELECIMENTO, ENDERECO, NUMERO, CIDADE, BAIRRO, COMPLEMENTO, CEP, '+
                      'SIMPLES, INDICADORIE, LIMITECREDITO, CONDICAOPAGAMENTO, ATIVO, DATAMOVIMENTO, DATAINATIVADO, OBS, COMISSAO, SPC, COMISSAOFIXA, VENDARESTRITA, CONSUMIDOR, '+
-                     'DESTACARSTITEM, TIPO, CATEGORIA, FILIAL) VALUES (%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, (SELECT FIRST(1) CODIGO FROM BAIRRO WHERE NOME = %s), '+
-                     '%s, %s, %s, %d, %s, %s, %s, %s, %s, %s, %d, %s, %s, %s, %s, %s, %d, %d, %d);';
+                     'DESTACARSTITEM, TIPO, CATEGORIA, FILIAL, LATITUDE, LONGITUDE) VALUES (%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, (SELECT FIRST(1) CODIGO FROM BAIRRO WHERE NOME = %s), '+
+                     '%s, %s, %s, %d, %s, %s, %s, %s, %s, %s, %d, %s, %s, %s, %s, %s, %d, %d, %d, %s, %s);';
   SQLInsertCliforContato := 'INSERT INTO CLIFORCONTATO (CLIFOR, NUMERO, NOME, EMAIL, ENVIARNFE, ENVIARDANFE, ENVIARBOLETO, ENVIARPEDIDO) ' +
                             'VALUES (%d, %s, %s, %s, %s, %s, %s, %s);';
   SQLInsertFuncionarioClifor := 'INSERT INTO FUNCIONARIOCLIFOR (FUNCIONARIO, CLIFOR) VALUES (%d, %d);';
@@ -498,6 +502,8 @@ begin
     EmailNFe := Trim(FDQuery1.FieldByName('emailnfe').AsString);
     EmailBoleto := Trim(FDQuery1.FieldByName('emailboleto').AsString);
     Simples := FDQuery1.FieldByName('simples').AsString;
+    Latitude := FDQuery1.FieldByName('latitude').AsString;
+    Longitude := FDQuery1.FieldByName('longitude').AsString;
     IndicadorIE := FDQuery1.FieldByName('indicadorie').AsInteger;
     LimiteCredito := StringReplace(FDQuery1.FieldByName('limitecredito').AsString,',', '.', [rfReplaceAll]);
     if Length(LimiteCredito) > 8 then
@@ -561,6 +567,9 @@ begin
     if Tipo = 0 then
       raise Exception.Create('TipoClifor Inválido no cliente código: '+ IntToStr(Codigo));
 
+    if Latitude = EmptyStr then Latitude := 'NULL' else Latitude := QuotedStr(Latitude);
+    if Longitude = EmptyStr then Longitude := 'NULL' else Longitude := QuotedStr(Longitude);
+
     if TipoEstabelecimento = EmptyStr then
       TipoEstabelecimento := 'NULL'
     else
@@ -571,7 +580,8 @@ begin
     //insert clifor
     ListBox1.Items.Add(Format(SQLInsertClifor,[Codigo, QuotedStr(Fantasia), QuotedStr(Nome), QuotedStr(Cnpj), QuotedStr(IE), DataCadastro, DataNascimento, QuotedStr(NomePai),
                      QuotedStr(NomeMae), TipoEstabelecimento, QuotedStr(Endereco), QuotedStr(Numero), Cidade, QuotedStr(NomeBairro), QuotedStr(Complemento), QuotedStr(Cep), QuotedStr(Simples),
-                     IndicadorIE, LimiteCredito, CondicaoPagamento, BooleanToStr(Ativo), DataMovimento, DataInativado, QuotedStr(Obs), 0, cNao, cNao, cNao, cNao, cNao, Tipo, 1, Filial]));
+                     IndicadorIE, LimiteCredito, CondicaoPagamento, BooleanToStr(Ativo), DataMovimento, DataInativado, QuotedStr(Obs), 0, cNao, cNao, cNao, cNao, cNao, Tipo, 1, Filial,
+                     Latitude, Longitude]));
     //insert cliforcontato
     EnviarNFe := QuotedStr('N');
     EnviarBoleto := QuotedStr('N');
@@ -2575,6 +2585,44 @@ begin
   finally
     Excel.Quit;
   end;
+end;
+
+procedure TFrmPrincipal.ButtonUpdateGeoLocalizacaoClick(Sender: TObject);
+var
+  SQLUpdateLatitude, SQLUpdateLongitude, Latitude, Longitude : String;
+  Codigo : Integer;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select distinct');
+  FDQuery1.SQL.Add('terceiros.id as codigo, ');
+  FDQuery1.SQL.Add('terceiros.endereco_latitude as latitude, ');
+  FDQuery1.SQL.Add('terceiros.endereco_longitude as longitude ');
+  FDQuery1.SQL.Add('from terceiros ');
+
+  SQLUpdateLatitude := 'UPDATE CLIFOR SET LATITUDE = %s WHERE CODIGO = %d AND LATITUDE IS NULL;';
+  SQLUpdateLongitude := 'UPDATE CLIFOR SET LONGITUDE = %s WHERE CODIGO = %d AND LONGITUDE IS NULL;';
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  PageControl1.ActivePageIndex := 0;
+  Application.ProcessMessages;
+  while not FDQuery1.Eof do
+  begin
+    Codigo := FDQuery1.FieldByName('codigo').AsInteger;
+    Latitude := Copy(StringReplace(FDQuery1.FieldByName('latitude').AsString,',','.',[rfReplaceAll]),0,15);
+    Longitude := Copy(StringReplace(FDQuery1.FieldByName('longitude').AsString,',','.',[rfReplaceAll]),0,15);
+
+    if Latitude <> EmptyStr then
+      ListBox1.Items.Add(Format(SQLUpdateLatitude, [QuotedStr(Latitude), Codigo]));
+    if Longitude <> EmptyStr then
+      ListBox1.Items.Add(Format(SQLUpdateLongitude, [QuotedStr(Longitude), Codigo]));
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+  SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '40-ajustageolocalizacao.txt');
 end;
 
 procedure TFrmPrincipal.CarregarConfigTipoEstabelecimento;

@@ -17,7 +17,7 @@ BEGIN
     else if (:dia = 'Qua') then varcodigorota = 4;
     else if (:dia = 'Qui') then varcodigorota = 5;
     else if (:dia = 'Sex') then varcodigorota = 6;
-    else if (:dia = 'Sab') then varcodigorota = 7;
+    else if (:dia = 'Sáb') then varcodigorota = 7;
     else if (:dia = 'Dom') then varcodigorota = 0;
 
     if (:dia = 'Seg') then diasemana = 'SEGUNDA-FEIRA';
@@ -25,7 +25,7 @@ BEGIN
     else if (:dia = 'Qua') then diasemana = 'QUARTA-FEIRA';
     else if (:dia = 'Qui') then diasemana = 'QUINTA-FEIRA';
     else if (:dia = 'Sex') then diasemana = 'SEXTA-FEIRA';
-    else if (:dia = 'Sab') then diasemana = 'SABADO';
+    else if (:dia = 'Sáb') then diasemana = 'SABADO';
     else if (:dia = 'Dom') then diasemana = 'DOMINGO';
 
     varcodigorota = :varcodigorota || :vendedor;
@@ -50,7 +50,7 @@ BEGIN
             'V',
             :VENDEDOR,
             'N',
-            2
+            4
         );
     END
 
