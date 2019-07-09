@@ -184,6 +184,7 @@ type
     function Numericos(st: string):string;
     function StrSplit(st: String; dl: char): TStrings;
     function ConverteTipoEstabelecimento(Tipo : String) : String;
+    function GetNomeSituacaoFinanceiro(Codigo : String) : String;
   published
 
   public
@@ -1159,12 +1160,14 @@ begin
     ShowMessage('Lembrar de preencher Inicio Planilha e Fim Planilha');
     ShowMessage('Analisar NossoNumero');
     CarregarExcel;
+    PageControl1.ActivePageIndex := 0;
+    Application.ProcessMessages;
     SQLInsert := 'INSERT INTO FINANCEIRO (FILIAL, TIPO, CLIFOR, ORDEM, DOCUMENTO, DATAEMISSAO, DATAVCTO, VALOR, NOSSONUMERO, HISTORICO, SITUACAO) '+
                  'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);';
     ListBox1.Clear;
     ListBoxNossoNumero.Clear;
     ListBoxNossoNumeroDuplicado.Clear;
-    ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES ('+EditSituacaoFinanceiro.Text+', ''CONVERSAO'', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
+    ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES ('+EditSituacaoFinanceiro.Text+', '+ GetNomeSituacaoFinanceiro(EditSituacaoFinanceiro.Text) +', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
     Gauge1.Progress := StrToInt(EditInicioPlanilha.Text);
     Gauge1.MaxValue := StrToInt(EditFimPlanilha.Text);
 
@@ -2391,7 +2394,7 @@ begin
     //             'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 99);';
     SQLInsert := 'EXECUTE PROCEDURE CUS_SETFINANCEIROPRATS(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);';
     ListBox1.Clear;
-    ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES ('+EditSituacaoFinanceiro.Text+', ''CONVERSAO'', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
+    ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES ('+EditSituacaoFinanceiro.Text+', '+ GetNomeSituacaoFinanceiro(EditSituacaoFinanceiro.Text) +', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
     Gauge1.Progress := StrToInt(EditInicioPlanilha.Text);
     Gauge1.MaxValue := StrToInt(EditFimPlanilha.Text);
 
@@ -2449,7 +2452,7 @@ begin
     ListBox1.Clear;
     ListBoxNossoNumero.Clear;
     ListBoxNossoNumeroDuplicado.Clear;
-    ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES ('+EditSituacaoFinanceiro.Text+', ''CONVERSAO'', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
+    ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES ('+EditSituacaoFinanceiro.Text+', '+ GetNomeSituacaoFinanceiro(EditSituacaoFinanceiro.Text) +', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
     Gauge1.Progress := StrToInt(EditInicioPlanilha.Text);
     Gauge1.MaxValue := StrToInt(EditFimPlanilha.Text);
 
@@ -2469,6 +2472,7 @@ begin
 
       //Documento := Copy(Documento,4,(Pos('/',Documento)-4));
       Documento := Numericos(Documento);
+      Documento := Copy(Documento,0,8);
       if Documento = EmptyStr then
         Documento := 'NULL';
       if Historico = EmptyStr then
@@ -2503,7 +2507,7 @@ begin
     //             'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 99);';
     SQLInsert := 'EXECUTE PROCEDURE CUS_SETFINANCEIROPRATS(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '+EditSituacaoFinanceiro.Text+');';
     ListBox1.Clear;
-    ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES ('+EditSituacaoFinanceiro.Text+', ''CONVERSAO'', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
+    ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES ('+EditSituacaoFinanceiro.Text+', '+ GetNomeSituacaoFinanceiro(EditSituacaoFinanceiro.Text) +', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
     Gauge1.Progress := StrToInt(EditInicioPlanilha.Text);
     Gauge1.MaxValue := StrToInt(EditFimPlanilha.Text);
 
@@ -2850,6 +2854,18 @@ begin
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
     SalvarArquivoAutomatico(EditCaminhoScripts.Text + '18-contaspagar.txt');
+end;
+
+function TFrmPrincipal.GetNomeSituacaoFinanceiro(Codigo: String): String;
+begin
+  if Codigo = '99' then Result := 'CONTAS RECEBER';
+  if Codigo = '98' then Result := 'CONTAS RECEBIDAS';
+  if Codigo = '97' then Result := 'CONTAS A PAGAR';
+  if Codigo = '96' then Result := 'CONTAS PAGAS';
+  if Result = EmptyStr then
+    raise Exception.Create('Codigo invalido situação');
+
+  Result := QuotedStr(Result);
 end;
 
 function TFrmPrincipal.Numericos(st: string): string;

@@ -1,19 +1,19 @@
 ﻿SET TERM ^ ;
 
-create or ALTER procedure CUS_INS_CONSUMO_PRATS (
-    NOME varchar(60),
-    FANTASIA varchar(60),
-    DOCUMENTO integer,
-    DATA date,
-    PRODUTO varchar(60),
-    QTDE numeric(15,2),
-    UNITARIO numeric(15,2),
-    TIPO varchar(2),
-    FILIAL integer)
+CREATE OR ALTER procedure cus_ins_consumo_prats (
+    nome varchar(60),
+    fantasia varchar(60),
+    documento integer,
+    data date,
+    produto varchar(60),
+    qtde numeric(15,2),
+    unitario numeric(15,2),
+    tipo varchar(2),
+    filial integer)
 as
-declare variable VAR_PRODUTO integer;
-declare variable VAR_CLIFOR integer;
-declare variable VAR_VENDEDOR integer;
+declare variable var_produto integer;
+declare variable var_clifor integer;
+declare variable var_vendedor integer;
 BEGIN
     VAR_PRODUTO = NULL;
     SELECT PRODUTO.CODIGO
@@ -25,20 +25,15 @@ BEGIN
         IF (PRODUTO = 'SUCO DE LARANJA INTEGRAL PET 330 ML') THEN VAR_PRODUTO = 1;
         IF (PRODUTO = 'SUCO DE LARANJA INTEGRAL PET 900 ML') THEN VAR_PRODUTO = 1279;
         IF (PRODUTO = 'SUCO DE LARANJA INTEGRAL PET 4 L') THEN VAR_PRODUTO = 1384;
-        IF (PRODUTO = 'SUCO DE UVA PET 330 ML') THEN VAR_PRODUTO = 1438;
-        IF (PRODUTO = 'SUCO DE UVA PET 900 ML') THEN VAR_PRODUTO = 1557;
-        IF (PRODUTO = 'SUCO DE UVA PET 4 L') THEN VAR_PRODUTO = 1558;
+        IF (PRODUTO = 'SUCO DE UVA INTEGRAL PET 330 ML') THEN VAR_PRODUTO = 1438;
+        IF (PRODUTO = 'SUCO DE UVA INTEGRAL PET 900 ML') THEN VAR_PRODUTO = 1557;
+        IF (PRODUTO = 'SUCO DE UVA INTEGRAL PET 4 L') THEN VAR_PRODUTO = 1558;
+        IF (PRODUTO = 'LIMONADA ADOCADA  PET 330 ML') THEN VAR_PRODUTO = 1980;
         IF (PRODUTO = 'LIMONADA ADOCADA PET 330 ML') THEN VAR_PRODUTO = 1980;
         IF (PRODUTO = 'LIMONADA ADOCADA PET 900 ML') THEN VAR_PRODUTO = 1981;
-        IF (PRODUTO = 'SUCO MISTO GOIABA E MACA PET 330 ML') THEN VAR_PRODUTO = 4128;
-        IF (PRODUTO = 'SUCO MISTO GOIABA E MACA PET 900 ML') THEN VAR_PRODUTO = 4129;
+        IF (PRODUTO = 'SUCO MISTO GOIABA E MACA 330 ML') THEN VAR_PRODUTO = 4128;
+        IF (PRODUTO = 'SUCO MISTO GOIABA E MACA 900 ML') THEN VAR_PRODUTO = 4129;
         IF (PRODUTO = 'SUCO DE LARANJA INTEGRAL PET 1700 ML') THEN VAR_PRODUTO = 9421;
-        IF (PRODUTO = 'SUCO MISTO MACA E LIMAO 900 ML') THEN VAR_PRODUTO = 27;
-        IF (PRODUTO = 'SUCO MISTO MACA E LIMAO 330 ML') THEN VAR_PRODUTO = 26;
-        IF (PRODUTO = 'SUCO MISTO UVA E MACA 330 ML') THEN VAR_PRODUTO = 24;
-        IF (PRODUTO = 'SUCO MISTO UVA E MACA 900 ML') THEN VAR_PRODUTO = 25;
-        IF (PRODUTO = 'BROWNIE DOCE DE LEITE PEQUENO 37G') THEN VAR_PRODUTO = 84;
-        IF (PRODUTO = 'BROWNIE DOCE DE LEITE GRANDE 70G') THEN VAR_PRODUTO = 85;
         IF (PRODUTO = '') THEN VAR_PRODUTO = 0;
         IF (PRODUTO = '') THEN VAR_PRODUTO = 0;
         IF (PRODUTO = '') THEN VAR_PRODUTO = 0;
@@ -70,28 +65,37 @@ BEGIN
     INTO :VAR_CLIFOR;
     IF (:VAR_CLIFOR IS NULL) THEN
     BEGIN
-        if ((:nome = 'M R ARAUJO PINHO') and (:fantasia = 'SUPER PINHO')) then var_clifor = 523;
-        if ((:nome = 'CLARIMUNDO JOSE BARBOSA NETO') and (:fantasia = 'MERCADO TOCANTINS')) then var_clifor = 596;
-        if ((:nome = 'RAFAEL DE MELO GOMES DOS SANTOS - ME') and (:fantasia = 'MERCADO TRIUNFANTE')) then var_clifor = 153;
-        if ((:nome = 'RAFAEL DE MELO GOMES DOS SANTOS - ME') and (:fantasia = 'MERCADO TRUNFANTE')) then var_clifor = 153;
-        if ((:nome = 'RAFAEL DE MELO GOMES DOS SANTOS - ME') and (:fantasia = 'MERCADINHO TRUNFANTE')) then var_clifor = 153;
-        if ((:nome = 'PANIFICADORA E CONFEITARIA MS LTDA - ME') and (:fantasia = 'PANIFICADORA VITORIA')) then var_clifor = 710;
-
-        if ((:nome = 'TREVO DISTRIBUIDORA DE ALIMENTOS EIRELI') and (:fantasia = 'TREVO DISTRIBUIDORA')) then var_clifor = 1009;
-        if ((:nome = 'INDUSTRIA E COMERCIO VIA M NORTE LTDA - ME') and (:fantasia = 'GONCALINA PAES E CONV ( M NORTE)')) then var_clifor = 1706;
-        if ((:nome = 'JULIANA CARVALHO') and (:fantasia = 'JULIANA CARVALHO ( FUNC MARTINEZ)')) then var_clifor = 2126;
-        if ((:nome = 'MFS COMERCIO DE FRIOS EIRELI') and (:fantasia = 'CASA DE FRIOS GLORIA')) then var_clifor = 2300;
-        if ((:nome = 'TECA RESTAURANTE LTDA') and (:fantasia = 'TECA RESTAURANTE')) then var_clifor = 2350;
-        if ((:nome = 'NUTRINI ALIMENTOS E SERVICOS EIRELI') and (:fantasia = 'RESTAURANTE ENAP')) then var_clifor = 2517;
-        if ((:nome = 'PAO DA HORA PANIFICADORA E CONFEITARIA LTDA') and (:fantasia = 'PAO DA HORA 1 (SOBRADINHO)')) then var_clifor = 2525;
-        if ((:nome = 'PADARIA COLORADO LTDA') and (:fantasia = 'EMPORIO FAMILIA')) then var_clifor = 2553;
-        if ((:nome = 'PADARIA E PIZZARIA BELO PAO EIRELI') and (:fantasia = 'PIZZARIA E RESTAURANTE BELO PAO 1 (QD 34)')) then var_clifor = 2611;
-        if ((:nome = 'PSPL COMERCIO VAREJISTA DE ALIMENTOS EIRELI') and (:fantasia = 'EMPORIO SAO JOAO')) then var_clifor = 2578;
-        if ((:nome = 'HUGO SILVA GOMES 07200667196') and (:fantasia = 'OXENTE CARNE DE SOL ( FRENTE IESB)')) then var_clifor = 2800;
-        if ((:nome = 'INDUSTRIA COMERCIO DE ALIMENTOS DLG LTDA') and (:fantasia = 'GONCALINA PAES E CONV (CEILANDIA SUL)')) then var_clifor = 2826;
-        if ((:nome = 'JC & KD COMERCIO DE ALIMENTOS EIRELI') and (:fantasia = 'CASA DO PAO DE QUEIJO')) then var_clifor = 2868;
-        if ((:nome = 'JORIELSON COSTA DOS REIS 00565449362') and (:fantasia = 'LANCHONETE DO JO (FAC PROJEÇAO)')) then var_clifor = 2925;
-        if ((:nome = 'CAROLINA NANDES CAMPOLINA ERVILHA 04030891152') and (:fantasia = 'CANTINA DA TIA JAK (SHOPPING)')) then var_clifor = 3050;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
+        if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
         if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
         if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;
         if ((:nome = '') and (:fantasia = '')) then var_clifor = 0;

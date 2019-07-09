@@ -48,7 +48,7 @@ object FrmPrincipal: TFrmPrincipal
     Top = 0
     Width = 1543
     Height = 854
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -258,6 +258,7 @@ object FrmPrincipal: TFrmPrincipal
         Width = 166
         Height = 18
         Caption = 'Contas a Pagar'
+        Enabled = False
         TabOrder = 13
         OnClick = BtnContasAPagarClick
       end
@@ -276,6 +277,7 @@ object FrmPrincipal: TFrmPrincipal
         Width = 166
         Height = 18
         Caption = 'Contas a Receber'
+        Enabled = False
         TabOrder = 15
         OnClick = BtnContasReceberClick
       end
@@ -499,22 +501,13 @@ object FrmPrincipal: TFrmPrincipal
         TabOrder = 37
         OnClick = BtnUpdateNossoNumeroClick
       end
-      object BtnContasAReceberExcel: TButton
-        Left = 8
-        Top = 682
-        Width = 166
-        Height = 18
-        Caption = 'Contas a Receber (Excel)'
-        TabOrder = 38
-        OnClick = BtnContasAReceberExcelClick
-      end
       object BtnUpdateRapel: TButton
         Left = 8
         Top = 744
         Width = 166
         Height = 18
         Caption = 'Update Rapel'
-        TabOrder = 39
+        TabOrder = 38
         OnClick = BtnUpdateRapelClick
       end
       object EditNatOpTrocas: TEdit
@@ -523,7 +516,7 @@ object FrmPrincipal: TFrmPrincipal
         Width = 74
         Height = 21
         NumbersOnly = True
-        TabOrder = 40
+        TabOrder = 39
         OnKeyPress = EditTipoEstabelecimentoParaKeyPress
       end
       object EditNatOpComodato: TEdit
@@ -532,7 +525,7 @@ object FrmPrincipal: TFrmPrincipal
         Width = 89
         Height = 21
         NumbersOnly = True
-        TabOrder = 41
+        TabOrder = 40
         OnKeyPress = EditTipoEstabelecimentoDeKeyPress
       end
       object BtnTrocas: TButton
@@ -541,7 +534,7 @@ object FrmPrincipal: TFrmPrincipal
         Width = 82
         Height = 21
         Caption = 'Trocas'
-        TabOrder = 42
+        TabOrder = 41
         OnClick = BtnTrocasClick
       end
       object BtnComodato: TButton
@@ -550,7 +543,7 @@ object FrmPrincipal: TFrmPrincipal
         Width = 90
         Height = 21
         Caption = 'Comodato'
-        TabOrder = 43
+        TabOrder = 42
         OnClick = BtnComodatoClick
       end
       object ButtonSemRomaneio: TButton
@@ -559,7 +552,7 @@ object FrmPrincipal: TFrmPrincipal
         Width = 166
         Height = 18
         Caption = 'Vendas (Excel)'
-        TabOrder = 44
+        TabOrder = 43
         OnClick = ButtonSemRomaneioClick
       end
       object ButtonAjustaFuncionarioClifor: TButton
@@ -568,13 +561,15 @@ object FrmPrincipal: TFrmPrincipal
         Width = 166
         Height = 18
         Caption = 'Ajusta FuncionarioClifor Filial'
-        TabOrder = 45
+        TabOrder = 44
         OnClick = ButtonAjustaFuncionarioCliforClick
       end
     end
     object TabSheet2: TTabSheet
       Caption = 'Configura'#231#227'o'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 28
       object sbTipoEstabelecimento: TSpeedButton
         Left = 280
         Top = 24
@@ -839,7 +834,9 @@ object FrmPrincipal: TFrmPrincipal
         Width = 166
         Height = 21
         Caption = 'Contas a Pagar (Excel)'
+        Enabled = False
         TabOrder = 10
+        Visible = False
         OnClick = BtnContasPagarExcelClick
       end
       object EditForcarNumeroFilial: TEdit
@@ -862,7 +859,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object ButtonContaPagaRecebida: TButton
         Left = 960
-        Top = 475
+        Top = 535
         Width = 217
         Height = 54
         Caption = 'Contas Recebidas (Excel)'
@@ -891,7 +888,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object ButtonContasPagarExcel: TButton
         Left = 960
-        Top = 635
+        Top = 595
         Width = 217
         Height = 54
         Caption = 'Contas Pagar (Excel)'
@@ -900,7 +897,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object ButtonContasPagasExcel: TButton
         Left = 960
-        Top = 535
+        Top = 655
         Width = 217
         Height = 54
         Caption = 'Contas Pagas (Excel)'
@@ -915,6 +912,15 @@ object FrmPrincipal: TFrmPrincipal
         Caption = 'Update Geo Localiza'#231#227'o'
         TabOrder = 18
         OnClick = ButtonUpdateGeoLocalizacaoClick
+      end
+      object BtnContasAReceberExcel: TButton
+        Left = 960
+        Top = 475
+        Width = 217
+        Height = 54
+        Caption = 'Contas a Receber (Excel)'
+        TabOrder = 19
+        OnClick = BtnContasAReceberExcelClick
       end
     end
   end
