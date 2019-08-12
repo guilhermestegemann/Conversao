@@ -568,8 +568,6 @@ object FrmPrincipal: TFrmPrincipal
     object TabSheet2: TTabSheet
       Caption = 'Configura'#231#227'o'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 28
       object sbTipoEstabelecimento: TSpeedButton
         Left = 280
         Top = 24
@@ -938,7 +936,7 @@ object FrmPrincipal: TFrmPrincipal
   object FDConnection1: TFDConnection
     Params.Strings = (
       'User_Name=postgres'
-      'Password=admin'
+      'Password=postgres'
       'Server=localhost'
       'DriverID=PG')
     Left = 24

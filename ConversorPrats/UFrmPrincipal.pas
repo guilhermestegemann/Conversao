@@ -503,8 +503,8 @@ begin
     EmailNFe := Trim(FDQuery1.FieldByName('emailnfe').AsString);
     EmailBoleto := Trim(FDQuery1.FieldByName('emailboleto').AsString);
     Simples := FDQuery1.FieldByName('simples').AsString;
-    Latitude := FDQuery1.FieldByName('latitude').AsString;
-    Longitude := FDQuery1.FieldByName('longitude').AsString;
+    Latitude := Copy(FDQuery1.FieldByName('latitude').AsString,0,14);
+    Longitude := Copy(FDQuery1.FieldByName('longitude').AsString,0,14);
     IndicadorIE := FDQuery1.FieldByName('indicadorie').AsInteger;
     LimiteCredito := StringReplace(FDQuery1.FieldByName('limitecredito').AsString,',', '.', [rfReplaceAll]);
     if Length(LimiteCredito) > 8 then
