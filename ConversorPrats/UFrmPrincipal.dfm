@@ -48,7 +48,7 @@ object FrmPrincipal: TFrmPrincipal
     Top = 0
     Width = 1543
     Height = 854
-    ActivePage = TabSheet1
+    ActivePage = TabSheetConversaoFiliais
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -919,6 +919,44 @@ object FrmPrincipal: TFrmPrincipal
         Caption = 'Contas a Receber (Excel)'
         TabOrder = 19
         OnClick = BtnContasAReceberExcelClick
+      end
+    end
+    object TabSheetConversaoFiliais: TTabSheet
+      Caption = 'Convers'#227'o Filiais'
+      ImageIndex = 2
+      object ButtonConversaoFiliaisCliFor: TButton
+        Left = 3
+        Top = 46
+        Width = 75
+        Height = 25
+        Caption = 'Clifor'
+        TabOrder = 0
+        OnClick = ButtonConversaoFiliaisCliForClick
+      end
+      object ButtonConversaoFiliaisFuncionario: TButton
+        Left = 3
+        Top = 15
+        Width = 75
+        Height = 25
+        Caption = 'Funcion'#225'rio'
+        TabOrder = 1
+        OnClick = ButtonConversaoFiliaisFuncionarioClick
+      end
+      object Button3: TButton
+        Left = 3
+        Top = 86
+        Width = 75
+        Height = 25
+        Caption = 'Button1'
+        TabOrder = 2
+      end
+      object Button4: TButton
+        Left = 3
+        Top = 117
+        Width = 75
+        Height = 25
+        Caption = 'Button1'
+        TabOrder = 3
       end
     end
   end

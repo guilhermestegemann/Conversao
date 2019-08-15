@@ -109,6 +109,11 @@ type
     ButtonContasPagarExcel: TButton;
     ButtonContasPagasExcel: TButton;
     ButtonUpdateGeoLocalizacao: TButton;
+    TabSheetConversaoFiliais: TTabSheet;
+    ButtonConversaoFiliaisCliFor: TButton;
+    ButtonConversaoFiliaisFuncionario: TButton;
+    Button3: TButton;
+    Button4: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);
@@ -160,6 +165,8 @@ type
     procedure ButtonContasPagarExcelClick(Sender: TObject);
     procedure ButtonContasPagasExcelClick(Sender: TObject);
     procedure ButtonUpdateGeoLocalizacaoClick(Sender: TObject);
+    procedure ButtonConversaoFiliaisFuncionarioClick(Sender: TObject);
+    procedure ButtonConversaoFiliaisCliForClick(Sender: TObject);
 
   private
     procedure CarregarExcel;
@@ -2552,6 +2559,375 @@ begin
   end;
 end;
 
+procedure TFrmPrincipal.ButtonConversaoFiliaisCliForClick(Sender: TObject);
+var
+  SQLInsertClifor, SQLInsertCliforContato, SQLInsertFuncionarioClifor : String;
+  {Codigo,} Cidade, IndicadorIE, {Vendedor,} Tipo, Filial : Integer;
+  Fantasia, Nome, CNPJ, IE, DataCadastro, DataNascimento, NomePai, NomeMae, Contato, Endereco, Numero, NomeBairro, Complemento, Cep, Telefone, Celular,
+  Email, EmailNFe, EmailBoleto, Simples, DataMovimento, DataInativado, Obs, LimiteCredito, TipoEstabelecimento, CondicaoPagamento,
+  EnviarNFe, EnviarBoleto, Latitude, Longitude, CPFVendedor : String;
+  IsFornecedor, IsCliente, IsFuncionario, IsTransportador, IsVendedor, IsEmpresa, IsMotorista, Ativo : Boolean;
+begin
+  ValidaConfigTipoEstabelecimento;
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select distinct');
+  FDQuery1.SQL.Add('terceiros.tipo_fornecedor as isfornecedor, ');
+  FDQuery1.SQL.Add('terceiros.tipo_motorista as ismotorista, ');
+  FDQuery1.SQL.Add('terceiros.tipo_empresa as isempresa, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.id_empresa as filial, ');
+  FDQuery1.SQL.Add('terceiros.tipo_cliente as iscliente, ');
+  FDQuery1.SQL.Add('terceiros.tipo_funcionario as isfuncionario, ');
+  FDQuery1.SQL.Add('terceiros.tipo_transportadora as istransportador, ');
+  FDQuery1.SQL.Add('terceiros.tipo_vendedor as isvendedor, ');
+  FDQuery1.SQL.Add('terceiros.nome as fantasia, ');
+  FDQuery1.SQL.Add('terceiros.razao_social as nome, ');
+  FDQuery1.SQL.Add('terceiros.cpf_cnpj as cpfcnpj, ');
+  FDQuery1.SQL.Add('terceiros.rg_ie as rgie, ');
+  FDQuery1.SQL.Add('terceiros.data_cadastro as data, ');
+  FDQuery1.SQL.Add('terceiros.data_nascimento as datanasc, ');
+  FDQuery1.SQL.Add('terceiros.nome_pai as nomepai, ');
+  FDQuery1.SQL.Add('terceiros.nome_mae as nomemae, ');
+  FDQuery1.SQL.Add('terceiros.id_tipologia as tipoestabelecimento, ');
+  FDQuery1.SQL.Add('terceiros.proprietario as contato, ');
+  FDQuery1.SQL.Add('logradouros.nome_completo as endereco, ');
+  FDQuery1.SQL.Add('terceiros.numero as numero, ');
+  FDQuery1.SQL.Add('terceiros.id_cidade as cidade, ');
+  FDQuery1.SQL.Add('bairros.nome_bairro as nomebairro, ');
+  FDQuery1.SQL.Add('terceiros.complemento as complemento, ');
+  FDQuery1.SQL.Add('terceiros.cep, ');
+  FDQuery1.SQL.Add('terceiros.fone as telefone, ');
+  FDQuery1.SQL.Add('terceiros.endereco_latitude as latitude, ');
+  FDQuery1.SQL.Add('terceiros.endereco_longitude as longitude, ');
+  FDQuery1.SQL.Add('terceiros.celular as celular, ');
+  FDQuery1.SQL.Add('terceiros.email as email, ');
+  FDQuery1.SQL.Add('terceiros.email_nfe as emailnfe, ');
+  FDQuery1.SQL.Add('terceiros.email_boleto as emailboleto, ');
+  FDQuery1.SQL.Add('case when (terceiros.id_regime_icms = 1) then ''N'' else ''S'' end as simples, ');
+  FDQuery1.SQL.Add('terceiros.indicador_insc_estadual as indicadorie, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.limite_credito as limitecredito, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.id_form_parc_pref as condicaopagamento, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.ativo as ativo, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.data_ultima_venda as datamovimento, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.data_inativacao as datainativado, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.observacao_entrega as obs, ');
+  FDQuery1.SQL.Add('terceirosvendedor.cpf_cnpj as cpfvendedor ');
+  FDQuery1.SQL.Add('from terceiros ');
+  FDQuery1.SQL.Add('left join logradouros on logradouros.id = terceiros.id_logradouro ');
+  FDQuery1.SQL.Add('left join bairros on bairros.id = terceiros.id_bairro ');
+  FDQuery1.SQL.Add('inner join terceiros_dados_emp on terceiros_dados_emp.id_terceiro = terceiros.id ');
+  FDQuery1.SQL.Add('left join terceiros terceirosvendedor on terceirosvendedor.id = terceiros_dados_emp.id_vendedor ');
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('and terceiros_dados_emp.id_empresa = %s',[EditIdEmpresa.Text]));
+  if EditRotas.Text <> EmptyStr then
+  begin
+    FDQuery1.SQL.Add('left join terceiros_setores on terceiros_setores.id_terceiro = terceiros.id ');
+    FDQuery1.SQL.Add('left join rotas_setores on rotas_setores.id = terceiros_setores.id_setor ');
+    FDQuery1.SQL.Add(Format('where ((terceiros.tipo_fornecedor is true) or (terceiros.tipo_funcionario is true) or (rotas_setores.id_rota in (%s))) ',[EditRotas.Text]));
+  end;
+  if EditCliforIn.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('and terceiros.id %s',[EditCliforIn.Text]));
+
+  SQLInsertClifor := 'EXECUTE PROCEDURE SET_CLIFOR_CONV(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %s, %s, %s, %s, %s, %s, %d, %s, %s, %s, %s, %s, %s, %d);';
+
+  SQLInsertCliforContato := 'INSERT INTO CLIFORCONTATO (CLIFOR, NUMERO, NOME, EMAIL, ENVIARNFE, ENVIARDANFE, ENVIARBOLETO, ENVIARPEDIDO) ' +
+                            'VALUES (%d, %s, %s, %s, %s, %s, %s, %s);';
+  SQLInsertFuncionarioClifor := 'INSERT INTO FUNCIONARIOCLIFOR (FUNCIONARIO, CLIFOR) VALUES (%d, %d);';
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  PageControl1.ActivePageIndex := 0;
+  ListBox1.Items.Add('ALTER TRIGGER TRIGGER_CLIFORCONTATO_VALIDAR INACTIVE; COMMIT;');
+  while not FDQuery1.Eof do
+  begin
+    IsVendedor := FDQuery1.FieldByName('isVendedor').AsBoolean;
+    IsMotorista := FDQuery1.FieldByName('ismotorista').AsBoolean;
+    IsEmpresa := FDQuery1.FieldByName('isEmpresa').AsBoolean;
+    IsFornecedor := FDQuery1.FieldByName('isfornecedor').AsBoolean;
+    IsCliente := FDQuery1.FieldByName('iscliente').AsBoolean;
+    IsFuncionario := FDQuery1.FieldByName('isfuncionario').AsBoolean;
+    IsTransportador := FDQuery1.FieldByName('istransportador').AsBoolean;
+    Filial := FDQuery1.FieldByName('filial').AsInteger;
+    if EditForcarNumeroFilial.Text <> EmptyStr then
+      Filial := StrToInt(EditForcarNumeroFilial.Text);
+    Fantasia := Copy(FDQuery1.FieldByName('fantasia').AsString, 0, 60);
+    Nome := Copy(FDQuery1.FieldByName('nome').AsString, 0, 60);
+    //CNPJ := Numericos(FDQuery1.FieldByName('cpfcnpj').AsString);
+    CNPJ := FDQuery1.FieldByName('cpfcnpj').AsString;
+    IE := Numericos(FDQuery1.FieldByName('rgie').AsString);
+    DataCadastro := AjustaData(FDQuery1.FieldByName('data').AsString);
+    DataNascimento := AjustaData(FDQuery1.FieldByName('datanasc').AsString);
+    NomePai := FDQuery1.FieldByName('nomepai').AsString;
+    NomeMae := FDQuery1.FieldByName('nomemae').AsString;
+    TipoEstabelecimento := FDQuery1.FieldByName('tipoestabelecimento').AsString;
+    Contato := Copy(FDQuery1.FieldByName('contato').AsString, 0, 40);
+    Endereco := Copy(FDQuery1.FieldByName('endereco').AsString, 0, 60);
+    Numero := FDQuery1.FieldByName('numero').AsString;
+    Cidade := FDQuery1.FieldByName('cidade').AsInteger;
+    NomeBairro := FDQuery1.FieldByName('nomebairro').AsString;
+    Complemento := FDQuery1.FieldByName('complemento').AsString;
+    Cep := Numericos(FDQuery1.FieldByName('cep').AsString);
+    Telefone := Copy(Numericos(FDQuery1.FieldByName('telefone').AsString),0,12);
+    Celular := Copy(Numericos(FDQuery1.FieldByName('celular').AsString),0,12);
+    Email := Trim(FDQuery1.FieldByName('email').AsString);
+    EmailNFe := Trim(FDQuery1.FieldByName('emailnfe').AsString);
+    EmailBoleto := Trim(FDQuery1.FieldByName('emailboleto').AsString);
+    Simples := FDQuery1.FieldByName('simples').AsString;
+    Latitude := Copy(FDQuery1.FieldByName('latitude').AsString,0,14);
+    Longitude := Copy(FDQuery1.FieldByName('longitude').AsString,0,14);
+    IndicadorIE := FDQuery1.FieldByName('indicadorie').AsInteger;
+    LimiteCredito := StringReplace(FDQuery1.FieldByName('limitecredito').AsString,',', '.', [rfReplaceAll]);
+    if Length(LimiteCredito) > 8 then
+      LimiteCredito := '0';
+    CondicaoPagamento := FDQuery1.FieldByName('condicaopagamento').AsString;;
+    Ativo := FDQuery1.FieldByName('ativo').AsBoolean;
+    DataMovimento := AjustaData(FDQuery1.FieldByName('datamovimento').AsString);
+    DataInativado := AjustaData(FDQuery1.FieldByName('datainativado').AsString);
+    Obs := FDQuery1.FieldByName('obs').AsString;
+    CPFVendedor := FDQuery1.FieldByName('cpfvendedor').AsString;
+    //separados por virgula
+    if Pos(',', Email) > 0 then
+      Email := Copy(Email, 0, Pos(',', Email)-1);
+    if Pos(',', EmailNFe) > 0 then
+      EmailNFe := Copy(EmailNFe, 0, Pos(',', EmailNFe)-1);
+    if Pos(',', EmailBoleto) > 0 then
+      EmailBoleto := Copy(EmailBoleto, 0, Pos(',', EmailBoleto)-1);
+    //separados por ;
+    if Pos(';', Email) > 0 then
+      Email := Copy(Email, 0, Pos(';', Email)-1);
+    if Pos(';', EmailNFe) > 0 then
+      EmailNFe := Copy(EmailNFe, 0, Pos(';', EmailNFe)-1);
+    if Pos(';', EmailBoleto) > 0 then
+      EmailBoleto := Copy(EmailBoleto, 0, Pos(';', EmailBoleto)-1);
+    //separados por espaço vazio
+    if Pos(' ', Email) > 0 then
+    begin
+      Email := Copy(Email, 0, Pos(' ', Email)-1);
+
+    end;
+    if Pos(' ', EmailNFe) > 0 then
+    begin
+      EmailNFe := Copy(EmailNFe, 0, Pos(' ', EmailNFe)-1);
+
+    end;
+    if Pos(' ', EmailBoleto) > 0 then
+    begin
+      EmailBoleto := Copy(EmailBoleto, 0, Pos(' ', EmailBoleto)-1);
+
+    end;
+
+    if ((IsFornecedor) and (IsCliente)) then
+      Tipo := 3
+    else if (IsCliente) then
+      Tipo := 1
+    else if (IsFornecedor) then
+      Tipo := 2
+    else if (IsFuncionario) then
+      Tipo := 4
+    else if (IsTransportador) then
+      Tipo := 5
+    else if (IsVendedor) then
+      Tipo := 6
+    else if (IsEmpresa) then
+      Tipo := 7
+    else if (IsMotorista) then
+      Tipo := 8;
+    if Tipo = 0 then
+      raise Exception.Create('TipoClifor Inválido no cliente CNPJ: '+ CNPJ);
+    if Latitude = EmptyStr then Latitude := 'NULL' else Latitude := QuotedStr(Latitude);
+    if Longitude = EmptyStr then Longitude := 'NULL' else Longitude := QuotedStr(Longitude);
+    if TipoEstabelecimento = EmptyStr then
+      TipoEstabelecimento := 'NULL'
+    else
+      TipoEstabelecimento := ConverteTipoEstabelecimento(TipoEstabelecimento);
+    if CondicaoPagamento = EmptyStr then CondicaoPagamento := 'NULL';
+    if Cidade = 0 then Cidade := 1;
+    if NomeBairro = EmptyStr then NomeBairro := 'CENTRO';
+    //insert clifor
+    ListBox1.Items.Add(Format(SQLInsertClifor,[Filial, QuotedStr(Fantasia), QuotedStr(Nome), QuotedStr(Cnpj), QuotedStr(IE), DataCadastro, DataNascimento, QuotedStr(NomePai),
+                     QuotedStr(NomeMae), TipoEstabelecimento, QuotedStr(Endereco), QuotedStr(Numero), Cidade, QuotedStr(NomeBairro), QuotedStr(Complemento), QuotedStr(Cep), QuotedStr(Simples),
+                     Latitude, Longitude, IndicadorIE, LimiteCredito, CondicaoPagamento, BooleanToStr(Ativo), DataMovimento, DataInativado, QuotedStr(Obs), Tipo]));
+    //insert cliforcontato
+    EnviarNFe := QuotedStr('N');
+    EnviarBoleto := QuotedStr('N');
+    if ((Email = EmailNFe) and (EmailNfe = EmailBoleto)) then // se os 3 emails forem iguais
+    begin
+      EmailNFe := EmptyStr;
+      EmailBoleto := EmptyStr;
+      EnviarNFe := QuotedStr('S');
+      EnviarBoleto := QuotedStr('S');
+    end
+    else
+    if (Email = EmailNFe)  then
+    begin
+      EmailNFe := EmptyStr;
+      EnviarNFe := QuotedStr('S');
+    end
+    else
+    if ((Email = EmailBoleto) and (EmailNFe = EmptyStr)) then
+    begin
+      EmailBoleto := EmptyStr;
+      EnviarBoleto := QuotedStr('S');
+    end
+    else
+    if (EmailNFe = EmailBoleto) then
+    begin
+      EmailBoleto := EmptyStr;
+      EnviarBoleto := QuotedStr('S');
+    end;
+
+    if EmailNFe <> EmptyStr then
+      EnviarNFe := QuotedStr('S');
+
+    if (Telefone = Celular)  then
+      Celular := EmptyStr;
+
+    if ((Telefone <> EmptyStr) or (Celular <> EmptyStr)) then
+    begin
+      //Telefone
+      if Telefone <> EmptyStr then
+      begin
+        if ((Email = EmptyStr) and (EmailNFe = EmptyStr) and (EmailBoleto = EmptyStr)) then
+          ListBox1.Items.Add(Format(SQLInsertCliforContato, [QuotedStr(CNPJ), QuotedStr(Telefone), QuotedStr(Contato), cNull, cNao, cNao, cNao, cNao]));
+        if Email <> EmptyStr then
+        begin
+          ListBox1.Items.Add(Format(SQLInsertCliforContato, [QuotedStr(CNPJ), QuotedStr(Telefone), QuotedStr(Contato), QuotedStr(Email), EnviarNFe, EnviarNFe, EnviarBoleto, cNao]));
+          Email := EmptyStr;
+        end;
+        if EmailNFe <> EmptyStr then
+        begin
+          ListBox1.Items.Add(Format(SQLInsertCliforContato, [QuotedStr(CNPJ), QuotedStr(Telefone), QuotedStr(Contato), QuotedStr(EmailNFe), EnviarNFe, EnviarNFe, EnviarBoleto, cNao]));
+          EmailNFe := EmptyStr;
+          EnviarNFe := QuotedStr('N');
+        end;
+        if EmailBoleto <> EmptyStr then
+        begin
+          EnviarBoleto := QuotedStr('S');
+          ListBox1.Items.Add(Format(SQLInsertCliforContato, [QuotedStr(CNPJ), QuotedStr(Telefone), QuotedStr(Contato), QuotedStr(EmailBoleto), EnviarNFe, EnviarNFe, EnviarBoleto, cNao]));
+          EmailBoleto := EmptyStr;
+          EnviarBoleto := QuotedStr('N');
+        end;
+      end;
+      //Celular
+      if Celular <> EmptyStr then
+      begin
+        if EmailBoleto <> EmptyStr then
+          ListBox1.Items.Add(Format(SQLInsertCliforContato, [QuotedStr(CNPJ), QuotedStr(Celular), QuotedStr(Contato), QuotedStr(EmailBoleto), EnviarNFe, EnviarNFe, EnviarBoleto, cNao]));
+        if EmailNFe <> EmptyStr then
+          ListBox1.Items.Add(Format(SQLInsertCliforContato, [QuotedStr(CNPJ), QuotedStr(Celular), QuotedStr(Contato), QuotedStr(EmailNFe), EnviarNFe, EnviarNFe, EnviarBoleto, cNao]));
+        if Email <> EmptyStr then
+          ListBox1.Items.Add(Format(SQLInsertCliforContato, [QuotedStr(CNPJ), QuotedStr(Celular), QuotedStr(Contato), QuotedStr(Email), EnviarNFe, EnviarNFe, EnviarBoleto, cNao]));
+        if ((Email = EmptyStr) and (EmailNFe = EmptyStr) and (EmailBoleto = EmptyStr)) then
+        begin
+          EnviarNFe := QuotedStr('N');
+          EnviarBoleto := QuotedStr('N');
+          ListBox1.Items.Add(Format(SQLInsertCliforContato, [QuotedStr(CNPJ), QuotedStr(Celular), QuotedStr(Contato), QuotedStr(Email), EnviarNFe, EnviarNFe, EnviarBoleto, cNao]));
+        end;
+      end;
+    end
+    else
+      if ((Email <> EmptyStr) or (EmailNFe <> EmptyStr) or (EmailBoleto <> EmptyStr)) then
+      begin
+        if Email <> EmptyStr then
+          ListBox1.Items.Add(Format(SQLInsertCliforContato, [QuotedStr(CNPJ), QuotedStr('11111111'), QuotedStr(Contato), QuotedStr(Email), EnviarNFe, EnviarNFe, EnviarBoleto, cNao]));
+        if EmailNFe <> EmptyStr then
+          ListBox1.Items.Add(Format(SQLInsertCliforContato, [QuotedStr(CNPJ), QuotedStr('11111111'), QuotedStr(Contato), QuotedStr(EmailNFe), EnviarNFe, EnviarNFe, EnviarBoleto, cNao]));
+        if EmailBoleto <> EmptyStr then
+          ListBox1.Items.Add(Format(SQLInsertCliforContato, [QuotedStr(CNPJ), QuotedStr('111111111'), QuotedStr(Contato), QuotedStr(EmailBoleto), EnviarNFe, EnviarNFe, EnviarBoleto, cNao]));
+      end;
+
+    //funcionarioclifor
+    if CpfVendedor <> EmptyStr then
+      ListBox1.Items.Add(Format(SQLInsertFuncionarioClifor, [CpfVendedor, QuotedStr(CNPJ)]));
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+  ListBox1.Items.Add('ALTER TRIGGER TRIGGER_CLIFORCONTATO_VALIDAR ACTIVE;');
+  SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '101-cliforfiliais'+Filial.ToString+'.txt');
+end;
+
+procedure TFrmPrincipal.ButtonConversaoFiliaisFuncionarioClick(Sender: TObject);
+var
+  SQLInsert : String;
+  Codigo, Filial, Estado : Integer;
+  Fantasia, Nome, Cpf, Rg, Data, DataNasc, Endereco, NomeBairro, Complemento, Cep, Telefone, Email, CodigoFiscal : String;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add(' select distinct ');
+  FDQuery1.SQL.Add(' terceiros_dados_emp.id_empresa as filial, ');
+  FDQuery1.SQL.Add(' terceiros_dados_emp.id_vendedor as codigo, ');
+  FDQuery1.SQL.Add(' terceiros.nome as fantasia, ');
+  FDQuery1.SQL.Add(' terceiros.razao_social as nome, ');
+  FDQuery1.SQL.Add(' terceiros.cpf_cnpj as cpf, ');
+  FDQuery1.SQL.Add(' terceiros.rg_ie as rg, ');
+  FDQuery1.SQL.Add(' terceiros.data_cadastro as data, ');
+  FDQuery1.SQL.Add(' terceiros.data_nascimento as datanasc, ');
+  FDQuery1.SQL.Add(' logradouros.nome_completo as endereco, ');
+  FDQuery1.SQL.Add(' terceiros.numero as numero, ');
+  FDQuery1.SQL.Add(' cidades.cod_ibge as codigofiscal, ');
+  FDQuery1.SQL.Add(' estados.codigo_ibge as estado, ');
+  FDQuery1.SQL.Add(' bairros.nome_bairro as nomebairro, ');
+  FDQuery1.SQL.Add(' terceiros.complemento as complemento, ');
+  FDQuery1.SQL.Add(' terceiros.cep as cep, ');
+  FDQuery1.SQL.Add(' terceiros.fone as telefone, ');
+  FDQuery1.SQL.Add(' terceiros.email as email ');
+  FDQuery1.SQL.Add(' from terceiros_dados_emp ');
+  FDQuery1.SQL.Add(' inner join terceiros on terceiros.id = terceiros_dados_emp.id_vendedor ');
+  FDQuery1.SQL.Add(' left join logradouros on logradouros.id = terceiros.id_logradouro ');
+  FDQuery1.SQL.Add(' left join bairros on bairros.id = terceiros.id_bairro ');
+  FDQuery1.SQL.Add(' left join cidades on cidades.id = terceiros.id_cidade ');
+  FDQuery1.SQL.Add(' left join estados on estados.sigla = cidades.estado ');
+  FDQuery1.SQL.Add('  ');
+  FDQuery1.SQL.Add(' where terceiros_dados_emp.id_vendedor is not null ');
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format(' and terceiros_dados_emp.id_empresa = %s ',[EditIdEmpresa.Text]));
+  if EditCliforIn.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format(' and terceiros.id in (%s) ',[EditCliforIn.Text]));
+  FDQuery1.SQL.Add(' order by 2 ');
+
+  SQLInsert := 'EXECUTE PROCEDURE SET_FUNCIONARIO_CONV(%d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);';
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  PageControl1.ActivePageIndex := 0;
+  Application.ProcessMessages;
+  while not FDQuery1.Eof do
+  begin
+    Filial := FDQuery1.FieldByName('filial').AsInteger;
+    Codigo := FDQuery1.FieldByName('codigo').AsInteger;
+    Fantasia := FDQuery1.FieldByName('fantasia').AsString;
+    Nome := Copy(FDQuery1.FieldByName('nome').AsString, 0, 40);
+    Cpf := FDQuery1.FieldByName('cpf').AsString;
+    Rg := FDQuery1.FieldByName('rg').AsString;
+    Data := AjustaData(FDQuery1.FieldByName('data').AsString);
+    DataNasc := AjustaData(FDQuery1.FieldByName('datanasc').AsString);
+    Endereco := FDQuery1.FieldByName('endereco').AsString + ', ' + FDQuery1.FieldByName('numero').AsString;
+    CodigoFiscal := FDQuery1.FieldByName('codigofiscal').AsString;
+    Estado := FDQuery1.FieldByName('estado').AsInteger;
+    NomeBairro := FDQuery1.FieldByName('nomebairro').AsString;
+    Complemento := FDQuery1.FieldByName('complemento').AsString;
+    Cep := Numericos(FDQuery1.FieldByName('cep').AsString);
+    Telefone := Numericos(FDQuery1.FieldByName('telefone').AsString);
+    Email := FDQuery1.FieldByName('email').AsString;
+
+    CodigoFiscal := IntToStr(Estado) + AdjustRight(CodigoFiscal, 5, '0');
+    if EditForcarNumeroFilial.Text <> EmptyStr then
+      Filial := StrToInt(EditForcarNumeroFilial.Text);
+    if NomeBairro = EmptyStr then NomeBairro := 'CENTRO';
+
+    ListBox1.Items.Add(Format(SQLInsert,[Filial, Codigo, QuotedStr(Fantasia), QuotedStr(Nome), QuotedStr(Cpf), QuotedStr(Rg), Data, DataNasc, QuotedStr(Endereco),
+                                         QuotedStr(CodigoFiscal), QuotedStr(NomeBairro), QuotedStr(Complemento), QuotedStr(Cep), QuotedStr(Telefone), QuotedStr(Email)]));
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+  SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '100-funcionariofiliais-'+Filial.ToString+'.txt');
+end;
+
 procedure TFrmPrincipal.ButtonSemRomaneioClick(Sender: TObject);
 var
   I :Integer;
@@ -2943,6 +3319,7 @@ end;
 
 procedure TFrmPrincipal.ValidaConfigTipoEstabelecimento;
 begin
+  Self.BtnCarregarConfigClick(Self);
   if (LowerCase(EditDatabase.Text) <> LowerCase(LabelConfigAtiva.Caption)) then
     raise Exception.Create('Config Tipo Estabelecimento Inválida!');
 end;
