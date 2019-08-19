@@ -100,11 +100,9 @@ type
     ButtonAjustaFuncionarioClifor: TButton;
     ButtonAjustaCondicaoPagamento: TButton;
     ButtonContaPagaRecebida: TButton;
-    Label13: TLabel;
     Label14: TLabel;
     EditTipoFinanceiro: TEdit;
     EditSituacaoFinanceiro: TEdit;
-    Label15: TLabel;
     Label16: TLabel;
     ButtonContasPagarExcel: TButton;
     ButtonContasPagasExcel: TButton;
@@ -112,7 +110,7 @@ type
     TabSheetConversaoFiliais: TTabSheet;
     ButtonConversaoFiliaisCliFor: TButton;
     ButtonConversaoFiliaisFuncionario: TButton;
-    Button3: TButton;
+    ButtonRotaFiliais: TButton;
     Button4: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -167,6 +165,7 @@ type
     procedure ButtonUpdateGeoLocalizacaoClick(Sender: TObject);
     procedure ButtonConversaoFiliaisFuncionarioClick(Sender: TObject);
     procedure ButtonConversaoFiliaisCliForClick(Sender: TObject);
+    procedure ButtonRotaFiliaisClick(Sender: TObject);
 
   private
     procedure CarregarExcel;
@@ -503,7 +502,7 @@ begin
     Cidade := FDQuery1.FieldByName('cidade').AsInteger;
     NomeBairro := FDQuery1.FieldByName('nomebairro').AsString;
     Complemento := FDQuery1.FieldByName('complemento').AsString;
-    Cep := Numericos(FDQuery1.FieldByName('cep').AsString);
+    Cep := Copy(Numericos(FDQuery1.FieldByName('cep').AsString),0,8);
     Telefone := Copy(Numericos(FDQuery1.FieldByName('telefone').AsString),0,12);
     Celular := Copy(Numericos(FDQuery1.FieldByName('celular').AsString),0,12);
     Email := Trim(FDQuery1.FieldByName('email').AsString);
@@ -2562,7 +2561,7 @@ end;
 procedure TFrmPrincipal.ButtonConversaoFiliaisCliForClick(Sender: TObject);
 var
   SQLInsertClifor, SQLInsertCliforContato, SQLInsertFuncionarioClifor : String;
-  {Codigo,} Cidade, IndicadorIE, {Vendedor,} Tipo, Filial : Integer;
+  Cidade, IndicadorIE, Tipo, Filial : Integer;
   Fantasia, Nome, CNPJ, IE, DataCadastro, DataNascimento, NomePai, NomeMae, Contato, Endereco, Numero, NomeBairro, Complemento, Cep, Telefone, Celular,
   Email, EmailNFe, EmailBoleto, Simples, DataMovimento, DataInativado, Obs, LimiteCredito, TipoEstabelecimento, CondicaoPagamento,
   EnviarNFe, EnviarBoleto, Latitude, Longitude, CPFVendedor : String;
@@ -2629,9 +2628,12 @@ begin
 
   SQLInsertClifor := 'EXECUTE PROCEDURE SET_CLIFOR_CONV(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %s, %s, %s, %s, %s, %s, %d, %s, %s, %s, %s, %s, %s, %d);';
 
-  SQLInsertCliforContato := 'INSERT INTO CLIFORCONTATO (CLIFOR, NUMERO, NOME, EMAIL, ENVIARNFE, ENVIARDANFE, ENVIARBOLETO, ENVIARPEDIDO) ' +
-                            'VALUES (%d, %s, %s, %s, %s, %s, %s, %s);';
-  SQLInsertFuncionarioClifor := 'INSERT INTO FUNCIONARIOCLIFOR (FUNCIONARIO, CLIFOR) VALUES (%d, %d);';
+
+//  SQLInsertCliforContato := 'INSERT INTO CLIFORCONTATO (CLIFOR, NUMERO, NOME, EMAIL, ENVIARNFE, ENVIARDANFE, ENVIARBOLETO, ENVIARPEDIDO) ' +
+//                            'VALUES (%d, %s, %s, %s, %s, %s, %s, %s);';
+  SQLInsertCliforContato := 'EXECUTE PROCEDURE SET_CLIFORCONTATO_CONV(%s, %s, %s, %s, %s, %s, %s, %s);';
+  //SQLInsertFuncionarioClifor := 'INSERT INTO FUNCIONARIOCLIFOR (FUNCIONARIO, CLIFOR) VALUES (%d, %d);';
+  SQLInsertFuncionarioClifor := 'EXECUTE PROCEDURE SET_FUNCIONARIOCLIFOR_CONV(%s, %s);';
   VerificaConexao;
   AbreQuery;
   AjustaGauge;
@@ -2838,7 +2840,7 @@ begin
 
     //funcionarioclifor
     if CpfVendedor <> EmptyStr then
-      ListBox1.Items.Add(Format(SQLInsertFuncionarioClifor, [CpfVendedor, QuotedStr(CNPJ)]));
+      ListBox1.Items.Add(Format(SQLInsertFuncionarioClifor, [QuotedStr(CpfVendedor), QuotedStr(CNPJ)]));
     FDQuery1.Next;
     Gauge1.AddProgress(1);
   end;
@@ -2926,6 +2928,54 @@ begin
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
     SalvarArquivoAutomatico(EditCaminhoScripts.Text + '100-funcionariofiliais-'+Filial.ToString+'.txt');
+end;
+
+procedure TFrmPrincipal.ButtonRotaFiliaisClick(Sender: TObject);
+var
+  SQLInsert : String;
+  Codigo, Filial : Integer;
+  CNPJFuncionario, NomeRota : String;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select ');
+  FDQuery1.SQL.Add('rotas_setores.id as codigo, ');
+  FDQuery1.SQL.Add('rotas.desc_rota || '' - '' ||rotas_setores.desc_setor as nome, ');
+  FDQuery1.SQL.Add('rotas_setores.id_vendedor as funcionario, ');
+  FDQuery1.SQL.Add('rotas_setores.ordem as classificacaorota, ');
+  FDQuery1.SQL.Add('rotas_setores.periodicidade, ');
+  FDQuery1.SQL.Add('rotas.id_empresa as filial, ');
+  FDQuery1.SQL.Add('terceiros.cpf_cnpj as cnpjvendedor ');
+  FDQuery1.SQL.Add('from rotas_setores ');
+  FDQuery1.SQL.Add('inner join rotas on rotas.id = rotas_setores.id_rota ');
+  FDQuery1.SQL.Add('inner join terceiros on terceiros.id = rotas_setores.id_vendedor ');
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('and rotas.id_empresa = %s ',[EditIdEmpresa.Text]));
+  if EditRotas.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('where rotas.id in (%s) ',[EditRotas.Text]));
+
+  //SQLInsert := 'INSERT INTO ROTA (CODIGO, NOME, TIPOROTA, FUNCIONARIO, REORDENAR, CLASSIFICACAOROTA, FILIAL) VALUES (%d, %s, %s, %d, %s, %s, %d);';
+  SQLInsert := 'EXECUTE PROCEDURE SET_ROTA_CONV(%d, %s, %s, %s, %s, %d);';
+  VerificaConexao;
+  PageControl1.ActivePageIndex := 0;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  while not FDQuery1.Eof do
+  begin
+    Codigo := FDQuery1.FieldByName('codigo').AsInteger;
+    NomeRota := Copy(FDQuery1.FieldByName('nome').AsString,0,30);
+    CNPJFuncionario := FDQuery1.FieldByName('cnpjvendedor').AsString;
+    Filial := FDQuery1.FieldByName('filial').AsInteger;
+    if EditForcarNumeroFilial.Text <> EmptyStr then
+      Filial := StrToInt(EditForcarNumeroFilial.Text);
+
+    ListBox1.Items.Add(Format(SQLInsert,[Codigo, QuotedStr(NomeRota), QuotedStr('V'), CNPJFuncionario, cNao, Filial]));
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+  SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '102-rotafiliais'+Filial.ToString()+'.txt');
 end;
 
 procedure TFrmPrincipal.ButtonSemRomaneioClick(Sender: TObject);

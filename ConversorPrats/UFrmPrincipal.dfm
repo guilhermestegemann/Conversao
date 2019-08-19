@@ -17,32 +17,6 @@ object FrmPrincipal: TFrmPrincipal
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object Label13: TLabel
-    Left = 1184
-    Top = 261
-    Width = 64
-    Height = 13
-    Caption = 'For'#231'ar Filial'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
-    ParentFont = False
-  end
-  object Label15: TLabel
-    Left = 1112
-    Top = 443
-    Width = 85
-    Height = 13
-    Caption = 'Tipo Financeiro'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
-    ParentFont = False
-  end
   object PageControl1: TPageControl
     Left = 0
     Top = 0
@@ -942,13 +916,14 @@ object FrmPrincipal: TFrmPrincipal
         TabOrder = 1
         OnClick = ButtonConversaoFiliaisFuncionarioClick
       end
-      object Button3: TButton
+      object ButtonRotaFiliais: TButton
         Left = 3
         Top = 86
         Width = 75
         Height = 25
-        Caption = 'Button1'
+        Caption = 'Rota'
         TabOrder = 2
+        OnClick = ButtonRotaFiliaisClick
       end
       object Button4: TButton
         Left = 3
@@ -966,7 +941,7 @@ object FrmPrincipal: TFrmPrincipal
     Top = 232
   end
   object FDPhysPgDriverLink1: TFDPhysPgDriverLink
-    VendorHome = 'E:\Conversao\ConversorPrats'
+    VendorHome = 'D:\Conversao\ConversorPrats'
     VendorLib = 'libpq.dll'
     Left = 16
     Top = 168
