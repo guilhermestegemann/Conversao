@@ -17,38 +17,12 @@ object FrmPrincipal: TFrmPrincipal
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object Label13: TLabel
-    Left = 1184
-    Top = 261
-    Width = 64
-    Height = 13
-    Caption = 'For'#231'ar Filial'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
-    ParentFont = False
-  end
-  object Label15: TLabel
-    Left = 1112
-    Top = 443
-    Width = 85
-    Height = 13
-    Caption = 'Tipo Financeiro'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
-    ParentFont = False
-  end
   object PageControl1: TPageControl
     Left = 0
     Top = 0
     Width = 1543
     Height = 854
-    ActivePage = TabSheet1
+    ActivePage = TabSheetConversaoFiliais
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -564,6 +538,15 @@ object FrmPrincipal: TFrmPrincipal
         TabOrder = 44
         OnClick = ButtonAjustaFuncionarioCliforClick
       end
+      object ButtonCliForAtivo: TButton
+        Left = 8
+        Top = 682
+        Width = 166
+        Height = 18
+        Caption = 'Clifor - Ativo'
+        TabOrder = 45
+        OnClick = ButtonCliForAtivoClick
+      end
     end
     object TabSheet2: TTabSheet
       Caption = 'Configura'#231#227'o'
@@ -942,21 +925,56 @@ object FrmPrincipal: TFrmPrincipal
         TabOrder = 1
         OnClick = ButtonConversaoFiliaisFuncionarioClick
       end
-      object Button3: TButton
+      object ButtonRotaFiliais: TButton
         Left = 3
         Top = 86
         Width = 75
         Height = 25
-        Caption = 'Button1'
+        Caption = 'Rota'
         TabOrder = 2
+        OnClick = ButtonRotaFiliaisClick
       end
-      object Button4: TButton
+      object ButtonRotaCliforFiliais: TButton
         Left = 3
         Top = 117
         Width = 75
         Height = 25
-        Caption = 'Button1'
+        Caption = 'Rota Clifor'
         TabOrder = 3
+        OnClick = ButtonRotaCliforFiliaisClick
+      end
+      object ButtonTabelaPrecoFiliais: TButton
+        Left = 3
+        Top = 157
+        Width = 75
+        Height = 25
+        Caption = 'Tabela Pre'#231'o'
+        TabOrder = 4
+        OnClick = ButtonTabelaPrecoFiliaisClick
+      end
+      object Button2: TButton
+        Left = 3
+        Top = 221
+        Width = 75
+        Height = 25
+        Caption = 'button'
+        TabOrder = 5
+      end
+      object Button3: TButton
+        Left = 3
+        Top = 269
+        Width = 75
+        Height = 25
+        Caption = 'button'
+        TabOrder = 6
+      end
+      object Button4: TButton
+        Left = 3
+        Top = 309
+        Width = 75
+        Height = 25
+        Caption = 'button'
+        TabOrder = 7
       end
     end
   end
@@ -966,7 +984,7 @@ object FrmPrincipal: TFrmPrincipal
     Top = 232
   end
   object FDPhysPgDriverLink1: TFDPhysPgDriverLink
-    VendorHome = 'E:\Conversao\ConversorPrats'
+    VendorHome = 'D:\Conversao\ConversorPrats'
     VendorLib = 'libpq.dll'
     Left = 16
     Top = 168
