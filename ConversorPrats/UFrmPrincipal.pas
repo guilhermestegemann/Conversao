@@ -114,7 +114,7 @@ type
     ButtonRotaCliforFiliais: TButton;
     ButtonCliForAtivo: TButton;
     ButtonTabelaPrecoFiliais: TButton;
-    Button2: TButton;
+    ButtonItemTabelaPrecoFiliais: TButton;
     Button3: TButton;
     Button4: TButton;
     procedure FormCreate(Sender: TObject);
@@ -174,6 +174,7 @@ type
     procedure ButtonCliForAtivoClick(Sender: TObject);
     procedure ButtonRotaCliforFiliaisClick(Sender: TObject);
     procedure ButtonTabelaPrecoFiliaisClick(Sender: TObject);
+    procedure ButtonItemTabelaPrecoFiliaisClick(Sender: TObject);
 
   private
     procedure CarregarExcel;
@@ -2407,7 +2408,7 @@ begin
   FDQuery1.SQL.Add('from terceiros_dados_emp ');
   FDQuery1.SQL.Add('where terceiros_dados_emp.ativo = true ');
 
-  SQLUpdate := 'UPDATE  CLIFOR SET ATIVO = %s WHERE CODIGO = %d;';
+  SQLUpdate := 'UPDATE  CLIFOR SET ATIVO = %s, DATAINATIVADO = NULL WHERE CODIGO = %d;';
 
   VerificaConexao;
   AbreQuery;
@@ -2973,6 +2974,57 @@ begin
     SalvarArquivoAutomatico(EditCaminhoScripts.Text + '100-funcionariofiliais-'+Filial.ToString+'.txt');
 end;
 
+procedure TFrmPrincipal.ButtonItemTabelaPrecoFiliaisClick(Sender: TObject);
+var
+  SQLUpdate : String;
+  TabelaPreco, Filial : Integer;
+  ValorMinimo, ValorVenda, Barras : String;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select ');
+  FDQuery1.SQL.Add('produtos_precos.valido_apos, ');
+  FDQuery1.SQL.Add('produtos_precos.id_tabela, ');
+  FDQuery1.SQL.Add('produtos_precos.id_produto, ');
+  FDQuery1.SQL.Add('produtos.codigo_barras as barras, ');
+  FDQuery1.SQL.Add('produtos_precos.valor_minimo, ');
+  FDQuery1.SQL.Add('produtos_precos.valor, ');
+  FDQuery1.SQL.Add('tabelas_precos.id_empresa as filial ');
+  FDQuery1.SQL.Add('from produtos_precos ');
+  FDQuery1.SQL.Add('inner join tabelas_precos on tabelas_precos.id = produtos_precos.id_tabela ');
+  FDQuery1.SQL.Add('inner join produtos on produtos.id = produtos_precos.id_produto ');
+  FDQuery1.SQL.Add('where produtos.codigo_BARRAS IN (''7898953148015'',''7898953148169'',''7898953148176'',''7898953148213'',''7898953148220'',''7898953148237'',''7898953148268'',''7898953148275'',''7898953148428'',''7898953148435'',''7898953148541'') ');
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('and tabelas_precos.id_empresa = %s',[EditIdEmpresa.Text]));
+  FDQuery1.SQL.Add('order by produtos_precos.id_tabela, produtos_precos.id_produto, produtos_precos.valido_apos ');
+
+
+  //SQLUpdate := 'UPDATE ITEMTABELAPRECO SET VALORVENDA = %s, VALORMINIMO = %s WHERE TABELAPRECO = %d AND PRODUTO = (SELECT CODIGO FROM PRODUTO WHERE PRAZOVALIDADE = %d);';
+  SQLUpdate := 'EXECUTE PROCEDURE SET_ITEMTABELAPRECO_CONV(%d, %s, %s, %s, %d);';
+  PageControl1.ActivePageIndex := 0;
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  while not FDQuery1.Eof do
+  begin
+    TabelaPreco := FDQuery1.FieldByName('id_tabela').AsInteger;
+    Filial := FDQuery1.FieldByName('filial').AsInteger;
+    if EditForcarNumeroFilial.Text <> EmptyStr then
+      Filial := StrToInt(EditForcarNumeroFilial.Text);
+    Barras := FDQuery1.FieldByName('barras').AsString;
+    ValorMinimo := StringReplace(FDQuery1.FieldByName('valor_minimo').AsString,',','.',[rfReplaceAll]);
+    ValorVenda := StringReplace(FDQuery1.FieldByName('valor').AsString,',','.',[rfReplaceAll]);
+
+    ListBox1.Items.Add(Format(SQLUpdate,[TabelaPreco, QuotedStr(Barras), ValorMinimo, ValorVenda, Filial]));
+
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+  SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '105-itemtabelaprecofiliais'+Filial.ToString()+'.txt');
+end;
+
 procedure TFrmPrincipal.ButtonRotaCliforFiliaisClick(Sender: TObject);
 var
   SQLInsert : String;
@@ -3120,7 +3172,7 @@ begin
 //  SQLInsert := 'INSERT INTO TABELAPRECO (CODIGO, FILIAL, NOME, INDICE, BASE, PROMOCAO, DATAINICIAL, DATAFINAL, EXPORTAR, VALORMINIMO, COMISSAO, ATUALIZARVALORVENDA, ' +
 //               'ATUALIZARVALORMINIMO, ATUALIZARDESCONTOMAXIMO, BLOQUEAR, VINCULARCLIFORAUTOMATICAMENTE, COMISSAOFIXA, INCLUIRPRODUTOAUTOMATICO, VALORMAXIMO, VALORMINIMOINICIAL) '+
 //               'VALUES (%d, %d, %s, %d, %s, %s, %s, %s, %s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %d, %d);';
-  SQLInsert := 'EXECUTE SET_TABELAPRECO_CONV(%d, %d, %s, %d, %s, %s, %s, %s, %s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %d, %d);';
+  SQLInsert := 'EXECUTE PROCEDURE SET_TABELAPRECO_CONV(%d, %d, %s, %d, %s, %s, %s, %s, %s, %d, %d, %s, %s, %s, %s, %s, %s, %s, %d, %d);';
   PageControl1.ActivePageIndex := 0;
   VerificaConexao;
   AbreQuery;

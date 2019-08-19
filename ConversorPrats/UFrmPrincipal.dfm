@@ -25,6 +25,7 @@ object FrmPrincipal: TFrmPrincipal
     ActivePage = TabSheetConversaoFiliais
     Align = alClient
     TabOrder = 0
+    ExplicitTop = 8
     object TabSheet1: TTabSheet
       Caption = 'Geral'
       object Gauge1: TGauge
@@ -907,6 +908,8 @@ object FrmPrincipal: TFrmPrincipal
     object TabSheetConversaoFiliais: TTabSheet
       Caption = 'Convers'#227'o Filiais'
       ImageIndex = 2
+      ExplicitLeft = 8
+      ExplicitTop = 28
       object ButtonConversaoFiliaisCliFor: TButton
         Left = 3
         Top = 46
@@ -952,13 +955,14 @@ object FrmPrincipal: TFrmPrincipal
         TabOrder = 4
         OnClick = ButtonTabelaPrecoFiliaisClick
       end
-      object Button2: TButton
+      object ButtonItemTabelaPrecoFiliais: TButton
         Left = 3
-        Top = 221
-        Width = 75
+        Top = 188
+        Width = 94
         Height = 25
-        Caption = 'button'
+        Caption = 'ItemTabelaPre'#231'o'
         TabOrder = 5
+        OnClick = ButtonItemTabelaPrecoFiliaisClick
       end
       object Button3: TButton
         Left = 3
