@@ -11,6 +11,7 @@ uses
   FireDAC.DApt.Intf, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
   FireDAC.Comp.Client, System.IniFiles, Vcl.StdCtrls, Vcl.Grids, Vcl.DBGrids,
   Vcl.Samples.Gauges, Vcl.ExtDlgs, Vcl.ComCtrls, Vcl.Buttons, ComObj;
+  
 
 type
   TFrmPrincipal = class(TForm)
