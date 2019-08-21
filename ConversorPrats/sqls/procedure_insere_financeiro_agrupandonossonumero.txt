@@ -1,7 +1,6 @@
 SET TERM ^ ;
 
-create or ALTER procedure CUS_SETFINANCEIROPRATSNOSSONUMERO (
-    ID integer,
+CREATE OR ALTER procedure CUS_SETFINANCEIROPRATSNOSSONUM (
     FILIAL integer,
     TIPO char(1),
     CLIFOR integer,
@@ -10,73 +9,64 @@ create or ALTER procedure CUS_SETFINANCEIROPRATSNOSSONUMERO (
     DATAEMISSAO date,
     DATAVCTO date,
     VALOR numeric(8,2),
-    DATAPGTO date,
-    DATABAIXA date,
-    MULTA numeric(8,2),
-    JURO numeric(8,2),
-    DESCONTO numeric(8,2),
-    VALORBAIXA numeric(8,2),
+    NOSSONUMERO integer,
     HISTORICO integer,
     SITUACAO integer)
 as
 declare variable CONT_FINANCEIRO integer;
 BEGIN
-    SELECT COUNT(*)
-    FROM FINANCEIRO
-    WHERE FINANCEIRO.ORDEM = :ORDEM
-    AND FINANCEIRO.CLIFOR = :CLIFOR
-    AND FINANCEIRO.DATAEMISSAO = :DATAEMISSAO
-    AND FINANCEIRO.FILIAL = :FILIAL
-    INTO :CONT_FINANCEIRO;
-
-    IF (:DATABAIXA < :DATAEMISSAO) THEN
-        DATABAIXA = :DATAEMISSAO;
-
+    CONT_FINANCEIRO = 0;
+    IF (:NOSSONUMERO IS NOT NULL) THEN
+        SELECT COUNT(*)
+        FROM FINANCEIRO
+        WHERE FINANCEIRO.NOSSONUMERO = :NOSSONUMERO
+        AND FINANCEIRO.CLIFOR = :CLIFOR
+        --AND FINANCEIRO.DATAVCTO = :DATAVCTO
+        AND FINANCEIRO.FILIAL = :FILIAL
+        AND FINANCEIRO.SITUACAO = :SITUACAO
+        INTO :CONT_FINANCEIRO;
 
     IF (:CONT_FINANCEIRO > 0) THEN
-    begin
-        ordem = substring(:ordem from 1 for  (19 - char_length(:id)));
-        ORDEM = :ORDEM  || '-'||:ID;
-    end
-    --ordem = substring(:ordem from 1 for 18);
+    BEGIN
+        UPDATE FINANCEIRO SET
+            FINANCEIRO.VALOR = FINANCEIRO.VALOR + :VALOR,
+            FINANCEIRO.OBS = COALESCE(FINANCEIRO.OBS, '') || ' - ' || :ORDEM
+        WHERE FINANCEIRO.NOSSONUMERO = :NOSSONUMERO
+        AND FINANCEIRO.SITUACAO = :SITUACAO
+        AND FINANCEIRO.CLIFOR = :CLIFOR
+        AND FINANCEIRO.FILIAL = :FILIAL;
+    END
+    ELSE
+    BEGIN
 
-    INSERT INTO FINANCEIRO
-    (
-        FILIAL,
-        TIPO,
-        CLIFOR,
-        ORDEM,
-        DOCUMENTO,
-        DATAEMISSAO,
-        DATAVCTO,
-        VALOR,
-        DATAPGTO,
-        DATABAIXA,
-        MULTA,
-        JURO,
-        DESCONTO,
-        VALORBAIXA,
-        SITUACAO,
-        historico
-    ) VALUES
-    (
-        :FILIAL,
-        :TIPO,
-        :CLIFOR,
-        :ORDEM,
-        :DOCUMENTO,
-        :DATAEMISSAO,
-        :DATAVCTO,
-        :VALOR,
-        :DATAPGTO,
-        :DATABAIXA,
-        :MULTA,
-        :JURO,
-        :DESCONTO,
-        :VALORBAIXA,
-        :SITUACAO,
-        :historico
-    );
+        INSERT INTO FINANCEIRO
+        (
+            FILIAL,
+            TIPO,
+            CLIFOR,
+            ORDEM,
+            DOCUMENTO,
+            DATAEMISSAO,
+            DATAVCTO,
+            VALOR,
+            SITUACAO,
+            HISTORICO,
+            NOSSONUMERO
+        ) VALUES
+        (
+            :FILIAL,
+            :TIPO,
+            :CLIFOR,
+            :ORDEM,
+            :DOCUMENTO,
+            :DATAEMISSAO,
+            :DATAVCTO,
+            :VALOR,
+            :SITUACAO,
+            :HISTORICO,
+            :NOSSONUMERO
+        );
+    END
 END^
 
 SET TERM ; ^
