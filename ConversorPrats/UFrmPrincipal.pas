@@ -1182,7 +1182,7 @@ begin
     ListBox1.Clear;
     ListBoxNossoNumero.Clear;
     ListBoxNossoNumeroDuplicado.Clear;
-    ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES ('+EditSituacaoFinanceiro.Text+', '+ GetNomeSituacaoFinanceiro(EditSituacaoFinanceiro.Text) +', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
+    ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES (99, ''CONTAS A RECEBER'', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
     Gauge1.Progress := StrToInt(EditInicioPlanilha.Text);
     Gauge1.MaxValue := StrToInt(EditFimPlanilha.Text);
 
@@ -1225,8 +1225,8 @@ begin
 
       end;
       Ordem := Copy(Ordem,0,17);
-      ListBox1.Items.Add(Format(SQLInsert,[Filial, QuotedStr(EditTipoFinanceiro.Text), Clifor, QuotedStr(Ordem), Documento, QuotedStr(Emissao), QuotedStr(Vencimento),
-      Valor, NossoNumero, Historico, EditSituacaoFinanceiro.Text]));
+      ListBox1.Items.Add(Format(SQLInsert,[Filial, QuotedStr('C'), Clifor, QuotedStr(Ordem), Documento, QuotedStr(Emissao), QuotedStr(Vencimento),
+      Valor, NossoNumero, Historico, '99']));
 
       Gauge1.AddProgress(1);
     end;
@@ -2435,7 +2435,7 @@ var
   ID, Clifor, Ordem, Documento, Emissao, Vencimento, Valor, Filial, DataPgto, DataBaixa, Multa, Juros, Desconto, ValorPago, Historico : String;
 begin
   try
-    ShowMessage('Confirmar Edit Tipo Financeiro');
+    //ShowMessage('Confirmar Edit Tipo Financeiro');
     ShowMessage('Lembrar de preencher Inicio Planilha e Fim Planilha');
     CarregarExcel;
     PageControl1.ActivePageIndex := 0;
@@ -2444,7 +2444,7 @@ begin
     //             'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 99);';
     SQLInsert := 'EXECUTE PROCEDURE CUS_SETFINANCEIROPRATS(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);';
     ListBox1.Clear;
-    ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES ('+EditSituacaoFinanceiro.Text+', '+ GetNomeSituacaoFinanceiro(EditSituacaoFinanceiro.Text) +', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
+    ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES (98, ''CONTAS RECEBIDAS'', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
     Gauge1.Progress := StrToInt(EditInicioPlanilha.Text);
     Gauge1.MaxValue := StrToInt(EditFimPlanilha.Text);
 
@@ -2475,8 +2475,8 @@ begin
         Documento := 'NULL';
 
       Ordem := Copy(Ordem,0,19);
-      ListBox1.Items.Add(Format(SQLInsert,[ID, Filial, QuotedStr(EditTipoFinanceiro.Text), Clifor, QuotedStr(Ordem), Documento, QuotedStr(Emissao), QuotedStr(Vencimento),
-                         Valor, QuotedStr(DataPgto), QuotedStr(DataBaixa), Multa, Juros, Desconto, ValorPago, Historico, EditSituacaoFinanceiro.Text]));
+      ListBox1.Items.Add(Format(SQLInsert,[ID, Filial, QuotedStr('C'), Clifor, QuotedStr(Ordem), Documento, QuotedStr(Emissao), QuotedStr(Vencimento),
+                         Valor, QuotedStr(DataPgto), QuotedStr(DataBaixa), Multa, Juros, Desconto, ValorPago, Historico, '98']));
 
       Gauge1.AddProgress(1);
     end;
@@ -2493,8 +2493,8 @@ var
 begin
   try
     ShowMessage('Lembrar de preencher Inicio Planilha e Fim Planilha');
-    ShowMessage('Analisar NossoNumero');
-    ShowMessage('Edit Tipo Financeiro');
+    //ShowMessage('Analisar NossoNumero');
+    //ShowMessage('Edit Tipo Financeiro');
     CarregarExcel;
     PageControl1.ActivePageIndex := 0;
     SQLInsert := 'INSERT INTO FINANCEIRO (FILIAL, TIPO, CLIFOR, ORDEM, DOCUMENTO, DATAEMISSAO, DATAVCTO, VALOR, HISTORICO, SITUACAO) '+
@@ -2502,7 +2502,7 @@ begin
     ListBox1.Clear;
     ListBoxNossoNumero.Clear;
     ListBoxNossoNumeroDuplicado.Clear;
-    ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES ('+EditSituacaoFinanceiro.Text+', '+ GetNomeSituacaoFinanceiro(EditSituacaoFinanceiro.Text) +', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
+    ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES (97, ''CONTAS A PAGAR'', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
     Gauge1.Progress := StrToInt(EditInicioPlanilha.Text);
     Gauge1.MaxValue := StrToInt(EditFimPlanilha.Text);
 
@@ -2531,8 +2531,8 @@ begin
 
 
       Ordem := Copy(Ordem,0,17);
-      ListBox1.Items.Add(Format(SQLInsert,[Filial, QuotedStr(EditTipoFinanceiro.Text), Clifor, QuotedStr(Ordem), Documento, QuotedStr(Emissao), QuotedStr(Vencimento),
-      Valor, Historico, EditSituacaoFinanceiro.Text]));
+      ListBox1.Items.Add(Format(SQLInsert,[Filial, QuotedStr('D'), Clifor, QuotedStr(Ordem), Documento, QuotedStr(Emissao), QuotedStr(Vencimento),
+      Valor, Historico, '97']));
 
       Gauge1.AddProgress(1);
     end;
@@ -2548,16 +2548,16 @@ var
   ID, Clifor, Ordem, Documento, Emissao, Vencimento, Valor, Filial, DataPgto, DataBaixa, Multa, Juros, Desconto, ValorPago, Historico : String;
 begin
   try
-    ShowMessage('Confirmar Edit Tipo Financeiro');
+    //ShowMessage('Confirmar Edit Tipo Financeiro');
     ShowMessage('Lembrar de preencher Inicio Planilha e Fim Planilha');
     CarregarExcel;
     PageControl1.ActivePageIndex := 0;
     Application.ProcessMessages;
     //SQLInsert := 'INSERT INTO FINANCEIRO (FILIAL, TIPO, CLIFOR, ORDEM, DOCUMENTO, DATAEMISSAO, DATAVCTO, VALOR, DATAPGTO, DATABAIXA, MULTA, JURO, DESCONTO, VALORBAIXA, SITUACAO) '+
     //             'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 99);';
-    SQLInsert := 'EXECUTE PROCEDURE CUS_SETFINANCEIROPRATS(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '+EditSituacaoFinanceiro.Text+');';
+    SQLInsert := 'EXECUTE PROCEDURE CUS_SETFINANCEIROPRATS(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 96);';
     ListBox1.Clear;
-    ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES ('+EditSituacaoFinanceiro.Text+', '+ GetNomeSituacaoFinanceiro(EditSituacaoFinanceiro.Text) +', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
+    ListBox1.Items.Add('UPDATE OR INSERT INTO SITUACAO (CODIGO, NOME, GERARDESC0NTO, OCORRENCIA) VALUES (96, ''CONTAS PAGAS'', ''N'', NULL) MATCHING (CODIGO); COMMIT WORK;');
     Gauge1.Progress := StrToInt(EditInicioPlanilha.Text);
     Gauge1.MaxValue := StrToInt(EditFimPlanilha.Text);
 
@@ -2592,7 +2592,7 @@ begin
         Documento := 'NULL';
 
       Ordem := Copy(Ordem,0,19);
-      ListBox1.Items.Add(Format(SQLInsert,[ID, Filial, QuotedStr(EditTipoFinanceiro.Text), Clifor, QuotedStr(Ordem), Documento, QuotedStr(Emissao), QuotedStr(Vencimento),
+      ListBox1.Items.Add(Format(SQLInsert,[ID, Filial, QuotedStr('D'), Clifor, QuotedStr(Ordem), Documento, QuotedStr(Emissao), QuotedStr(Vencimento),
                          Valor, QuotedStr(DataPgto), QuotedStr(DataBaixa), Multa, Juros, Desconto, ValorPago, Historico]));
 
       Gauge1.AddProgress(1);

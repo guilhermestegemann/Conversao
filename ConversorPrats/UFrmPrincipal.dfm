@@ -22,10 +22,9 @@ object FrmPrincipal: TFrmPrincipal
     Top = 0
     Width = 1543
     Height = 854
-    ActivePage = TabSheetConversaoFiliais
+    ActivePage = TabSheet2
     Align = alClient
     TabOrder = 0
-    ExplicitTop = 8
     object TabSheet1: TTabSheet
       Caption = 'Geral'
       object Gauge1: TGauge
@@ -908,8 +907,6 @@ object FrmPrincipal: TFrmPrincipal
     object TabSheetConversaoFiliais: TTabSheet
       Caption = 'Convers'#227'o Filiais'
       ImageIndex = 2
-      ExplicitLeft = 8
-      ExplicitTop = 28
       object ButtonConversaoFiliaisCliFor: TButton
         Left = 3
         Top = 46
