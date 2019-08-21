@@ -1,0 +1,83 @@
+SET TERM ^ ;
+
+create or ALTER procedure CUS_SETFINANCEIROPRATSNOSSONUMERO (
+    ID integer,
+    FILIAL integer,
+    TIPO char(1),
+    CLIFOR integer,
+    ORDEM varchar(40),
+    DOCUMENTO integer,
+    DATAEMISSAO date,
+    DATAVCTO date,
+    VALOR numeric(8,2),
+    DATAPGTO date,
+    DATABAIXA date,
+    MULTA numeric(8,2),
+    JURO numeric(8,2),
+    DESCONTO numeric(8,2),
+    VALORBAIXA numeric(8,2),
+    HISTORICO integer,
+    SITUACAO integer)
+as
+declare variable CONT_FINANCEIRO integer;
+BEGIN
+    SELECT COUNT(*)
+    FROM FINANCEIRO
+    WHERE FINANCEIRO.ORDEM = :ORDEM
+    AND FINANCEIRO.CLIFOR = :CLIFOR
+    AND FINANCEIRO.DATAEMISSAO = :DATAEMISSAO
+    AND FINANCEIRO.FILIAL = :FILIAL
+    INTO :CONT_FINANCEIRO;
+
+    IF (:DATABAIXA < :DATAEMISSAO) THEN
+        DATABAIXA = :DATAEMISSAO;
+
+
+    IF (:CONT_FINANCEIRO > 0) THEN
+    begin
+        ordem = substring(:ordem from 1 for  (19 - char_length(:id)));
+        ORDEM = :ORDEM  || '-'||:ID;
+    end
+    --ordem = substring(:ordem from 1 for 18);
+
+    INSERT INTO FINANCEIRO
+    (
+        FILIAL,
+        TIPO,
+        CLIFOR,
+        ORDEM,
+        DOCUMENTO,
+        DATAEMISSAO,
+        DATAVCTO,
+        VALOR,
+        DATAPGTO,
+        DATABAIXA,
+        MULTA,
+        JURO,
+        DESCONTO,
+        VALORBAIXA,
+        SITUACAO,
+        historico
+    ) VALUES
+    (
+        :FILIAL,
+        :TIPO,
+        :CLIFOR,
+        :ORDEM,
+        :DOCUMENTO,
+        :DATAEMISSAO,
+        :DATAVCTO,
+        :VALOR,
+        :DATAPGTO,
+        :DATABAIXA,
+        :MULTA,
+        :JURO,
+        :DESCONTO,
+        :VALORBAIXA,
+        :SITUACAO,
+        :historico
+    );
+END^
+
+SET TERM ; ^
+
