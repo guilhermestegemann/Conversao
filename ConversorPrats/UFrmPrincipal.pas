@@ -10,7 +10,8 @@ uses
   FireDAC.Phys.PGDef, FireDAC.VCLUI.Wait, FireDAC.Stan.Param, FireDAC.DatS,
   FireDAC.DApt.Intf, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
   FireDAC.Comp.Client, System.IniFiles, Vcl.StdCtrls, Vcl.Grids, Vcl.DBGrids,
-  Vcl.Samples.Gauges, Vcl.ExtDlgs, Vcl.ComCtrls, Vcl.Buttons, ComObj;
+  Vcl.Samples.Gauges, Vcl.ExtDlgs, Vcl.ComCtrls, Vcl.Buttons, ComObj,
+  Vcl.ExtCtrls;
 
 type
   TFrmPrincipal = class(TForm)
@@ -115,8 +116,9 @@ type
     ButtonCliForAtivo: TButton;
     ButtonTabelaPrecoFiliais: TButton;
     ButtonItemTabelaPrecoFiliais: TButton;
-    Button3: TButton;
+    ButtonEstoqueFiliais: TButton;
     Button4: TButton;
+    RGTipoConversaoContasReceber: TRadioGroup;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);
@@ -175,6 +177,7 @@ type
     procedure ButtonRotaCliforFiliaisClick(Sender: TObject);
     procedure ButtonTabelaPrecoFiliaisClick(Sender: TObject);
     procedure ButtonItemTabelaPrecoFiliaisClick(Sender: TObject);
+    procedure ButtonEstoqueFiliaisClick(Sender: TObject);
 
   private
     procedure CarregarExcel;
@@ -1177,8 +1180,12 @@ begin
     CarregarExcel;
     PageControl1.ActivePageIndex := 0;
     Application.ProcessMessages;
-    SQLInsert := 'INSERT INTO FINANCEIRO (FILIAL, TIPO, CLIFOR, ORDEM, DOCUMENTO, DATAEMISSAO, DATAVCTO, VALOR, NOSSONUMERO, HISTORICO, SITUACAO) '+
+    case RGTipoConversaoContasReceber.ItemIndex of
+      0: SQLInsert := 'INSERT INTO FINANCEIRO (FILIAL, TIPO, CLIFOR, ORDEM, DOCUMENTO, DATAEMISSAO, DATAVCTO, VALOR, NOSSONUMERO, HISTORICO, SITUACAO) '+
                  'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);';
+      1: SQLInsert := 'EXECUTE PROCEDURE CUS_SETFINANCEIROPRATSNOSSONUM(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);';
+    end;
+
     ListBox1.Clear;
     ListBoxNossoNumero.Clear;
     ListBoxNossoNumeroDuplicado.Clear;
@@ -2974,6 +2981,55 @@ begin
     SalvarArquivoAutomatico(EditCaminhoScripts.Text + '100-funcionariofiliais-'+Filial.ToString+'.txt');
 end;
 
+procedure TFrmPrincipal.ButtonEstoqueFiliaisClick(Sender: TObject);
+var
+  SQLUpdate : String;
+  TipoItem, Filial : Integer;
+  Barras, CustoMedio, CustoTabela: String;
+  Venda, Exportar : Boolean;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select ');
+  FDQuery1.SQL.Add('produtos_dados_emp.id_empresa as filial, ');
+  FDQuery1.SQL.Add('produtos.codigo_barras as barras, ');
+  FDQuery1.SQL.Add('produtos.tipo as tipoitem, ');
+  FDQuery1.SQL.Add('produtos_dados_emp.custo_mpm as customedio, ');
+  FDQuery1.SQL.Add('produtos_dados_emp.custo_reposicao as custotabela, ');
+  FDQuery1.SQL.Add('produtos_dados_emp.vende as venda, ');
+  FDQuery1.SQL.Add('produtos_dados_emp.exporta_pda as exportar ');
+  FDQuery1.SQL.Add('from produtos ');
+  FDQuery1.SQL.Add('inner join produtos_dados_emp on produtos_dados_emp.id_produto = produtos.id ');
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('and produtos_dados_emp.id_empresa = %s',[EditIdEmpresa.Text]));
+  FDQuery1.SQL.Add('where produtos.codigo_BARRAS IN (''7898953148015'',''7898953148169'',''7898953148176'',''7898953148213'',''7898953148220'',''7898953148237'',''7898953148268'',''7898953148275'',''7898953148428'',''7898953148435'',''7898953148541'') ');
+  SQLUpdate := 'EXECUTE PROCEDURE SET_ESTOQUE_CONV(%d, %s, %d, %s, %s, %s, %s);';
+  VerificaConexao;
+  PageControl1.ActivePageIndex := 0;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  while not FDQuery1.Eof do
+  begin
+    Filial := FDQuery1.FieldByName('filial').AsInteger;
+    if EditForcarNumeroFilial.Text <> EmptyStr then
+      Filial := StrToInt(EditForcarNumeroFilial.Text);
+    Barras := FDQuery1.FieldByName('barras').AsString;
+    TipoItem := FDQuery1.FieldByName('tipoitem').AsInteger;
+    CustoMedio := StringReplace(FDQuery1.FieldByName('customedio').AsString, ',', '.', [rfReplaceAll]);
+    CustoTabela := StringReplace(FDQuery1.FieldByName('custotabela').AsString, ',', '.', [rfReplaceAll]);
+    Venda := FDQuery1.FieldByName('venda').AsBoolean;
+    Exportar := FDQuery1.FieldByName('exportar').AsBoolean;
+
+    ListBox1.Items.Add(Format(SQLUpdate,[Filial, QuotedStr(Barras), TipoItem, CustoMedio, CustoTabela, BooleanToStr(Venda), BooleanToStr(Exportar)]));
+
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+  SetHorizontalScrollBar(ListBox1);
+  if CheckBoxSalvarAutomaticamente.Checked then
+    SalvarArquivoAutomatico(EditCaminhoScripts.Text + '106-estoquefiliais'+Filial.ToString()+'.txt');
+end;
+
 procedure TFrmPrincipal.ButtonItemTabelaPrecoFiliaisClick(Sender: TObject);
 var
   SQLUpdate : String;
@@ -3290,7 +3346,7 @@ begin
   CheckBoxSalvarAutomaticamente.Checked := INI.ReadBool('Geral', 'salvarautomaticamente', True);
   CheckBobxContasReceberSomenteDocumentosComNumero.Checked := INI.ReadBool('Geral', 'contasrecebersomentedocumentocomnumero', True);
   EditForcarNumeroFilial.Text := INI.ReadString('Geral', 'forcarfilial', EmptyStr);
-
+  RGTipoConversaoContasReceber.ItemIndex := INI.ReadInteger('Geral', 'tipoconversaocontasreceber', 0);
 end;
 
 procedure TFrmPrincipal.ConectarDB;
@@ -3529,6 +3585,7 @@ begin
   INI.WriteBool('Geral', 'salvarautomaticamente', CheckBoxSalvarAutomaticamente.Checked);
   INI.WriteBool('Geral', 'contasrecebersomentedocumentocomnumero', CheckBobxContasReceberSomenteDocumentosComNumero.Checked);
   INI.WriteString('Geral', 'forcarfilial', EditForcarNumeroFilial.Text);
+  INI.WriteInteger('Geral', 'tipoconversaocontasreceber', RGTipoConversaoContasReceber.ItemIndex);
 end;
 
 procedure TFrmPrincipal.sbTipoEstabelecimentoClick(Sender: TObject);

@@ -22,7 +22,7 @@ object FrmPrincipal: TFrmPrincipal
     Top = 0
     Width = 1543
     Height = 854
-    ActivePage = TabSheet2
+    ActivePage = TabSheetConversaoFiliais
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -903,6 +903,17 @@ object FrmPrincipal: TFrmPrincipal
         TabOrder = 19
         OnClick = BtnContasAReceberExcelClick
       end
+      object RGTipoConversaoContasReceber: TRadioGroup
+        Left = 1199
+        Top = 469
+        Width = 185
+        Height = 60
+        Caption = 'Tipo Convers'#227'o Contas Receber'
+        Items.Strings = (
+          'Sem agrupar'
+          'Agrupando pelo nosso numero')
+        TabOrder = 20
+      end
     end
     object TabSheetConversaoFiliais: TTabSheet
       Caption = 'Convers'#227'o Filiais'
@@ -961,13 +972,14 @@ object FrmPrincipal: TFrmPrincipal
         TabOrder = 5
         OnClick = ButtonItemTabelaPrecoFiliaisClick
       end
-      object Button3: TButton
+      object ButtonEstoqueFiliais: TButton
         Left = 3
         Top = 269
         Width = 75
         Height = 25
-        Caption = 'button'
+        Caption = 'Estoque'
         TabOrder = 6
+        OnClick = ButtonEstoqueFiliaisClick
       end
       object Button4: TButton
         Left = 3
