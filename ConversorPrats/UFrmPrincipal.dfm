@@ -22,7 +22,7 @@ object FrmPrincipal: TFrmPrincipal
     Top = 0
     Width = 1543
     Height = 854
-    ActivePage = TabSheetConversaoFiliais
+    ActivePage = TabSheet1
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -551,6 +551,10 @@ object FrmPrincipal: TFrmPrincipal
     object TabSheet2: TTabSheet
       Caption = 'Configura'#231#227'o'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sbTipoEstabelecimento: TSpeedButton
         Left = 280
         Top = 24
@@ -938,7 +942,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object ButtonRotaFiliais: TButton
         Left = 3
-        Top = 86
+        Top = 77
         Width = 75
         Height = 25
         Caption = 'Rota'
@@ -947,7 +951,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object ButtonRotaCliforFiliais: TButton
         Left = 3
-        Top = 117
+        Top = 108
         Width = 75
         Height = 25
         Caption = 'Rota Clifor'
@@ -956,7 +960,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object ButtonTabelaPrecoFiliais: TButton
         Left = 3
-        Top = 157
+        Top = 139
         Width = 75
         Height = 25
         Caption = 'Tabela Pre'#231'o'
@@ -965,7 +969,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object ButtonItemTabelaPrecoFiliais: TButton
         Left = 3
-        Top = 188
+        Top = 170
         Width = 94
         Height = 25
         Caption = 'ItemTabelaPre'#231'o'
@@ -974,20 +978,21 @@ object FrmPrincipal: TFrmPrincipal
       end
       object ButtonEstoqueFiliais: TButton
         Left = 3
-        Top = 269
+        Top = 201
         Width = 75
         Height = 25
         Caption = 'Estoque'
         TabOrder = 6
         OnClick = ButtonEstoqueFiliaisClick
       end
-      object Button4: TButton
+      object ButtonCliforTabelaPrecoFiliais: TButton
         Left = 3
         Top = 309
-        Width = 75
+        Width = 102
         Height = 25
-        Caption = 'button'
+        Caption = 'CliforTabelaPreco'
         TabOrder = 7
+        OnClick = ButtonCliforTabelaPrecoFiliaisClick
       end
     end
   end
