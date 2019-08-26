@@ -60,11 +60,6 @@ BEGIN
         IF (:CODIGOCIDADE IS NULL) THEN
             EXCEPTION EXCEPTION_VALORCAMPO'CIDADE';
 
-        IF (:ESTADO = 33) THEN
-            FILIAL = 3;
-        IF (:ESTADO = 35) THEN
-            FILIAL = 2;
-
         INSERT INTO CLIFOR
         (
             CODIGO, 
