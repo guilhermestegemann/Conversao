@@ -22,7 +22,7 @@ object FrmPrincipal: TFrmPrincipal
     Top = 0
     Width = 1543
     Height = 854
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -245,15 +245,14 @@ object FrmPrincipal: TFrmPrincipal
         TabOrder = 14
         OnClick = BtnContasPagarProcedureClick
       end
-      object BtnContasReceber: TButton
+      object BtnAjustaEmailExcel: TButton
         Left = 8
         Top = 558
         Width = 166
         Height = 18
-        Caption = 'Contas a Receber'
-        Enabled = False
+        Caption = 'AjustaEmailExcel'
         TabOrder = 15
-        OnClick = BtnContasReceberClick
+        OnClick = BtnAjustaEmailExcelClick
       end
       object BtnDesconectar: TButton
         Left = 94
@@ -551,10 +550,6 @@ object FrmPrincipal: TFrmPrincipal
     object TabSheet2: TTabSheet
       Caption = 'Configura'#231#227'o'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object sbTipoEstabelecimento: TSpeedButton
         Left = 280
         Top = 24

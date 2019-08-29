@@ -46,7 +46,7 @@ type
     BtnCliforTabelaPreco: TButton;
     BtnProdutoClifor: TButton;
     BtnContasAPagar: TButton;
-    BtnContasReceber: TButton;
+    BtnAjustaEmailExcel: TButton;
     CheckBoxInserirDeleteAntes: TCheckBox;
     CheckBoxSalvarAutomaticamente: TCheckBox;
     BtnGerarTodos: TButton;
@@ -179,6 +179,7 @@ type
     procedure ButtonItemTabelaPrecoFiliaisClick(Sender: TObject);
     procedure ButtonEstoqueFiliaisClick(Sender: TObject);
     procedure ButtonCliforTabelaPrecoFiliaisClick(Sender: TObject);
+    procedure BtnAjustaEmailExcelClick(Sender: TObject);
 
   private
     procedure CarregarExcel;
@@ -218,6 +219,9 @@ var
   Excel, Planilha : OleVariant;
 
 implementation
+
+uses
+  System.Types, System.StrUtils;
 
 {$R *.dfm}
 
@@ -268,6 +272,43 @@ begin
   Result := QuotedStr('N');
   if p then
     Result := QuotedStr('S');
+end;
+
+procedure TFrmPrincipal.BtnAjustaEmailExcelClick(Sender: TObject);
+var
+  I, J :Integer;
+  SQLInsert : String;
+  Codigo, Email : String;
+  ListaEmail : TStringList;
+begin
+  try
+    ShowMessage('Lembrar de preencher Inicio Planilha e Fim Planilha');
+    CarregarExcel;
+    SQLInsert := 'EXECUTE PROCEDURE CUS_AJUSTAEMAIL_PRATS(%s, %s);';
+    ListBox1.Clear;
+    Gauge1.Progress := StrToInt(EditInicioPlanilha.Text);
+    Gauge1.MaxValue := StrToInt(EditFimPlanilha.Text);
+    ListaEmail := TStringList.Create();
+    for I := StrToInt(EditInicioPlanilha.Text) to StrToInt(EditFimPlanilha.Text) do
+    begin
+      Codigo := Trim(Planilha.cells[i,1]);
+      Email := Trim(Planilha.cells[i,2]);
+
+      ListaEmail.Clear();
+      ExtractStrings([';'],[], PChar(Email), ListaEmail);
+      for J := 0 to ListaEmail.Count -1 do
+      begin
+        ListBox1.Items.Add(Format(SQLInsert,[Codigo, QuotedStr(Trim(ListaEmail[J]))]));
+      end;
+
+
+
+      Gauge1.AddProgress(1);
+    end;
+  finally
+    Excel.Quit;
+    ListaEmail.Free();
+  end;
 end;
 
 procedure TFrmPrincipal.BtnBairroClick(Sender: TObject);
@@ -3248,9 +3289,9 @@ begin
       Fantasia := Trim(Planilha.cells[i,10]);
       Documento := Trim(Planilha.cells[i,5]);
       Emissao := Copy(StringReplace(Trim(Planilha.cells[i,1]),'/','.',[rfReplaceAll]),0,10);
-      Produto := Trim(Planilha.cells[i,17]);
-      Qtde := StringReplace(Trim(Planilha.cells[i,22]),',','.',[rfReplaceAll]);
-      Unitario := StringReplace(Trim(Planilha.cells[i,24]),',','.',[rfReplaceAll]);
+      Produto := Trim(Planilha.cells[i,15]);
+      Qtde := StringReplace(Trim(Planilha.cells[i,19]),',','.',[rfReplaceAll]);
+      Unitario := StringReplace(Trim(Planilha.cells[i,21]),',','.',[rfReplaceAll]);
       Tipo := 'CP';
       Produto := StringReplace(Produto,'''','',[rfReplaceAll]);
       Nome := StringReplace(Nome,'''',''''+'''',[rfReplaceAll]);

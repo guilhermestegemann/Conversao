@@ -1,6 +1,6 @@
 ﻿SET TERM ^ ;
 
-ALTER procedure CUS_SETFINANCEIROPRATS (
+create or ALTER procedure CUS_SETFINANCEIROPRATS (
     ID integer,
     FILIAL integer,
     TIPO char(1),

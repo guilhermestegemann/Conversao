@@ -1,12 +1,7 @@
-﻿select sum(valor), Count(*)
+﻿select financeiro.situacao, situacao.nome, financeiro.filial, sum(financeiro.valor) as valor,
+sum(financeiro.valorbaixa) as valorbaixa,  sum(financeiro.desconto) as desconto, sum(financeiro.juro) as juro,
+sum(financeiro.multa) as multa
 from financeiro
-where tipo = 'D'
-and databaixa is NOT  null
-
-and ORDEM NOT IN (SELECT
-                    OC.ORDEM
-                    FROM OCORRENCIAFINANCEIRO OC
-                    WHERE OC.ORDEM = FINanceiro.ORDEM
-                    AND OC.CLIFOR = FINanceiro.CLIFOR
-                    AND OC.FILIAL = FINanceiro.FILIAL
-                    AND OC.DATAEMISSAO = FINanceiro.DATAEMISSAO)
+inner join situacao on situacao.codigo = financeiro.situacao
+where financeiro.situacao is not null
+group by 1,2,3
