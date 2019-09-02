@@ -119,6 +119,8 @@ type
     ButtonEstoqueFiliais: TButton;
     ButtonCliforTabelaPrecoFiliais: TButton;
     RGTipoConversaoContasReceber: TRadioGroup;
+    ButtonAjustaCondicaoPagamentoFiliais: TButton;
+    ButtonAjustaCliforAtivoFiliais: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConectarClick(Sender: TObject);
@@ -180,6 +182,8 @@ type
     procedure ButtonEstoqueFiliaisClick(Sender: TObject);
     procedure ButtonCliforTabelaPrecoFiliaisClick(Sender: TObject);
     procedure BtnAjustaEmailExcelClick(Sender: TObject);
+    procedure ButtonAjustaCondicaoPagamentoFiliaisClick(Sender: TObject);
+    procedure ButtonAjustaCliforAtivoFiliaisClick(Sender: TObject);
 
   private
     procedure CarregarExcel;
@@ -2376,6 +2380,100 @@ begin
   ShowMessage(ConverteTipoEstabelecimento(EditTipoEstabelecimentoDe.Text));
 end;
 
+procedure TFrmPrincipal.ButtonAjustaCliforAtivoFiliaisClick(Sender: TObject);
+var
+  SQLUpdateClifor : String;
+  Filial : Integer;
+  CNPJ : String;
+  Ativo : Boolean;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select distinct');
+  FDQuery1.SQL.Add('terceiros.tipo_fornecedor as isfornecedor, ');
+  FDQuery1.SQL.Add('terceiros.tipo_motorista as ismotorista, ');
+  FDQuery1.SQL.Add('terceiros.tipo_empresa as isempresa, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.id_empresa as filial, ');
+  FDQuery1.SQL.Add('terceiros.tipo_cliente as iscliente, ');
+  FDQuery1.SQL.Add('terceiros.tipo_funcionario as isfuncionario, ');
+  FDQuery1.SQL.Add('terceiros.tipo_transportadora as istransportador, ');
+  FDQuery1.SQL.Add('terceiros.tipo_vendedor as isvendedor, ');
+  FDQuery1.SQL.Add('terceiros.nome as fantasia, ');
+  FDQuery1.SQL.Add('terceiros.razao_social as nome, ');
+  FDQuery1.SQL.Add('terceiros.cpf_cnpj as cpfcnpj, ');
+  FDQuery1.SQL.Add('terceiros.rg_ie as rgie, ');
+  FDQuery1.SQL.Add('terceiros.data_cadastro as data, ');
+  FDQuery1.SQL.Add('terceiros.data_nascimento as datanasc, ');
+  FDQuery1.SQL.Add('terceiros.nome_pai as nomepai, ');
+  FDQuery1.SQL.Add('terceiros.nome_mae as nomemae, ');
+  FDQuery1.SQL.Add('terceiros.id_tipologia as tipoestabelecimento, ');
+  FDQuery1.SQL.Add('terceiros.proprietario as contato, ');
+  FDQuery1.SQL.Add('logradouros.nome_completo as endereco, ');
+  FDQuery1.SQL.Add('terceiros.numero as numero, ');
+  FDQuery1.SQL.Add('cidades.cod_ibge as codigofiscal, ');
+  FDQuery1.SQL.Add('estados.codigo_ibge as estado, ');
+  FDQuery1.SQL.Add('bairros.nome_bairro as nomebairro, ');
+  FDQuery1.SQL.Add('terceiros.complemento as complemento, ');
+  FDQuery1.SQL.Add('terceiros.cep, ');
+  FDQuery1.SQL.Add('terceiros.fone as telefone, ');
+  FDQuery1.SQL.Add('terceiros.endereco_latitude as latitude, ');
+  FDQuery1.SQL.Add('terceiros.endereco_longitude as longitude, ');
+  FDQuery1.SQL.Add('terceiros.celular as celular, ');
+  FDQuery1.SQL.Add('terceiros.email as email, ');
+  FDQuery1.SQL.Add('terceiros.email_nfe as emailnfe, ');
+  FDQuery1.SQL.Add('terceiros.email_boleto as emailboleto, ');
+  FDQuery1.SQL.Add('case when (terceiros.id_regime_icms = 1) then ''N'' else ''S'' end as simples, ');
+  FDQuery1.SQL.Add('terceiros.indicador_insc_estadual as indicadorie, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.limite_credito as limitecredito, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.id_form_parc_pref as condicaopagamento, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.ativo as ativo, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.data_ultima_venda as datamovimento, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.data_inativacao as datainativado, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.observacao_entrega as obs, ');
+  FDQuery1.SQL.Add('terceirosvendedor.cpf_cnpj as cpfvendedor ');
+  FDQuery1.SQL.Add('from terceiros ');
+  FDQuery1.SQL.Add('left join logradouros on logradouros.id = terceiros.id_logradouro ');
+  FDQuery1.SQL.Add('left join bairros on bairros.id = terceiros.id_bairro ');
+  FDQuery1.SQL.Add(' left join cidades on cidades.id = terceiros.id_cidade ');
+  FDQuery1.SQL.Add(' left join estados on estados.sigla = cidades.estado ');
+  FDQuery1.SQL.Add('inner join terceiros_dados_emp on terceiros_dados_emp.id_terceiro = terceiros.id ');
+  FDQuery1.SQL.Add('left join terceiros terceirosvendedor on terceirosvendedor.id = terceiros_dados_emp.id_vendedor ');
+
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('and terceiros_dados_emp.id_empresa = %s',[EditIdEmpresa.Text]));
+  if EditRotas.Text <> EmptyStr then
+  begin
+    FDQuery1.SQL.Add('left join terceiros_setores on terceiros_setores.id_terceiro = terceiros.id ');
+    FDQuery1.SQL.Add('left join rotas_setores on rotas_setores.id = terceiros_setores.id_setor ');
+    FDQuery1.SQL.Add(Format('where ((terceiros.tipo_fornecedor is true) or (terceiros.tipo_funcionario is true) or (rotas_setores.id_rota in (%s))) ',[EditRotas.Text]));
+  end;
+  if EditCliforIn.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('and terceiros.id %s',[EditCliforIn.Text]));
+
+  SQLUpdateClifor := 'EXECUTE PROCEDURE SET_CLIFORATIVO_CONV(%d, %s, %s);';
+
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  PageControl1.ActivePageIndex := 0;
+  while not FDQuery1.Eof do
+  begin
+    Filial := FDQuery1.FieldByName('filial').AsInteger;
+    if EditForcarNumeroFilial.Text <> EmptyStr then
+      Filial := StrToInt(EditForcarNumeroFilial.Text);
+    CNPJ := FDQuery1.FieldByName('cpfcnpj').AsString;
+    Ativo := FDQuery1.FieldByName('ativo').AsBoolean;
+
+    ListBox1.Items.Add(Format(SQLUpdateClifor,[Filial, QuotedStr(Cnpj), BooleanToStr(Ativo)]));
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+    Application.ProcessMessages;
+  end;
+    SetHorizontalScrollBar(ListBox1);
+    if CheckBoxSalvarAutomaticamente.Checked then
+      SalvarArquivoAutomatico(EditCaminhoScripts.Text + '202-cliforativofiliais'+Filial.ToString+'.txt');
+end;
+
 procedure TFrmPrincipal.ButtonAjustaCondicaoPagamentoClick(Sender: TObject);
 var
   SQLUpdate : String;
@@ -2407,6 +2505,101 @@ begin
   SetHorizontalScrollBar(ListBox1);
   if CheckBoxSalvarAutomaticamente.Checked then
     SalvarArquivoAutomatico(EditCaminhoScripts.Text + '30-ajustafuncionarioclifor.txt');
+end;
+
+procedure TFrmPrincipal.ButtonAjustaCondicaoPagamentoFiliaisClick(Sender: TObject);
+var
+  SQLUpdateClifor : String;
+  Filial : Integer;
+  CNPJ, CondicaoPagamento : String;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('select distinct');
+  FDQuery1.SQL.Add('terceiros.tipo_fornecedor as isfornecedor, ');
+  FDQuery1.SQL.Add('terceiros.tipo_motorista as ismotorista, ');
+  FDQuery1.SQL.Add('terceiros.tipo_empresa as isempresa, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.id_empresa as filial, ');
+  FDQuery1.SQL.Add('terceiros.tipo_cliente as iscliente, ');
+  FDQuery1.SQL.Add('terceiros.tipo_funcionario as isfuncionario, ');
+  FDQuery1.SQL.Add('terceiros.tipo_transportadora as istransportador, ');
+  FDQuery1.SQL.Add('terceiros.tipo_vendedor as isvendedor, ');
+  FDQuery1.SQL.Add('terceiros.nome as fantasia, ');
+  FDQuery1.SQL.Add('terceiros.razao_social as nome, ');
+  FDQuery1.SQL.Add('terceiros.cpf_cnpj as cpfcnpj, ');
+  FDQuery1.SQL.Add('terceiros.rg_ie as rgie, ');
+  FDQuery1.SQL.Add('terceiros.data_cadastro as data, ');
+  FDQuery1.SQL.Add('terceiros.data_nascimento as datanasc, ');
+  FDQuery1.SQL.Add('terceiros.nome_pai as nomepai, ');
+  FDQuery1.SQL.Add('terceiros.nome_mae as nomemae, ');
+  FDQuery1.SQL.Add('terceiros.id_tipologia as tipoestabelecimento, ');
+  FDQuery1.SQL.Add('terceiros.proprietario as contato, ');
+  FDQuery1.SQL.Add('logradouros.nome_completo as endereco, ');
+  FDQuery1.SQL.Add('terceiros.numero as numero, ');
+  FDQuery1.SQL.Add('cidades.cod_ibge as codigofiscal, ');
+  FDQuery1.SQL.Add('estados.codigo_ibge as estado, ');
+  FDQuery1.SQL.Add('bairros.nome_bairro as nomebairro, ');
+  FDQuery1.SQL.Add('terceiros.complemento as complemento, ');
+  FDQuery1.SQL.Add('terceiros.cep, ');
+  FDQuery1.SQL.Add('terceiros.fone as telefone, ');
+  FDQuery1.SQL.Add('terceiros.endereco_latitude as latitude, ');
+  FDQuery1.SQL.Add('terceiros.endereco_longitude as longitude, ');
+  FDQuery1.SQL.Add('terceiros.celular as celular, ');
+  FDQuery1.SQL.Add('terceiros.email as email, ');
+  FDQuery1.SQL.Add('terceiros.email_nfe as emailnfe, ');
+  FDQuery1.SQL.Add('terceiros.email_boleto as emailboleto, ');
+  FDQuery1.SQL.Add('case when (terceiros.id_regime_icms = 1) then ''N'' else ''S'' end as simples, ');
+  FDQuery1.SQL.Add('terceiros.indicador_insc_estadual as indicadorie, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.limite_credito as limitecredito, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.id_form_parc_pref as condicaopagamento, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.ativo as ativo, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.data_ultima_venda as datamovimento, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.data_inativacao as datainativado, ');
+  FDQuery1.SQL.Add('terceiros_dados_emp.observacao_entrega as obs, ');
+  FDQuery1.SQL.Add('terceirosvendedor.cpf_cnpj as cpfvendedor ');
+  FDQuery1.SQL.Add('from terceiros ');
+  FDQuery1.SQL.Add('left join logradouros on logradouros.id = terceiros.id_logradouro ');
+  FDQuery1.SQL.Add('left join bairros on bairros.id = terceiros.id_bairro ');
+  FDQuery1.SQL.Add(' left join cidades on cidades.id = terceiros.id_cidade ');
+  FDQuery1.SQL.Add(' left join estados on estados.sigla = cidades.estado ');
+  FDQuery1.SQL.Add('inner join terceiros_dados_emp on terceiros_dados_emp.id_terceiro = terceiros.id ');
+  FDQuery1.SQL.Add('left join terceiros terceirosvendedor on terceirosvendedor.id = terceiros_dados_emp.id_vendedor ');
+
+  if EditIdEmpresa.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('and terceiros_dados_emp.id_empresa = %s',[EditIdEmpresa.Text]));
+  if EditRotas.Text <> EmptyStr then
+  begin
+    FDQuery1.SQL.Add('left join terceiros_setores on terceiros_setores.id_terceiro = terceiros.id ');
+    FDQuery1.SQL.Add('left join rotas_setores on rotas_setores.id = terceiros_setores.id_setor ');
+    FDQuery1.SQL.Add(Format('where ((terceiros.tipo_fornecedor is true) or (terceiros.tipo_funcionario is true) or (rotas_setores.id_rota in (%s))) ',[EditRotas.Text]));
+  end;
+  if EditCliforIn.Text <> EmptyStr then
+    FDQuery1.SQL.Add(Format('and terceiros.id %s',[EditCliforIn.Text]));
+
+  SQLUpdateClifor := 'EXECUTE PROCEDURE SET_CLIFORCONDICAO_CONV(%d, %s, %s);';
+
+  VerificaConexao;
+  AbreQuery;
+  AjustaGauge;
+  ListBox1.Clear;
+  PageControl1.ActivePageIndex := 0;
+  while not FDQuery1.Eof do
+  begin
+    Filial := FDQuery1.FieldByName('filial').AsInteger;
+    if EditForcarNumeroFilial.Text <> EmptyStr then
+      Filial := StrToInt(EditForcarNumeroFilial.Text);
+    CNPJ := FDQuery1.FieldByName('cpfcnpj').AsString;
+    CondicaoPagamento := FDQuery1.FieldByName('condicaopagamento').AsString;;
+
+    if CondicaoPagamento = EmptyStr then
+      CondicaoPagamento :=  'NULL';
+
+    ListBox1.Items.Add(Format(SQLUpdateClifor,[Filial, QuotedStr(Cnpj), CondicaoPagamento]));
+    FDQuery1.Next;
+    Gauge1.AddProgress(1);
+  end;
+    SetHorizontalScrollBar(ListBox1);
+    if CheckBoxSalvarAutomaticamente.Checked then
+      SalvarArquivoAutomatico(EditCaminhoScripts.Text + '201-cliforcondicaofiliais'+Filial.ToString+'.txt');
 end;
 
 procedure TFrmPrincipal.ButtonAjustaFuncionarioCliforClick(Sender: TObject);

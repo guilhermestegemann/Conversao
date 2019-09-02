@@ -22,7 +22,7 @@ object FrmPrincipal: TFrmPrincipal
     Top = 0
     Width = 1543
     Height = 854
-    ActivePage = TabSheet2
+    ActivePage = TabSheetConversaoFiliais
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -988,6 +988,24 @@ object FrmPrincipal: TFrmPrincipal
         Caption = 'CliforTabelaPreco'
         TabOrder = 7
         OnClick = ButtonCliforTabelaPrecoFiliaisClick
+      end
+      object ButtonAjustaCondicaoPagamentoFiliais: TButton
+        Left = 3
+        Top = 414
+        Width = 222
+        Height = 25
+        Caption = 'Ajusta Condi'#231#227'o Pagamento Filiais'
+        TabOrder = 8
+        OnClick = ButtonAjustaCondicaoPagamentoFiliaisClick
+      end
+      object ButtonAjustaCliforAtivoFiliais: TButton
+        Left = 3
+        Top = 462
+        Width = 222
+        Height = 25
+        Caption = 'Ajusta Clifor Ativo Filiais'
+        TabOrder = 9
+        OnClick = ButtonAjustaCliforAtivoFiliaisClick
       end
     end
   end

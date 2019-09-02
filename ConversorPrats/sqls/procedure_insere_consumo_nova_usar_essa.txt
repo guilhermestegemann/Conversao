@@ -16,7 +16,7 @@ declare variable var_clifor integer;
 declare variable var_vendedor integer;
 BEGIN
     VAR_PRODUTO = NULL;
-    SELECT PRODUTO.CODIGO
+    SELECT first(1) PRODUTO.CODIGO
     FROM PRODUTO
     WHERE PRODUTO.NOME = :PRODUTO
     INTO VAR_PRODUTO;
@@ -60,8 +60,8 @@ BEGIN
 
     SELECT first(1) CLIFOR.CODIGO
     FROM CLIFOR
-    WHERE CLIFOR.NOME = :NOME
-    AND CLIFOR.FANTASIA = :FANTASIA 
+    WHERE TRIM(CLIFOR.NOME) = TRIM(:NOME)
+    AND TRIM(CLIFOR.FANTASIA) = TRIM(:FANTASIA)
     INTO :VAR_CLIFOR;
     IF (:VAR_CLIFOR IS NULL) THEN
     BEGIN
@@ -164,7 +164,7 @@ BEGIN
             0,
             0,
             0,
-            2,
+            13,
             :FILIAL,
             :TIPO,
             0,
