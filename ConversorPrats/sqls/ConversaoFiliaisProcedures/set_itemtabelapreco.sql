@@ -9,10 +9,7 @@ CREATE OR ALTER procedure set_itemtabelapreco_conv (
 as
 declare variable codigoproduto integer;
 BEGIN
-    IF (:FILIAL = 2) THEN
-        TABELAPRECO = 200 || :TABELAPRECO;
-    IF (:FILIAL = 3) THEN
-        TABELAPRECO = 300 || :TABELAPRECO;
+    CODIGO = :FILIAL || 00 || :CODIGO;
 
     CODIGOPRODUTO = NULL;
     IF (:BARRAS = '7898953148015') THEN CODIGOPRODUTO = 1;

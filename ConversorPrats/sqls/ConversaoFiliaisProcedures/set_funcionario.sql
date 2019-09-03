@@ -34,11 +34,8 @@ BEGIN
         SELECT CODIGO
         FROM GET_BAIRRO_CONV(:NOMEBAIRRO)
         INTO :CODIGOBAIRRO;
-    
-        IF (:FILIAL = 2) THEN
-            CODIGO = 2000 || :CODIGO;
-        IF (:FILIAL = 3) THEN
-            CODIGO = 3000 || :CODIGO;
+
+        CODIGO = :FILIAL || 000 || :CODIGO;
     
         INSERT INTO FUNCIONARIO
         (

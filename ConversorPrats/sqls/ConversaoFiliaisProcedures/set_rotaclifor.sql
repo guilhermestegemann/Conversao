@@ -9,10 +9,7 @@ as
 declare variable codigoclifor integer;
 BEGIN
 
-    IF (:FILIAL = 2) THEN
-        CODIGOROTA = 200 || :CODIGOROTA;
-    IF (:FILIAL = 3) THEN
-        CODIGOROTA = 300 || :CODIGOROTA;
+	CODIGO = :FILIAL || 00 || :CODIGO;
 
     SELECT FIRST(1) CODIGO
     FROM CLIFOR
