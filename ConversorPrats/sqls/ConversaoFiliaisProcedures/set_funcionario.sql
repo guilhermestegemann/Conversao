@@ -35,7 +35,7 @@ BEGIN
         FROM GET_BAIRRO_CONV(:NOMEBAIRRO)
         INTO :CODIGOBAIRRO;
 
-        CODIGO = :FILIAL || 000 || :CODIGO;
+        CODIGO = :FILIAL || '000' || :CODIGO;
     
         INSERT INTO FUNCIONARIO
         (

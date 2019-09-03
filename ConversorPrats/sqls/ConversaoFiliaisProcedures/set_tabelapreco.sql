@@ -23,7 +23,7 @@ CREATE OR ALTER procedure set_tabelapreco_conv (
     valorminimoinicial numeric(8,2))
 as
 BEGIN
-	CODIGO = :FILIAL || 00 || :CODIGO;	
+	CODIGO = :FILIAL || '00' || :CODIGO;	
 
     INSERT INTO TABELAPRECO
     (

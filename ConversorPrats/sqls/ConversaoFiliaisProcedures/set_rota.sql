@@ -11,7 +11,7 @@ as
 declare variable codigovendedor integer;
 BEGIN
 		
-	CODIGO = :FILIAL || 00 || :CODIGO;	
+	CODIGO = :FILIAL || '00' || :CODIGO;	
 
     SELECT CODIGO
     FROM FUNCIONARIO

@@ -9,7 +9,7 @@ as
 declare variable codigoclifor integer;
 BEGIN
 
-	CODIGO = :FILIAL || 00 || :CODIGO;
+	CODIGOROTA = :FILIAL || '00' || :CODIGOROTA;
 
     SELECT FIRST(1) CODIGO
     FROM CLIFOR
