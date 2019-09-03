@@ -2892,7 +2892,7 @@ end;
 procedure TFrmPrincipal.ButtonConversaoFiliaisCliForClick(Sender: TObject);
 var
   SQLInsertClifor, SQLInsertCliforContato, SQLInsertFuncionarioClifor : String;
-  Estado, IndicadorIE, Tipo, Filial : Integer;
+  CodigoCliFor, Estado, IndicadorIE, Tipo, Filial : Integer;
   Fantasia, Nome, CNPJ, IE, DataCadastro, DataNascimento, NomePai, NomeMae, Contato, Endereco, Numero, NomeBairro, Complemento, Cep, Telefone, Celular,
   Email, EmailNFe, EmailBoleto, Simples, DataMovimento, DataInativado, Obs, LimiteCredito, TipoEstabelecimento, CondicaoPagamento,
   EnviarNFe, EnviarBoleto, Latitude, Longitude, CPFVendedor, CodigoFiscal : String;
@@ -2910,6 +2910,7 @@ begin
   FDQuery1.SQL.Add('terceiros.tipo_transportadora as istransportador, ');
   FDQuery1.SQL.Add('terceiros.tipo_vendedor as isvendedor, ');
   FDQuery1.SQL.Add('terceiros.nome as fantasia, ');
+  FDQuery1.SQL.Add('terceiros.id as codigo, ');
   FDQuery1.SQL.Add('terceiros.razao_social as nome, ');
   FDQuery1.SQL.Add('terceiros.cpf_cnpj as cpfcnpj, ');
   FDQuery1.SQL.Add('terceiros.rg_ie as rgie, ');
@@ -2961,7 +2962,7 @@ begin
   if EditCliforIn.Text <> EmptyStr then
     FDQuery1.SQL.Add(Format('and terceiros.id %s',[EditCliforIn.Text]));
 
-  SQLInsertClifor := 'EXECUTE PROCEDURE SET_CLIFOR_CONV(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %s, %s, %s, %s, %s, %s, %d);';
+  SQLInsertClifor := 'EXECUTE PROCEDURE SET_CLIFOR_CONV(%d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %s, %s, %s, %s, %s, %s, %d);';
 
 
 //  SQLInsertCliforContato := 'INSERT INTO CLIFORCONTATO (CLIFOR, NUMERO, NOME, EMAIL, ENVIARNFE, ENVIARDANFE, ENVIARBOLETO, ENVIARPEDIDO) ' +
@@ -2984,6 +2985,7 @@ begin
     IsCliente := FDQuery1.FieldByName('iscliente').AsBoolean;
     IsFuncionario := FDQuery1.FieldByName('isfuncionario').AsBoolean;
     IsTransportador := FDQuery1.FieldByName('istransportador').AsBoolean;
+    CodigoCliFor := FDQuery1.FieldByName('codigo').AsInteger;
     Filial := FDQuery1.FieldByName('filial').AsInteger;
     if EditForcarNumeroFilial.Text <> EmptyStr then
       Filial := StrToInt(EditForcarNumeroFilial.Text);
@@ -3083,7 +3085,7 @@ begin
     if CondicaoPagamento = EmptyStr then CondicaoPagamento := 'NULL';
     if NomeBairro = EmptyStr then NomeBairro := 'CENTRO';
     //insert clifor
-    ListBox1.Items.Add(Format(SQLInsertClifor,[Filial, QuotedStr(Fantasia), QuotedStr(Nome), QuotedStr(Cnpj), QuotedStr(IE), DataCadastro, DataNascimento, QuotedStr(NomePai),
+    ListBox1.Items.Add(Format(SQLInsertClifor,[CodigoCliFor, Filial, QuotedStr(Fantasia), QuotedStr(Nome), QuotedStr(Cnpj), QuotedStr(IE), DataCadastro, DataNascimento, QuotedStr(NomePai),
                      QuotedStr(NomeMae), TipoEstabelecimento, QuotedStr(Endereco), QuotedStr(Numero), QuotedStr(CodigoFiscal), QuotedStr(NomeBairro), QuotedStr(Complemento), QuotedStr(Cep), QuotedStr(Simples),
                      Latitude, Longitude, IndicadorIE, LimiteCredito, CondicaoPagamento, BooleanToStr(Ativo), DataMovimento, DataInativado, QuotedStr(Obs), Tipo]));
     //insert cliforcontato
