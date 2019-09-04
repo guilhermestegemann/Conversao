@@ -22,7 +22,7 @@ object FrmPrincipal: TFrmPrincipal
     Top = 0
     Width = 1543
     Height = 854
-    ActivePage = TabSheetConversaoFiliais
+    ActivePage = TabSheet2
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -919,7 +919,7 @@ object FrmPrincipal: TFrmPrincipal
       ImageIndex = 2
       object ButtonConversaoFiliaisCliFor: TButton
         Left = 3
-        Top = 46
+        Top = 65
         Width = 75
         Height = 25
         Caption = 'Clifor'
@@ -928,7 +928,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object ButtonConversaoFiliaisFuncionario: TButton
         Left = 3
-        Top = 15
+        Top = 34
         Width = 75
         Height = 25
         Caption = 'Funcion'#225'rio'
@@ -937,7 +937,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object ButtonRotaFiliais: TButton
         Left = 3
-        Top = 77
+        Top = 96
         Width = 75
         Height = 25
         Caption = 'Rota'
@@ -946,7 +946,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object ButtonRotaCliforFiliais: TButton
         Left = 3
-        Top = 108
+        Top = 127
         Width = 75
         Height = 25
         Caption = 'Rota Clifor'
@@ -955,7 +955,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object ButtonTabelaPrecoFiliais: TButton
         Left = 3
-        Top = 139
+        Top = 219
         Width = 75
         Height = 25
         Caption = 'Tabela Pre'#231'o'
@@ -964,7 +964,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object ButtonItemTabelaPrecoFiliais: TButton
         Left = 3
-        Top = 170
+        Top = 250
         Width = 94
         Height = 25
         Caption = 'ItemTabelaPre'#231'o'
@@ -973,7 +973,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object ButtonEstoqueFiliais: TButton
         Left = 3
-        Top = 201
+        Top = 281
         Width = 75
         Height = 25
         Caption = 'Estoque'
@@ -1006,6 +1006,33 @@ object FrmPrincipal: TFrmPrincipal
         Caption = 'Ajusta Clifor Ativo Filiais'
         TabOrder = 9
         OnClick = ButtonAjustaCliforAtivoFiliaisClick
+      end
+      object ButtonCidadeFiliais: TButton
+        Left = 3
+        Top = 3
+        Width = 75
+        Height = 25
+        Caption = 'Cidade'
+        TabOrder = 10
+        OnClick = ButtonCidadeFiliaisClick
+      end
+      object ButtonProdutoFiliais: TButton
+        Left = 3
+        Top = 158
+        Width = 75
+        Height = 25
+        Caption = 'Produto'
+        TabOrder = 11
+        OnClick = ButtonProdutoFiliaisClick
+      end
+      object ButtonGerarTodosFiliais: TButton
+        Left = 3
+        Top = 582
+        Width = 126
+        Height = 25
+        Caption = 'Gerar Todos'
+        TabOrder = 12
+        OnClick = ButtonGerarTodosFiliaisClick
       end
     end
   end

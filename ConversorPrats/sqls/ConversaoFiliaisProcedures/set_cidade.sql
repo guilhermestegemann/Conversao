@@ -1,6 +1,6 @@
 SET TERM ^ ;
 
-create or alter procedure set_cidade_conv (
+CREATE OR ALTER procedure set_cidade_conv (
     nome varchar(40),
     estado integer,
     codigofiscal varchar(7),
@@ -38,7 +38,6 @@ BEGIN
             0,
             :CODIGOFISCAL
         );
-            
     END
 END^
 
