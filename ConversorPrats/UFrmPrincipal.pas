@@ -2189,7 +2189,7 @@ begin
     Sigla := Copy(FDQuery1.FieldByName('sigla').AsString,0,3);
     Descricao := FDQuery1.FieldByName('descricao').AsString;
 
-    ListBox1.Items.Add(Format(SQLInsert,[Quotedstr(Sigla), QuotedStr(Descricao)]));
+    ListBox1.Items.Add(Format(SQLInsert,[QuotedStr(Sigla), QuotedStr(Descricao)]));
 
     FDQuery1.Next;
     Gauge1.AddProgress(1);
@@ -3320,7 +3320,7 @@ end;
 procedure TFrmPrincipal.ButtonEstoqueFiliaisClick(Sender: TObject);
 var
   SQLUpdate : String;
-  TipoItem, Filial : Integer;
+  Produto, TipoItem, Filial : Integer;
   Barras, CustoMedio, CustoTabela: String;
   Venda, Exportar : Boolean;
 begin
@@ -3329,6 +3329,7 @@ begin
   FDQuery1.SQL.Add('produtos_dados_emp.id_empresa as filial, ');
   FDQuery1.SQL.Add('produtos.codigo_barras as barras, ');
   FDQuery1.SQL.Add('produtos.tipo as tipoitem, ');
+  FDQuery1.SQL.Add('produtos.id as produto, ');
   FDQuery1.SQL.Add('produtos_dados_emp.custo_mpm as customedio, ');
   FDQuery1.SQL.Add('produtos_dados_emp.custo_reposicao as custotabela, ');
   FDQuery1.SQL.Add('produtos_dados_emp.vende as venda, ');
@@ -3337,8 +3338,8 @@ begin
   FDQuery1.SQL.Add('inner join produtos_dados_emp on produtos_dados_emp.id_produto = produtos.id ');
   if EditIdEmpresa.Text <> EmptyStr then
     FDQuery1.SQL.Add(Format('and produtos_dados_emp.id_empresa = %s',[EditIdEmpresa.Text]));
-  FDQuery1.SQL.Add('where produtos.codigo_BARRAS IN (''7898953148015'',''7898953148169'',''7898953148176'',''7898953148213'',''7898953148220'',''7898953148237'',''7898953148268'',''7898953148275'',''7898953148428'',''7898953148435'',''7898953148541'') ');
-  SQLUpdate := 'EXECUTE PROCEDURE SET_ESTOQUE_CONV(%d, %s, %d, %s, %s, %s, %s);';
+  //FDQuery1.SQL.Add('where produtos.codigo_BARRAS IN (''7898953148015'',''7898953148169'',''7898953148176'',''7898953148213'',''7898953148220'',''7898953148237'',''7898953148268'',''7898953148275'',''7898953148428'',''7898953148435'',''7898953148541'') ');
+  SQLUpdate := 'EXECUTE PROCEDURE SET_ESTOQUE_CONV(%d, %d, %s, %d, %s, %s, %s, %s);';
   VerificaConexao;
   PageControl1.ActivePageIndex := 0;
   AbreQuery;
@@ -3351,12 +3352,13 @@ begin
       Filial := StrToInt(EditForcarNumeroFilial.Text);
     Barras := FDQuery1.FieldByName('barras').AsString;
     TipoItem := FDQuery1.FieldByName('tipoitem').AsInteger;
+    Produto := FDQuery1.FieldByName('produto').AsInteger;
     CustoMedio := StringReplace(FDQuery1.FieldByName('customedio').AsString, ',', '.', [rfReplaceAll]);
     CustoTabela := StringReplace(FDQuery1.FieldByName('custotabela').AsString, ',', '.', [rfReplaceAll]);
     Venda := FDQuery1.FieldByName('venda').AsBoolean;
     Exportar := FDQuery1.FieldByName('exportar').AsBoolean;
 
-    ListBox1.Items.Add(Format(SQLUpdate,[Filial, QuotedStr(Barras), TipoItem, CustoMedio, CustoTabela, BooleanToStr(Venda), BooleanToStr(Exportar)]));
+    ListBox1.Items.Add(Format(SQLUpdate,[Filial, Produto, QuotedStr(Barras), TipoItem, CustoMedio, CustoTabela, BooleanToStr(Venda), BooleanToStr(Exportar)]));
 
     FDQuery1.Next;
     Gauge1.AddProgress(1);
@@ -3385,14 +3387,14 @@ end;
 procedure TFrmPrincipal.ButtonItemTabelaPrecoFiliaisClick(Sender: TObject);
 var
   SQLUpdate : String;
-  TabelaPreco, Filial : Integer;
+  Produto, TabelaPreco, Filial : Integer;
   ValorMinimo, ValorVenda, Barras : String;
 begin
   FDQuery1.SQL.Clear;
   FDQuery1.SQL.Add('select ');
   FDQuery1.SQL.Add('produtos_precos.valido_apos, ');
   FDQuery1.SQL.Add('produtos_precos.id_tabela, ');
-  FDQuery1.SQL.Add('produtos_precos.id_produto, ');
+  FDQuery1.SQL.Add('produtos_precos.id_produto as produto, ');
   FDQuery1.SQL.Add('produtos.codigo_barras as barras, ');
   FDQuery1.SQL.Add('produtos_precos.valor_minimo, ');
   FDQuery1.SQL.Add('produtos_precos.valor, ');
@@ -3400,14 +3402,15 @@ begin
   FDQuery1.SQL.Add('from produtos_precos ');
   FDQuery1.SQL.Add('inner join tabelas_precos on tabelas_precos.id = produtos_precos.id_tabela ');
   FDQuery1.SQL.Add('inner join produtos on produtos.id = produtos_precos.id_produto ');
-  FDQuery1.SQL.Add('where produtos.codigo_BARRAS IN (''7898953148015'',''7898953148169'',''7898953148176'',''7898953148213'',''7898953148220'',''7898953148237'',''7898953148268'',''7898953148275'',''7898953148428'',''7898953148435'',''7898953148541'') ');
+  FDQuery1.SQL.Add('where 1=1 ');
+  //FDQuery1.SQL.Add('where produtos.codigo_BARRAS IN (''7898953148015'',''7898953148169'',''7898953148176'',''7898953148213'',''7898953148220'',''7898953148237'',''7898953148268'',''7898953148275'',''7898953148428'',''7898953148435'',''7898953148541'') ');
   if EditIdEmpresa.Text <> EmptyStr then
     FDQuery1.SQL.Add(Format('and tabelas_precos.id_empresa = %s',[EditIdEmpresa.Text]));
   FDQuery1.SQL.Add('order by produtos_precos.id_tabela, produtos_precos.id_produto, produtos_precos.valido_apos ');
 
 
   //SQLUpdate := 'UPDATE ITEMTABELAPRECO SET VALORVENDA = %s, VALORMINIMO = %s WHERE TABELAPRECO = %d AND PRODUTO = (SELECT CODIGO FROM PRODUTO WHERE PRAZOVALIDADE = %d);';
-  SQLUpdate := 'EXECUTE PROCEDURE SET_ITEMTABELAPRECO_CONV(%d, %s, %s, %s, %d);';
+  SQLUpdate := 'EXECUTE PROCEDURE SET_ITEMTABELAPRECO_CONV(%d, %d, %s, %s, %s, %d);';
   PageControl1.ActivePageIndex := 0;
   VerificaConexao;
   AbreQuery;
@@ -3416,6 +3419,7 @@ begin
   while not FDQuery1.Eof do
   begin
     TabelaPreco := FDQuery1.FieldByName('id_tabela').AsInteger;
+    Produto := FDQuery1.FieldByName('produto').AsInteger;
     Filial := FDQuery1.FieldByName('filial').AsInteger;
     if EditForcarNumeroFilial.Text <> EmptyStr then
       Filial := StrToInt(EditForcarNumeroFilial.Text);
@@ -3423,7 +3427,7 @@ begin
     ValorMinimo := StringReplace(FDQuery1.FieldByName('valor_minimo').AsString,',','.',[rfReplaceAll]);
     ValorVenda := StringReplace(FDQuery1.FieldByName('valor').AsString,',','.',[rfReplaceAll]);
 
-    ListBox1.Items.Add(Format(SQLUpdate,[TabelaPreco, QuotedStr(Barras), ValorMinimo, ValorVenda, Filial]));
+    ListBox1.Items.Add(Format(SQLUpdate,[TabelaPreco, Produto, QuotedStr(Barras), ValorMinimo, ValorVenda, Filial]));
 
     FDQuery1.Next;
     Gauge1.AddProgress(1);

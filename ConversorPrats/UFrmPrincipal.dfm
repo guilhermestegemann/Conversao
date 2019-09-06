@@ -22,7 +22,7 @@ object FrmPrincipal: TFrmPrincipal
     Top = 0
     Width = 1543
     Height = 854
-    ActivePage = TabSheet2
+    ActivePage = TabSheetConversaoFiliais
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -391,7 +391,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object BtnUnidadeMedida: TButton
         Left = 8
-        Top = 309
+        Top = 306
         Width = 166
         Height = 18
         Caption = 'Unidade de Medida'
