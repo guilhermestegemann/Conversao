@@ -22,7 +22,7 @@ object FrmPrincipal: TFrmPrincipal
     Top = 0
     Width = 1543
     Height = 854
-    ActivePage = TabSheetConversaoFiliais
+    ActivePage = TabSheet2
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
