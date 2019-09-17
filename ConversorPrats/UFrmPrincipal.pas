@@ -563,6 +563,7 @@ begin
     Contato := Copy(FDQuery1.FieldByName('contato').AsString, 0, 40);
     Endereco := Copy(FDQuery1.FieldByName('endereco').AsString, 0, 60);
     Numero := FDQuery1.FieldByName('numero').AsString;
+    if Numero = EmptyStr then Numero := 'S/N';
     Cidade := FDQuery1.FieldByName('cidade').AsInteger;
     NomeBairro := FDQuery1.FieldByName('nomebairro').AsString;
     Complemento := FDQuery1.FieldByName('complemento').AsString;
@@ -3050,6 +3051,7 @@ begin
     Contato := Copy(FDQuery1.FieldByName('contato').AsString, 0, 40);
     Endereco := Copy(FDQuery1.FieldByName('endereco').AsString, 0, 60);
     Numero := FDQuery1.FieldByName('numero').AsString;
+    if Numero = EmptyStr then Numero := 'S/N';
     CodigoFiscal := FDQuery1.FieldByName('codigofiscal').AsString;
     Estado := FDQuery1.FieldByName('estado').AsInteger;
     NomeBairro := FDQuery1.FieldByName('nomebairro').AsString;
