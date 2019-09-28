@@ -1125,9 +1125,7 @@ begin
     FDQuery1.SQL.Add('(select id_terceiro from terceiros_setores where id_setor in ');
     FDQuery1.SQL.Add(Format('(select id from rotas_setores where id_rota in (%s))) or (terceiros.tipo_fornecedor is true) or (terceiros.tipo_funcionario is true)) ',[EditRotas.Text]));
   end;
-  SQLInsert := 'INSERT INTO COMODATO (CODIGO, DATAEMISSAO, CLIFOR, FUNCIONARIO, PRODUTO, OBS, FILIAL) '+
-               'VALUES ((SELECT COALESCE((MAX(CODIGO) +1),1) FROM COMODATO), %s, %d, %d, (SELECT CODIGO FROM PRODUTO WHERE PRAZOVALIDADE = %d), %s, %d);';
-
+  SQLInsert := 'EXECUTE PROCEDURE SET_COMODATO_CONV(%d, %d, %d, %s, %d, %s, %s);';
   VerificaConexao;
   AbreQuery;
   AjustaGauge;
@@ -1153,7 +1151,7 @@ begin
       Obs := 'NULL';
 
 
-    ListBox1.Items.Add(Format(SQLInsert,[DataEmissao, Clifor, Funcionario, Produto, Obs, Filial]));
+    ListBox1.Items.Add(Format(SQLInsert,[Filial, Clifor, Produto, Qtde, Funcionario, DataEmissao, Obs]));
 
     FDQuery1.Next;
     Gauge1.AddProgress(1);
