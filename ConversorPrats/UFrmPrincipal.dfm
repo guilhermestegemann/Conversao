@@ -22,7 +22,7 @@ object FrmPrincipal: TFrmPrincipal
     Top = 0
     Width = 1543
     Height = 854
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -192,7 +192,7 @@ object FrmPrincipal: TFrmPrincipal
       end
       object BtnClifor: TButton
         Left = 8
-        Top = 291
+        Top = 286
         Width = 166
         Height = 18
         Caption = 'Clifor'
@@ -842,7 +842,7 @@ object FrmPrincipal: TFrmPrincipal
         Top = 535
         Width = 217
         Height = 54
-        Caption = 'Contas Recebidas (Excel)'
+        Caption = 'Contas Recebidas (Excel) (ID)'
         TabOrder = 13
         OnClick = ButtonContaPagaRecebidaClick
       end
@@ -880,7 +880,7 @@ object FrmPrincipal: TFrmPrincipal
         Top = 655
         Width = 217
         Height = 54
-        Caption = 'Contas Pagas (Excel)'
+        Caption = 'Contas Pagas (Excel) (ID)'
         TabOrder = 17
         OnClick = ButtonContasPagasExcelClick
       end
