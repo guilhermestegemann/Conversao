@@ -2989,14 +2989,15 @@ begin
   FDQuery1.SQL.Add('terceiros_dados_emp.data_ultima_venda as datamovimento, ');
   FDQuery1.SQL.Add('terceiros_dados_emp.data_inativacao as datainativado, ');
   FDQuery1.SQL.Add('terceiros_dados_emp.observacao_entrega as obs, ');
-  FDQuery1.SQL.Add('terceirosvendedor.cpf_cnpj as cpfvendedor ');
+  //FDQuery1.SQL.Add('terceirosvendedor.cpf_cnpj as cpfvendedor ');
+  FDQuery1.SQL.Add('(select cpf_cnpj from terceiros where terceiros.id = terceiros_dados_emp.id_vendedor) as cpfvendedor ');
   FDQuery1.SQL.Add('from terceiros ');
   FDQuery1.SQL.Add('left join logradouros on logradouros.id = terceiros.id_logradouro ');
   FDQuery1.SQL.Add('left join bairros on bairros.id = terceiros.id_bairro ');
   FDQuery1.SQL.Add(' left join cidades on cidades.id = terceiros.id_cidade ');
   FDQuery1.SQL.Add(' left join estados on estados.sigla = cidades.estado ');
   FDQuery1.SQL.Add('inner join terceiros_dados_emp on terceiros_dados_emp.id_terceiro = terceiros.id ');
-  FDQuery1.SQL.Add('left join terceiros terceirosvendedor on terceirosvendedor.id = terceiros_dados_emp.id_vendedor ');
+  //FDQuery1.SQL.Add('left join terceiros terceirosvendedor on terceirosvendedor.id = terceiros_dados_emp.id_vendedor ');
 
   if EditIdEmpresa.Text <> EmptyStr then
     FDQuery1.SQL.Add(Format('and terceiros_dados_emp.id_empresa = %s',[EditIdEmpresa.Text]));
