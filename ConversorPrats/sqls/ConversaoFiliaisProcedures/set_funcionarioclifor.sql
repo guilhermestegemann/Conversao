@@ -2,7 +2,8 @@ SET TERM ^ ;
 
 CREATE OR ALTER procedure set_funcionarioclifor_conv (
     cnpjcpfvendedor varchar(18),
-    cnpjclifor varchar(18))
+    cnpjclifor varchar(18),
+    frequenciavisita integer)
 as
 declare variable codigoclifor integer;
 declare variable codigovendedor integer;
@@ -30,11 +31,13 @@ BEGIN
             INSERT INTO FUNCIONARIOCLIFOR
             (
                 FUNCIONARIO,
-                CLIFOR
+                CLIFOR,
+                FREQUENCIAVISITA
             ) VALUES
             (
                 :CODIGOVENDEDOR,
-                :CODIGOCLIFOR
+                :CODIGOCLIFOR,
+                :FREQUENCIAVISITA
             );
         END
     END
